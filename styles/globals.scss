@@ -1,0 +1,370 @@
+//MAKE THE PRIMEREACT DIRECTION RTL
+@import "primeReactArabicStyle.scss";
+
+
+@media screen and (max-width: 991px) {
+    .layout-menu-button.layout-topbar-button{
+        margin-right: auto;
+        margin-left: initial !important;
+    }
+}
+
+// COLOR THE LOGOUT BUTTON
+a[href="/auth/login"]{
+    color: #ff0000 !important;
+}
+
+
+// BUTTONS ACTIONS
+.AMB_btn{
+    border: none;
+    padding: 7px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.15s ease-in-out;
+}
+
+.AMB_btn-primary{
+    background-color: #007bff;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#007bff, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#007bff, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-secondary{
+    background-color: #6c757d;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#6c757d, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#6c757d, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-success{
+    background-color: #28a745;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#28a745, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#28a745, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-danger{
+    background-color: #dc3545;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#dc3545, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#dc3545, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-warning{
+    background-color: #ffc107;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#ffc107, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#ffc107, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-info{
+    background-color: #17a2b8;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#17a2b8, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#17a2b8, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-light{
+    background-color: #f8f9fa;
+    color: black;
+
+    &:hover{
+        background-color: rgba(#f8f9fa, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#f8f9fa, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.AMB_btn-dark{
+    background-color: #343a40;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#343a40, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#343a40, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+/*RESET THE SIZE OF THE CUSTOM FILE UPLOAD*/
+.p-fluid .p-fileupload .p-button {
+    width: 3rem !important;
+}
+
+
+// USERS BUTTONS
+//btn btn-sm btn-info
+
+.btn{
+    border: none;
+    padding: 7px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-sm{
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.btn-info{
+    background-color: #17a2b8;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#17a2b8, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#17a2b8, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.btn-warning{
+    background-color: #007bff;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#007bff, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#007bff, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.btn-secondary{
+    background-color: #6c757d;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#6c757d, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#6c757d, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.btn-tertiary{
+    background-color: #ffc107;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#ffc107, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#ffc107, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.btn-primary{
+    background-color: #623a94;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#ffc107, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#ffc107, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+.btn-danger{
+    background-color: #dc3545;
+    color: white;
+
+    &:hover{
+        background-color: rgba(#dc3545, 0.8);
+    }
+
+    &:active{
+        background-color: rgba(#dc3545, 0.6);
+        transform: scale(0.98);
+    }
+}
+
+//RETWEET BUTTONS
+.viewButton{
+    background-color: #5cb85c;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.viewButton:hover{
+    background-color: #449d44;
+    color: #fff;
+}
+
+.viewButton:active{
+    transform: scale(0.95);
+}
+
+.editButton{
+    background-color: #136d88;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.editButton:hover{
+    background-color: #0a3c4d;
+    color: #fff;
+}
+
+.editButton:active{
+    transform: scale(0.95);
+}
+
+.deleteButton{
+    background-color: #d9534f;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.deleteButton:hover{
+    background-color: #a94442;
+    color: #fff;
+}
+
+.deleteButton:active{
+    transform: scale(0.95);
+}
+
+
+.copyButton{
+    background-color: #5bc0de;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.copyButton:hover{
+    background-color: #31b0d5;
+    color: #fff;
+}
+
+.copyButton:active{
+    transform: scale(0.95);
+}
+
+.blockButton{
+    background-color: #f0ad4e;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.blockButton:hover{
+    background-color: #ec971f;
+    color: #fff;
+}
+
+.blockButton:active{
+    transform: scale(0.95);
+}
+
+.unblockButton{
+    background-color: #5cb85c;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    border: 0;
+}
+
+.unblockButton:hover{
+    background-color: #449d44;
+    color: #fff;
+}
+
+.unblockButton:active{
+    transform: scale(0.95);
+}
+

@@ -1,0 +1,64 @@
+{
+    "sidebar": {
+        "home": {
+            "title": "الرئيسية",
+            "dashboard": "لوحة التحكم"
+        },
+        "settings": {
+            "title": "الإعدادات",
+            "logout": "تسجيل الخروج"
+        }
+    },
+    "optionsbar": {
+        "language": {
+            "title": "اللغة"
+        },
+        "scale": {
+            "title": "الحجم"
+        },
+        "menuType": {
+            "title": "نوع القائمة"
+        },
+        "inputStyle": {
+            "title": "حقل الإدخال"
+        },
+        "RippleEffect": {
+            "title": "تأثيرات مضاعفة"
+        },
+        "BootstrapTheme": {
+            "title": "Bootstrap"
+        },
+        "MaterialTheme": {
+            "title": "Material"
+        },
+        "MaterialCompact": {
+            "title": "Material Compact"
+        },
+        "TailwindTheme": {
+            "title": "Tailwind"
+        },
+        "FluentTheme": {
+            "title": "Fluent"
+        },
+        "PrimeOne2022": {
+            "title": "PrimeOne 2022"
+        },
+        "PrimeOne2021": {
+            "title": "PrimeOne 2021"
+        }
+    },
+    "login": {
+        "company": "فيكساوي",
+        "username": "اسم المستخدم",
+        "password": "كلمة المرور",
+        "login": "تسجيل الدخول",
+        "welcome": "مرحبا بكم في موقعنا"
+    },
+    "home": {
+        "welcome": "مرحبا بكم في موقعنا"
+    },
+    "about": {
+        "title": "من نحن",
+        "description": "هذه الصفحة تتحدث عن الموقع"
+    }
+}

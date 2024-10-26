@@ -1,0 +1,53 @@
+// ####################### PASSWORD INPUT #############################
+
+// change the direction of the icon in rtl mode
+html[lang="ar"] .p-password.p-component.p-inputwrapper.p-input-icon-right.w-full i{
+    right: initial;
+    left: 10px;
+}
+
+
+// RESTYLE IF THE LANGUAGE IS ARABIC
+html[lang="ar"] {
+    .layout-menu ul a .layout-menuitem-icon {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+}
+
+// RESTYLE THE TABLE VIEW
+html[lang="ar"] .p-datatable .p-column-header-content{
+    gap: 5px;
+}
+html[lang="ar"] .p-datatable .p-sortable-column .p-column-title {
+    text-align: right;
+    margin-left: auto; /* Default to auto */
+}
+
+html[lang="ar"] .p-column-filter-menu {
+    margin-left: initial;
+}
+
+html[lang="ar"] .p-datatable .p-datatable-tbody > tr > td {
+    text-align: right ;
+}
+
+html[lang="ar"] .p-datatable .p-paginator-bottom {
+    direction: ltr;
+}
+
+// DROP DOWN
+html[lang="ar"] .p-dropdown-item {
+    text-align: right;
+}
+
+// MULTI SELECT
+html[lang="ar"] .p-multiselect .p-multiselect-clear-icon {
+    right: initial !important;
+    left: 3rem !important;
+}
+
+html[lang="ar"] .p-dropdown .p-dropdown-clear-icon {
+    right: initial;
+    left: 3rem;
+}

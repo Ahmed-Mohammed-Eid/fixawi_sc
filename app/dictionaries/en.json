@@ -1,0 +1,64 @@
+{
+    "sidebar": {
+        "home": {
+            "title": "HOME",
+            "dashboard": "Dashboard"
+        },
+        "settings": {
+            "title": "SETTINGS",
+            "logout": "Logout"
+        }
+    },
+    "optionsbar": {
+        "language": {
+            "title": "Language"
+        },
+        "scale": {
+            "title": "Scale"
+        },
+        "menuType": {
+            "title": "Menu Type"
+        },
+        "inputStyle": {
+            "title": "Input Style"
+        },
+        "RippleEffect": {
+            "title": "Ripple Effect"
+        },
+        "BootstrapTheme": {
+            "title": "Bootsrap"
+        },
+        "MaterialTheme": {
+            "title": "Material"
+        },
+        "MaterialCompact": {
+            "title": "Material Compact"
+        },
+        "TailwindTheme": {
+            "title": "Tailwind"
+        },
+        "FluentTheme": {
+            "title": "Fluent"
+        },
+        "PrimeOne2022": {
+            "title": "PrimeOne 2022"
+        },
+        "PrimeOne2021": {
+            "title": "PrimeOne 2021"
+        }
+    },
+    "login": {
+        "company": "FIXAWI",
+        "username": "Username",
+        "password": "Password",
+        "login": "Login",
+        "welcome": "Welcome to the login page"
+    },
+    "home": {
+        "welcome": "Welcome to the home page"
+    },
+    "about": {
+        "title": "About",
+        "description": "This is the about page"
+    }
+}
