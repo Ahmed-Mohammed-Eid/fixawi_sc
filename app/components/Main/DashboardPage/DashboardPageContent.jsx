@@ -40,7 +40,6 @@ export default function DashboardPageContent({lang}) {
 
 
                 setVisits(visitsTableArray || []);
-                console.log(response.data?.visits);
             })
             .catch(error => {
                 toast.error(error.response?.data?.message || 'An error occurred');

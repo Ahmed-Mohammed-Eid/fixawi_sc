@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import axios from 'axios';
-import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputSwitch } from 'primereact/inputswitch';
@@ -21,7 +20,6 @@ export default function PricesListFormPart({ lang }) {
             serviceTitle: '',
             servicePrice: '',
             isAvailable: true,
-            isApproved: true
         }]);
     }
 
@@ -65,7 +63,6 @@ export default function PricesListFormPart({ lang }) {
             }
         })
             .then(response => {
-                console.log(response.data);
                 setPriceList(response.data?.priceList?.priceList || []);
             })
             .catch(error => {
@@ -89,7 +86,7 @@ export default function PricesListFormPart({ lang }) {
                 {priceList.length > 0 && priceList.map((item, index) => {
                     return (
                         <div className={'p-fluid formgrid grid mb-2 align-items-center'} key={index}>
-                            <div className={'field col-3'}>
+                            <div className={'field col-4'}>
                                 <label className={'font-bold'}
                                        htmlFor={`ServiceTitle${index}`}>{lang === 'en' ? 'Service Title' : 'عنوان الخدمة'}</label>
                                 <InputText
@@ -102,7 +99,7 @@ export default function PricesListFormPart({ lang }) {
                                     }}
                                 />
                             </div>
-                            <div className={'field col-3'}>
+                            <div className={'field col-4'}>
                                 <label className={'font-bold'}
                                        htmlFor={`ServicePrice${index}`}>{lang === 'en' ? 'Service Price' : 'سعر الخدمة'}</label>
                                 <InputNumber
@@ -124,19 +121,6 @@ export default function PricesListFormPart({ lang }) {
                                     onChange={(e) => {
                                         const list = [...priceList];
                                         list[index].isAvailable = e.value;
-                                        setPriceList(list);
-                                    }}
-                                />
-                            </div>
-                            <div className={'field col-2 flex flex-column align-items-center'}>
-                                <label className={'font-bold'}
-                                       htmlFor={`IsApproved${index}`}>{lang === 'en' ? 'Is Approved' : 'معتمد'}</label>
-                                <InputSwitch
-                                    id={`IsApproved${index}`}
-                                    checked={item.isApproved}
-                                    onChange={(e) => {
-                                        const list = [...priceList];
-                                        list[index].isApproved = e.value;
                                         setPriceList(list);
                                     }}
                                 />
