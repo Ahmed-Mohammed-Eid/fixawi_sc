@@ -57,7 +57,7 @@ const LoginContent = ({ dictionary, lang }) => {
                 // SAVE TOKEN IN LOCAL STORAGE AND COOKIES AND THE ROLE OF THE USER
                 localStorage.setItem('token', res.data?.token);
                 localStorage.setItem('role', res.data?.admin?.role);
-                localStorage.setItem("userId", res.data?.admin?._id);
+                localStorage.setItem('userId', res.data?.admin?._id);
 
                 // SET THE COOKIES
                 document.cookie = `token=${res.data.token}; path=/`;
@@ -71,7 +71,7 @@ const LoginContent = ({ dictionary, lang }) => {
                     toast.success('Login Successful');
                     router.push(`/${lang}/`);
                 } else {
-                    toast.error('You are not authorized to access this page');
+                    toast.error('You have no permission to access this page');
                 }
             })
             .catch((err) => {

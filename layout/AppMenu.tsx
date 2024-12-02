@@ -11,7 +11,6 @@ type ChildContainerProps = {
 };
 
 const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
-
     const model: AppMenuItem[] = [
         {
             label: dictionary.sidebar.home.title,
@@ -22,15 +21,18 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             icon: 'pi pi-fw pi-map-marker',
             items: [
                 // UPDATE SERVICE CENTER INFO
-                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` },
+                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` }
             ]
         },
         {
             label: lang === 'en' ? 'Prices List' : 'قائمة الأسعار',
             icon: 'pi pi-fw pi-money-bill',
-            items: [
-                {label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list`},
-            ]
+            items: [{ label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` }]
+        },
+        {
+            label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات',
+            icon: 'pi pi-fw pi-calendar',
+            items: [{ label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` }]
         },
         // {
         //     label: lang === 'en' ? 'Reports' : 'التقارير',
@@ -51,9 +53,7 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
                         localStorage.clear();
                         // Clear Cookies
                         document.cookie.split(';').forEach((c) => {
-                            document.cookie = c
-                                .replace(/^ +/, '')
-                                .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+                            document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
                         });
                         // Redirect to login page
                         window.location.href = '/auth/login';
@@ -67,8 +67,7 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
         <MenuProvider dictionary={dictionary} lang={lang}>
             <ul className="layout-menu" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
                 {model.map((item, i) => {
-                    return !item?.seperator ? <AppMenuitem lang={lang} item={item} root={true} index={i} key={item.label} /> :
-                        <li className="menu-separator"></li>;
+                    return !item?.seperator ? <AppMenuitem lang={lang} item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
                 })}
             </ul>
         </MenuProvider>
