@@ -1,14 +1,6 @@
 //MAKE THE PRIMEREACT DIRECTION RTL
 @import "primeReactArabicStyle.scss";
 
-
-@media screen and (max-width: 991px) {
-    .layout-menu-button.layout-topbar-button{
-        margin-right: auto;
-        margin-left: initial !important;
-    }
-}
-
 // COLOR THE LOGOUT BUTTON
 a[href="/auth/login"]{
     color: #ff0000 !important;

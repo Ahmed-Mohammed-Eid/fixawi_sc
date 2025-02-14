@@ -14,7 +14,7 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
     const model: AppMenuItem[] = [
         {
             label: dictionary.sidebar.home.title,
-            items: [{ label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}/` }]
+            items: [{ label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}` }]
         },
         {
             label: lang === 'en' ? 'Service Centers' : 'مراكز الخدمة',
@@ -30,10 +30,41 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             items: [{ label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` }]
         },
         {
-            label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات',
+            label: lang === 'en' ? 'Bookings' : 'الحجوزات',
             icon: 'pi pi-fw pi-calendar',
-            items: [{ label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` }]
+            items: [
+                { label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` },
+                { label: lang === 'en' ? 'Create Booking Settings' : 'إنشاء إعدادات الحجز', icon: 'pi pi-fw pi-plus', to: `/${lang}/bookings/settings` },
+                { label: lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز', icon: 'pi pi-fw pi-pencil', to: `/${lang}/bookings/settings/update` }
+            ]
         },
+        // CHECK REPORTS
+        {
+            label: lang === 'en' ? 'Check Reports' : 'تقارير الفحص',
+            icon: 'pi pi-fw pi-chart-bar',
+            items: [
+                {
+                    label: lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص',
+                    icon: 'pi pi-fw pi-plus',
+                    to: `/${lang}/check-reports`
+                },
+                {
+                    label: lang === 'en' ? 'Get Check Reports' : 'استرجاع تقارير الفحص',
+                    icon: 'pi pi-fw pi-search',
+                    to: `/${lang}/check-reports/get-check-reports`
+                }
+            ]
+        },
+        // INVOICES
+        {
+            label: lang === 'en' ? 'Invoices' : 'الفواتير',
+            icon: 'pi pi-fw pi-file',
+            items: [
+                { label: lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة', icon: 'pi pi-fw pi-plus', to: `/${lang}/invoices/create` },
+                { label: lang === 'en' ? 'Get Invoices' : 'استرجاع الفواتير', icon: 'pi pi-fw pi-search', to: `/${lang}/invoices` }
+            ]
+        },
+
         // {
         //     label: lang === 'en' ? 'Reports' : 'التقارير',
         //     icon: 'pi pi-fw pi-chart-bar',

@@ -41,13 +41,63 @@ html[lang="ar"] .p-dropdown-item {
     text-align: right;
 }
 
-// MULTI SELECT
-html[lang="ar"] .p-multiselect .p-multiselect-clear-icon {
-    right: initial !important;
-    left: 3rem !important;
-}
-
 html[lang="ar"] .p-dropdown .p-dropdown-clear-icon {
     right: initial;
     left: 3rem;
+}
+
+// html[lang="ar"] .p-fluid .p-calendar{
+//     flex-direction: row-reverse;
+// }
+
+html[lang="ar"] .p-calendar-w-btn-right .p-datepicker-trigger{
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+html[lang="ar"] .p-calendar-w-btn-right .p-inputtext,
+html[lang="ar"] .p-inputnumber-buttons-stacked .p-inputnumber-input  {
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+    border-top-right-radius: 6px !important;
+    border-bottom-right-radius: 6px !important;
+}
+
+html[lang="ar"] .p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-up{
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+html[lang="ar"] .p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-down {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 6px !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+html[lang="ar"] .custom-file-upload button.p-button.p-component.p-button-outlined.p-button-rounded.p-button-danger.ml-auto.p-button-icon-only {
+    margin-left: 0 !important;
+    margin-right:auto;
+}
+
+html[lang="ar"] .custom-progressbar-container {
+    margin-left: 0 !important;
+    margin-right:auto;
+}
+
+html[lang="ar"] .p-button .p-button-icon-left{
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
+}
+
+
+html[lang="ar"] .layout-topbar {
+    direction: rtl;
+
+    .layout-menu-button{
+        margin-left: initial !important;
+        margin-right: auto;
+    }
 }

@@ -10,3 +10,20 @@
 .layout-main {
     flex: 1 1 auto;
 }
+
+
+//RTL
+html[lang="ar"] .layout-main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between;
+    padding: 7rem 4rem 2rem 2rem; /* Swap padding for RTL */
+    transition: margin-right $transitionDuration; /* Adjust transition for RTL */
+    margin-left: 0; /* Reset LTR margin */
+    margin-right: 0; /* Add RTL margin */
+}
+
+html[lang="ar"] .layout-main {
+    flex: 1 1 auto;
+}

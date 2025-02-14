@@ -51,4 +51,20 @@
             padding-right: 2rem;
         }
     }
-} 
+}
+
+// CUSTOM SCROLLBAR
+*::-webkit-scrollbar {
+    width: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+*::-webkit-scrollbar-track {
+    margin: 20px;
+}
+

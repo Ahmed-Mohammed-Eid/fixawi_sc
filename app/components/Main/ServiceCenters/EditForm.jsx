@@ -23,7 +23,6 @@ import cities from '../../../json/cities.json';
 import Image from 'next/image';
 
 export default function EditServiceCenterForm({ lang }) {
-
     const [serviceCenterId, setServiceCenterId] = useState(''); // GET THE SERVICE CENTER ID FROM THE URL
 
     // CATEGORIES
@@ -68,8 +67,8 @@ export default function EditServiceCenterForm({ lang }) {
         }
 
         // Formatting openAt and closeAt (time format logic)
-        const openAtFormatted = `${openAt.getHours()}:${openAt.getMinutes()}`;
-        const closeAtFormatted = `${closeAt.getHours()}:${closeAt.getMinutes()}`;
+        const openAtFormatted = openAt.getHours();
+        const closeAtFormatted = closeAt.getHours();
 
         const formData = new FormData();
         formData.append('serviceCenterTitle', serviceCenterTitle);
@@ -92,19 +91,20 @@ export default function EditServiceCenterForm({ lang }) {
             formData.append('password', password);
         }
 
-        files.forEach(file => {
+        files.forEach((file) => {
             formData.append('files', file);
         });
 
-        axios.put(`${process.env.API_URL}/update/profile`, formData, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(_ => {
+        axios
+            .put(`${process.env.API_URL}/update/profile`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((_) => {
                 toast.success(lang === 'en' ? 'Service Center updated successfully' : 'تم تحديث مركز الخدمة بنجاح');
             })
-            .catch(err => {
+            .catch((err) => {
                 toast.error(err.response?.data?.message || (lang === 'en' ? 'Failed to update service center' : 'فشل في تحديث مركز الخدمة'));
             });
     }
@@ -114,16 +114,17 @@ export default function EditServiceCenterForm({ lang }) {
         // GET THE TOKEN FROM THE LOCAL STORAGE
         const token = localStorage.getItem('token');
 
-        axios.get(`${process.env.API_URL}/service/sub/categories`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(res => {
+        axios
+            .get(`${process.env.API_URL}/service/sub/categories`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((res) => {
                 // Update the state
                 setSubCategories(res.data?.subCategories || []);
             })
-            .catch(error => {
+            .catch((error) => {
                 toast.error(error?.response?.data?.message || 'An error occurred while getting the categories.');
             });
     }
@@ -133,11 +134,12 @@ export default function EditServiceCenterForm({ lang }) {
         // GET THE TOKEN FROM THE LOCAL STORAGE
         const token = localStorage.getItem('token');
 
-        axios.get(`${process.env.API_URL}/user/cars/brands`)
-            .then(res => {
+        axios
+            .get(`${process.env.API_URL}/user/cars/brands`)
+            .then((res) => {
                 console.log(res.data);
                 // Update the state
-                const ArrayOfCars = res.data?.brands?.map(brand => {
+                const ArrayOfCars = res.data?.brands?.map((brand) => {
                     return {
                         label: brand?.brand,
                         value: brand?.brand,
@@ -146,7 +148,7 @@ export default function EditServiceCenterForm({ lang }) {
                 }); // map the cars to the format that the dropdown accepts
                 setCars(ArrayOfCars);
             })
-            .catch(error => {
+            .catch((error) => {
                 toast.error(error?.response?.data?.message || 'An error occurred while getting the cars.');
             });
     }
@@ -163,7 +165,6 @@ export default function EditServiceCenterForm({ lang }) {
 
     // GET THE SERVICE CENTER DATA
     function getServiceCenterData() {
-
         const serviceCenterId = localStorage.getItem('userId');
 
         // SET THE SERVICE CENTER ID
@@ -172,25 +173,22 @@ export default function EditServiceCenterForm({ lang }) {
         // GET THE TOKEN FROM THE LOCAL STORAGE
         const token = localStorage.getItem('token');
 
-        axios.get(`${process.env.API_URL}/service/center/profile`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
-            .then(res => {
+        axios
+            .get(`${process.env.API_URL}/service/center/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            .then((res) => {
                 console.log(res.data);
                 const serviceCenter = res?.data?.serviceCenter;
 
                 // MAP TO RETURN THE IDS ONLY FOR SERVICE TYPES
-                const serviceTypes = serviceCenter.serviceCategoryIds.map(service => service._id);
+                const serviceTypes = serviceCenter.serviceCategoryIds.map((service) => service._id);
 
                 // HANDLE THE DATE
-                const handledOpenAt = new Date();
-                handledOpenAt.setHours(serviceCenter.openAt.split(':')[0]);
-                handledOpenAt.setMinutes(serviceCenter.openAt.split(':')[1]);
-                const handledCloseAt = new Date();
-                handledCloseAt.setHours(serviceCenter.closeAt.split(':')[0]);
-                handledCloseAt.setMinutes(serviceCenter.closeAt.split(':')[1]);
+                const handledOpenAt = new Date(serviceCenter.openAt);
+                const handledCloseAt = new Date(serviceCenter.closeAt);
 
                 // SET THE STATE
                 setServiceCenterTitle(serviceCenter.serviceCenterTitle);
@@ -208,14 +206,11 @@ export default function EditServiceCenterForm({ lang }) {
                 setWebsite(serviceCenter.website);
                 setCarBrands(serviceCenter.carBrands);
                 setUsername(serviceCenter.username);
-
-
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
             });
     }
-
 
     // EFFECT TO FETCH THE CATEGORIES
     useEffect(() => {
@@ -224,36 +219,21 @@ export default function EditServiceCenterForm({ lang }) {
         getCars();
     }, [lang]);
 
-
     return (
         <>
             <form dir={lang === 'en' ? 'ltr' : 'rtl'} onSubmit={handleSubmit}>
                 {/* Form fields */}
                 <div className={`card`}>
-                    <h1 className={'text-2xl mb-5 uppercase'}>
-                        {lang === 'en' ? 'Edit Service Center' : 'تعديل مركز خدمة'}
-                    </h1>
+                    <h1 className={'text-2xl mb-5 uppercase'}>{lang === 'en' ? 'Edit Service Center' : 'تعديل مركز خدمة'}</h1>
 
                     <div className={'p-fluid formgrid grid'}>
                         <div className={'field col-12 md:col-6'}>
-                            <label
-                                htmlFor="serviceCenterTitle">{lang === 'en' ? 'Service Center Title' : 'اسم المركز'}</label>
-                            <InputText
-                                id="serviceCenterTitle"
-                                value={serviceCenterTitle}
-                                onChange={(e) => setServiceCenterTitle(e.target.value)}
-                                placeholder={lang === 'en' ? 'Service Center Title' : 'اسم المركز'}
-                            />
+                            <label htmlFor="serviceCenterTitle">{lang === 'en' ? 'Service Center Title' : 'اسم المركز'}</label>
+                            <InputText id="serviceCenterTitle" value={serviceCenterTitle} onChange={(e) => setServiceCenterTitle(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title' : 'اسم المركز'} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label
-                                htmlFor="serviceCenterTitleEn">{lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'}</label>
-                            <InputText
-                                id="serviceCenterTitleEn"
-                                value={serviceCenterTitleEn}
-                                onChange={(e) => setServiceCenterTitleEn(e.target.value)}
-                                placeholder={lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'}
-                            />
+                            <label htmlFor="serviceCenterTitleEn">{lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'}</label>
+                            <InputText id="serviceCenterTitleEn" value={serviceCenterTitleEn} onChange={(e) => setServiceCenterTitleEn(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'} />
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="area">{lang === 'en' ? 'Area' : 'المنطقة'}</label>
@@ -270,31 +250,15 @@ export default function EditServiceCenterForm({ lang }) {
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="address">{lang === 'en' ? 'Address' : 'العنوان'}</label>
-                            <InputTextarea
-                                id="address"
-                                value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                                placeholder={lang === 'en' ? 'Address' : 'العنوان'}
-                                style={{ height: '100px' }}
-                            />
+                            <InputTextarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder={lang === 'en' ? 'Address' : 'العنوان'} style={{ height: '100px' }} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="lat">{lang === 'en' ? 'Latitude' : 'خط العرض'}</label>
-                            <InputText
-                                id="lat"
-                                value={lat}
-                                onChange={(e) => setLat(e.target.value)}
-                                placeholder={lang === 'en' ? 'Latitude' : 'خط العرض'}
-                            />
+                            <InputText id="lat" value={lat} onChange={(e) => setLat(e.target.value)} placeholder={lang === 'en' ? 'Latitude' : 'خط العرض'} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="lng">{lang === 'en' ? 'Longitude' : 'خط الطول'}</label>
-                            <InputText
-                                id="lng"
-                                value={lng}
-                                onChange={(e) => setLng(e.target.value)}
-                                placeholder={lang === 'en' ? 'Longitude' : 'خط الطول'}
-                            />
+                            <InputText id="lng" value={lng} onChange={(e) => setLng(e.target.value)} placeholder={lang === 'en' ? 'Longitude' : 'خط الطول'} />
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="serviceType">{lang === 'en' ? 'Service Types' : 'أنواع الخدمات'}</label>
@@ -315,52 +279,23 @@ export default function EditServiceCenterForm({ lang }) {
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="openAt">{lang === 'en' ? 'Open At' : 'يفتح في'}</label>
-                            <Calendar
-                                id="openAt"
-                                value={openAt}
-                                onChange={(e) => setOpenAt(e.target.value)}
-                                placeholder={lang === 'en' ? 'Open At' : 'يفتح في'}
-                                showTime={true}
-                                timeOnly={true}
-                            />
+                            <Calendar id="openAt" value={openAt} onChange={(e) => setOpenAt(e.target.value)} placeholder={lang === 'en' ? 'Open At' : 'يفتح في'} showTime={true} timeOnly={true} stepMinute={60} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="closeAt">{lang === 'en' ? 'Close At' : 'يغلق في'}</label>
-                            <Calendar
-                                id="closeAt"
-                                value={closeAt}
-                                onChange={(e) => setCloseAt(e.target.value)}
-                                placeholder={lang === 'en' ? 'Close At' : 'يغلق في'}
-                                showTime={true}
-                                timeOnly={true}
-                            />
+                            <Calendar id="closeAt" value={closeAt} onChange={(e) => setCloseAt(e.target.value)} placeholder={lang === 'en' ? 'Close At' : 'يغلق في'} showTime={true} timeOnly={true} stepMinute={60} />
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="contacts">{lang === 'en' ? 'Contacts' : 'الاتصالات'}</label>
-                            <InputText
-                                id="contacts"
-                                value={contacts}
-                                onChange={(e) => setContacts(e.target.value)}
-                                placeholder={lang === 'en' ? 'Contacts' : 'الاتصالات'}
-                            />
+                            <InputText id="contacts" value={contacts} onChange={(e) => setContacts(e.target.value)} placeholder={lang === 'en' ? 'Contacts' : 'الاتصالات'} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="email">{lang === 'en' ? 'Email' : 'البريد الإلكتروني'}</label>
-                            <InputText
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder={lang === 'en' ? 'Email' : 'البريد الإلكتروني'}
-                            />
+                            <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={lang === 'en' ? 'Email' : 'البريد الإلكتروني'} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="website">{lang === 'en' ? 'Website' : 'الموقع الإلكتروني'}</label>
-                            <InputText
-                                id="website"
-                                value={website}
-                                onChange={(e) => setWebsite(e.target.value)}
-                                placeholder={lang === 'en' ? 'Website' : 'الموقع الإلكتروني'}
-                            />
+                            <InputText id="website" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder={lang === 'en' ? 'Website' : 'الموقع الإلكتروني'} />
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="carBrands">{lang === 'en' ? 'Car Brands' : 'ماركات السيارات'}</label>
@@ -384,7 +319,8 @@ export default function EditServiceCenterForm({ lang }) {
                                 value={visitType}
                                 options={[
                                     { label: lang === 'en' ? 'Booking' : 'حجز', value: 'booking' },
-                                    { label: lang === 'en' ? 'Direct Visit' : 'زيارة مباشرة', value: 'direct visit' }
+                                    { label: lang === 'en' ? 'Direct Visit' : 'زيارة مباشرة', value: 'direct visit' },
+                                    { label: lang === 'en' ? 'Both' : 'كلاهما', value: 'both' }
                                 ]}
                                 optionLabel={'label'}
                                 optionValue={'value'}
@@ -395,12 +331,7 @@ export default function EditServiceCenterForm({ lang }) {
                         </div>
                         <div className={'field col-12'}>
                             <label htmlFor="files">{lang === 'en' ? 'Images' : 'الصور'}</label>
-                            <CustomFileUpload
-                                id="files"
-                                multiple={true}
-                                setFiles={(files) => setFiles(files)}
-                                removeThisItem={() => setFiles([])}
-                            />
+                            <CustomFileUpload id="files" multiple={true} setFiles={(files) => setFiles(files)} removeThisItem={() => setFiles([])} />
                         </div>
                     </div>
                 </div>
@@ -410,12 +341,7 @@ export default function EditServiceCenterForm({ lang }) {
                     <div className={'p-fluid formgrid grid'}>
                         <div className={'field col-12'}>
                             <label htmlFor="username">{lang === 'en' ? 'Username' : 'اسم المستخدم'}</label>
-                            <InputText
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder={lang === 'en' ? 'Username' : 'اسم المستخدم'}
-                            />
+                            <InputText id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder={lang === 'en' ? 'Username' : 'اسم المستخدم'} />
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="password">{lang === 'en' ? 'Password' : 'كلمة المرور'}</label>
@@ -430,8 +356,7 @@ export default function EditServiceCenterForm({ lang }) {
                             />
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label
-                                htmlFor="confirmPassword">{lang === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
+                            <label htmlFor="confirmPassword">{lang === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
                             <Password
                                 id="confirmPassword"
                                 value={confirmPassword}
@@ -457,6 +382,5 @@ export default function EditServiceCenterForm({ lang }) {
                 </div>
             </form>
         </>
-    )
-        ;
+    );
 }

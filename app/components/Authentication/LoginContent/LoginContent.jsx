@@ -57,12 +57,12 @@ const LoginContent = ({ dictionary, lang }) => {
                 // SAVE TOKEN IN LOCAL STORAGE AND COOKIES AND THE ROLE OF THE USER
                 localStorage.setItem('token', res.data?.token);
                 localStorage.setItem('role', res.data?.admin?.role);
-                localStorage.setItem('userId', res.data?.admin?._id);
+                localStorage.setItem('userId', res.data?.admin?.serviceCenterId);
 
                 // SET THE COOKIES
                 document.cookie = `token=${res.data.token}; path=/`;
                 document.cookie = `role=${res.data?.admin?.role}; path=/`;
-                document.cookie = `userId=${res.data?.admin?._id}; path=/`;
+                document.cookie = `userId=${res.data?.admin?.serviceCenterId}; path=/`;
 
                 console.log(res.data?.admin?.role);
 

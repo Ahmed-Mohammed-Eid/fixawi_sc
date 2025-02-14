@@ -154,3 +154,17 @@
     max-height: 0 !important;
     transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
 }
+
+
+// RTL
+/* General RTL Styling */
+html[lang="ar"] .layout-sidebar {
+    left: auto; /* Reset left position */
+    right: 2rem; /* Move to the right */
+    direction: rtl; /* Set text direction */
+}
+
+/* Ensure animations and transitions remain consistent */
+html[lang="ar"] .layout-submenu-toggler {
+    transform: rotate(180deg); /* Adjust rotation for toggler in RTL */
+}
