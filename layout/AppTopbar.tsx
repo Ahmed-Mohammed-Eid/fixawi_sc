@@ -20,8 +20,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     return (
         <div className="layout-topbar">
             <Link href="/" className="layout-topbar-logo">
-                <img src={`/assets/Icon_1.svg`} width="47.22px" height={'35px'} alt="logo" />
-                <span>FIXAWI</span>
+                <img src={`/assets/topbar-logo.svg`} width="41px" height={'57px'} alt="logo" />
+                <span>Sayyn</span>
             </Link>
 
             <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button ml-auto" onClick={onMenuToggle}>

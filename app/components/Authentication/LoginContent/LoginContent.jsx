@@ -100,7 +100,7 @@ const LoginContent = ({ dictionary, lang }) => {
                         gap: '1rem'
                     }}
                 >
-                    <Image src={`/assets/text-based-logo-1.svg`} alt="AL-DAROAZA logo" className="flex-shrink-0" width={180} height={51} />
+                    <Image src={`/assets/texted-logo.svg`} alt="AL-DAROAZA logo" className="flex-shrink-0" width={180} height={51} />
                     {/*<div className="text-900 text-4xl font-medium">{dictionary?.login.company}</div>*/}
                 </div>
                 <div

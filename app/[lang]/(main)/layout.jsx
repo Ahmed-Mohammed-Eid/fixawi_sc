@@ -4,12 +4,12 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
-    title: 'Fixawi - Dashboard',
-    description: 'Fixawi - Dashboard',
+    title: 'Sayyn - Dashboard',
+    description: 'Sayyn - Dashboard',
     robots: { index: false, follow: false },
     viewport: { initialScale: 1, width: 'device-width' },
     icons: {
-        icon: '/assets/Icon_1.svg'
+        icon: '/assets/favicon.ico'
     }
 };
 

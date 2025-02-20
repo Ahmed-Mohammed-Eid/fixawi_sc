@@ -176,7 +176,7 @@ export default function Invoices() {
                 <Column field="date" header="Date" sortable body={dateTemplate} style={{ minWidth: '120px' }} />
                 <Column field="paymentStatus" header="Status" body={statusTemplate} sortable style={{ minWidth: '120px' }} />
                 <Column field="subTotal" header="Subtotal" sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
-                <Column field="fixawiFare" header="Fixawi Fare" body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
+                <Column field="fixawiFare" header="Sayyn Fare" body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
                 <Column field="salesTaxAmount" header="Sales Tax" body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
                 <Column field="invoiceTotal" header="Total" sortable body={(row) => priceTemplate(row, { field: 'invoiceTotal' })} style={{ minWidth: '120px' }} />
                 <Column header="Actions" body={actionsTemplate} style={{ minWidth: '100px' }} />
@@ -235,7 +235,7 @@ export default function Invoices() {
                                     <span>{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">Fixawi Fare:</span>
+                                    <span className="font-semibold">Sayyn Fare:</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'fixawiFare' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">

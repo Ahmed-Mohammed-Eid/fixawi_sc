@@ -322,7 +322,7 @@ export default function CreateInvoice() {
                             <span>{invoice.subTotal?.toFixed(2)} EGP</span>
                         </div>
                         <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Fixawi Fare:</span>
+                            <span className="font-semibold">Sayyn Fare:</span>
                             <span>{invoice.fixawiFare?.toFixed(2)} EGP</span>
                         </div>
                         <div className="flex justify-content-between p-3 surface-100 border-round</div>">
