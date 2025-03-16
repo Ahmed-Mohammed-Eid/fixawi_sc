@@ -2,19 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { Calendar } from 'primereact/calendar';
-import { Dropdown } from 'primereact/dropdown';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import ServiceCentersView from './ServiceCentersView';
 
 export default function BookingsContent({ lang }) {
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Get bookings for selected center and date
     const getBookings = () => {
         if (!selectedDate) return;
 
+        setLoading(true);
         const token = localStorage.getItem('token');
         const formattedDate = new Date(selectedDate)
             .toLocaleDateString('en-US', {
@@ -35,18 +36,26 @@ export default function BookingsContent({ lang }) {
             })
             .then((res) => {
                 setBookings(res.data?.bookings || []);
+                setLoading(false);
             })
             .catch((err) => {
                 console.error(err);
                 toast.error(lang === 'en' ? 'Failed to fetch bookings' : 'فشل في جلب الحجوزات');
+                setLoading(false);
             });
     };
 
+    // Fetch bookings when date changes
     useEffect(() => {
         if (selectedDate) {
             getBookings();
         }
     }, [selectedDate]);
+
+    // Fetch bookings for today when component mounts
+    useEffect(() => {
+        // This will trigger the above useEffect since selectedDate is already set to today
+    }, []);
 
     return (
         <>
@@ -60,7 +69,7 @@ export default function BookingsContent({ lang }) {
                     </div>
                 </div>
             </div>
-            <ServiceCentersView lang={lang} data={bookings} />
+            <ServiceCentersView lang={lang} data={bookings} loading={loading} />
         </>
     );
 }

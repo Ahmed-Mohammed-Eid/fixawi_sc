@@ -90,7 +90,7 @@ export default function DashboardPageContent({ lang }) {
         <>
             <div className="card mb-0" dir={isRTL ? 'rtl' : 'ltr'}>
                 <div className="card-body">
-                    <h3 className="card-title">{lang === 'en' ? 'Visits' : 'الزيارات'}</h3>
+                    <h3 className="card-title">{lang === 'en' ? 'Direct Visits' : 'الزيارات المباشرة'}</h3>
 
                     <DataTable
                         value={visits || []}
@@ -99,7 +99,7 @@ export default function DashboardPageContent({ lang }) {
                         rowsPerPageOptions={[25, 50, 100]}
                         className="p-datatable-sm"
                         emptyMessage={lang === 'en' ? 'No records found' : 'لم يتم العثور على سجلات'}
-                        header={lang === 'en' ? 'Visits' : 'الزيارات'}
+                        header={lang === 'en' ? 'Direct Visits' : 'الزيارات المباشرة'}
                     >
                         <Column field={'fullName'} header={lang === 'en' ? 'Full Name' : 'الاسم الكامل'} sortable filter={true} />
                         {/*  PHONE NUMBER  */}

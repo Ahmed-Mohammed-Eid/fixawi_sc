@@ -13,12 +13,14 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function ServiceCentersView({ lang, data }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [bookings, setBookings] = useState(data || []); // Use state for bookings to allow dynamic updates
+    const router = useRouter();
 
     const formatDate = (date) => {
         return format(new Date(date), 'yyyy-MM-dd');
@@ -157,13 +159,22 @@ export default function ServiceCentersView({ lang, data }) {
                         </p>
                     )}
                 </div>
-                <Button
-                    icon="pi pi-times"
-                    className="p-button-danger p-button-outlined"
-                    onClick={() => handleCancelBooking(serviceId, client.clientId || client._id, slotId, date, client.phone)}
-                    tooltip={lang === 'en' ? 'Cancel Booking' : 'إلغاء الحجز'}
-                    tooltipOptions={{ position: 'top' }}
-                />
+                <div className="flex gap-2">
+                    <Button
+                        icon="pi pi-file-edit"
+                        className="p-button-success p-button-outlined"
+                        onClick={() => router.push(`/${lang}/check-reports?visitId=${client.clientId || client._id}`)}
+                        tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
+                        tooltipOptions={{ position: 'top' }}
+                    />
+                    <Button
+                        icon="pi pi-times"
+                        className="p-button-danger p-button-outlined"
+                        onClick={() => handleCancelBooking(serviceId, client.clientId || client._id, slotId, date, client.phone)}
+                        tooltip={lang === 'en' ? 'Cancel Booking' : 'إلغاء الحجز'}
+                        tooltipOptions={{ position: 'top' }}
+                    />
+                </div>
             </div>
         </div>
     );

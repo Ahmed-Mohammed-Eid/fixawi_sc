@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -15,7 +15,7 @@ export default function GetCheckReports({ lang }) {
 
     const Router = useRouter();
 
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState(new Date());
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -25,8 +25,8 @@ export default function GetCheckReports({ lang }) {
     const [reportToDelete, setReportToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    const fetchReports = async (event) => {
-        event.preventDefault();
+    const fetchReports = async (e) => {
+        if (e) e.preventDefault();
 
         if (!date) {
             return toast.error(lang === 'en' ? 'Please select a date' : 'يرجى اختيار تاريخ');
@@ -52,6 +52,11 @@ export default function GetCheckReports({ lang }) {
             setLoading(false);
         }
     };
+
+    // Fetch reports for today when component mounts
+    useEffect(() => {
+        fetchReports();
+    }, []);
 
     return (
         <div className="card" dir={isRTL ? 'rtl' : 'ltr'}>

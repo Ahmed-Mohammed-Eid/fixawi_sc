@@ -64,6 +64,15 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
                 { label: lang === 'en' ? 'Get Invoices' : 'استرجاع الفواتير', icon: 'pi pi-fw pi-search', to: `/${lang}/invoices` }
             ]
         },
+        // PROMOTIONS
+        {
+            label: lang === 'en' ? 'Promotions' : 'العروض الترويجية',
+            icon: 'pi pi-fw pi-gift',
+            items: [
+                { label: lang === 'en' ? 'Promotions List' : 'قائمة العروض الترويجية', icon: 'pi pi-fw pi-list', to: `/${lang}/promotions` },
+                { label: lang === 'en' ? 'Add Promotion' : 'إضافة عرض ترويجي', icon: 'pi pi-fw pi-plus', to: `/${lang}/promotions/add` }
+            ]
+        },
 
         // {
         //     label: lang === 'en' ? 'Reports' : 'التقارير',
