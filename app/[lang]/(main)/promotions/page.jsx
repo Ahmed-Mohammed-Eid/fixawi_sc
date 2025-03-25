@@ -11,6 +11,8 @@ import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 export default function PromotionsPage({ params: { lang } }) {
+    const isRTL = lang === 'ar';
+
     // ROUTER
     const router = useRouter();
 
@@ -77,7 +79,7 @@ export default function PromotionsPage({ params: { lang } }) {
 
     return (
         <>
-            <div className="card">
+            <div className="card" dir={isRTL ? 'rtl' : 'ltr'}>
                 {/* Header Section */}
                 <div className="flex align-items-center justify-content-between mb-4">
                     <h1 className="text-2xl m-0">{lang === 'en' ? 'PROMOTIONS' : 'العروض'}</h1>

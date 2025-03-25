@@ -188,13 +188,13 @@ export default function AddPromotion({ params: { lang } }) {
                                     <div key={index} className="grid mb-3 align-items-center">
                                         <div className="col-12 md:col-6 field mb-2 md:mb-0">
                                             <label htmlFor={`detail-title-${index}`} className="block mb-2">
-                                                {lang === 'en' ? 'Detail Title' : 'عنوان التفصيل'}
+                                                {lang === 'en' ? 'Detail Title' : 'عنوان الخدمة'}
                                             </label>
                                             <InputText
                                                 id={`detail-title-${index}`}
                                                 value={detail.title}
                                                 onChange={(e) => handleDetailsChange(index, 'title', e.target.value)}
-                                                placeholder={lang === 'en' ? 'Enter detail title' : 'أدخل عنوان التفصيل'}
+                                                placeholder={lang === 'en' ? 'Enter detail title' : 'أدخل عنوان الخدمة'}
                                                 className="w-full"
                                             />
                                         </div>

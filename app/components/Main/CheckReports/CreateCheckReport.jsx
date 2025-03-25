@@ -50,14 +50,23 @@ export default function CreateCheckReport({ lang }) {
                 });
 
                 const visitor = response.data;
-                console.log('visitor', visitor);
-                setCheckReport((prev) => ({
-                    ...prev,
+
+                let defaultCar = visitor.user.userCars?.findIndex((car) => car.isDefaultCar);
+                defaultCar = defaultCar !== -1 ? visitor.user.userCars[defaultCar] : visitor.user.userCars[0];
+
+                const objectToSet = {
                     clientName: visitor?.user?.fullName,
-                    phoneNumber: visitor.user?.phoneNumber
-                    // carBrand: visitor.userCars[0]?.carBrand || '',
-                    // carModel: visitor.userCars[0]?.carModel || ''
-                }));
+                    phoneNumber: visitor.user?.phoneNumber,
+                    carBrand: defaultCar?.carBrand || '',
+                    carModel: defaultCar?.carModel || ''
+                };
+
+                if (visitor.user.userCars.length > 0) {
+                    setCheckReport((prev) => ({
+                        ...prev,
+                        ...objectToSet
+                    }));
+                }
             } catch (error) {
                 toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch visitor details' : 'فشل في جلب بيانات الزائر'));
             } finally {
@@ -144,6 +153,8 @@ export default function CreateCheckReport({ lang }) {
             });
 
             toast.success(lang === 'en' ? 'Check report created successfully' : 'تم إنشاء تقرير الفحص بنجاح');
+
+            router.push(`/${lang}/check-reports`);
         } catch (error) {
             toast.error(error.response?.data?.message || (lang === 'en' ? 'Something went wrong' : 'حدث خطأ ما'));
         }

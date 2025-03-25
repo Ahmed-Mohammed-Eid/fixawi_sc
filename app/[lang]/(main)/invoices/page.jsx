@@ -11,15 +11,24 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-export default function Invoices() {
+export default function Invoices({ params: { lang } }) {
+    const isRTL = lang === 'ar';
+
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [invoices, setInvoices] = useState([]);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [previewDialog, setPreviewDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
+
+    // GET THE FIRST DAY OF THE MONTH
+    const getFirstDayOfMonth = () => {
+        const date = new Date();
+        return new Date(date.getFullYear(), date.getMonth(), 1);
+    };
+
     const [dateRange, setDateRange] = useState({
-        from: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        from: new Date(getFirstDayOfMonth()), // 2 days ago
         to: new Date() // today
     });
 
@@ -83,7 +92,7 @@ export default function Invoices() {
     };
 
     const timestampTemplate = (rowData, field) => {
-        return new Date(rowData[field]).toLocaleString('en-US', {
+        return new Date(rowData[field]).toLocaleString(lang === 'en' ? 'en-US' : 'ar-EG', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -95,8 +104,8 @@ export default function Invoices() {
     const actionsTemplate = (rowData) => {
         return (
             <div className="flex gap-2">
-                <Button icon="pi pi-eye" outlined severity="info" onClick={() => showPreviewDialog(rowData)} tooltip="Preview" tooltipOptions={{ position: 'left' }} />
-                <Button icon="pi pi-external-link" outlined severity="success" onClick={() => router.push(`/invoices/${rowData._id}`)} tooltip="Open Details" tooltipOptions={{ position: 'left' }} />
+                <Button icon="pi pi-eye" outlined severity="info" onClick={() => showPreviewDialog(rowData)} tooltip={lang === 'en' ? 'Preview' : 'معاينة'} tooltipOptions={{ position: 'left' }} />
+                <Button icon="pi pi-external-link" outlined severity="success" onClick={() => router.push(`/invoices/${rowData._id}`)} tooltip={lang === 'en' ? 'Open Details' : 'عرض التفاصيل'} tooltipOptions={{ position: 'left' }} />
             </div>
         );
     };
@@ -107,9 +116,9 @@ export default function Invoices() {
     };
 
     return (
-        <div className="card">
+        <div className="card" dir={lang === 'en' ? 'ltr' : 'rtl'}>
             <div className="mb-4">
-                <h2 className="text-3xl font-bold text-primary m-0">Invoices</h2>
+                <h2 className="text-3xl font-bold text-primary m-0">{lang === 'en' ? 'Invoices' : 'الفواتير'}</h2>
             </div>
 
             <div className="surface-100 p-4 border-round mb-4">
@@ -118,7 +127,7 @@ export default function Invoices() {
                         <div className="flex-auto">
                             <h3 className="text-lg font-semibold mb-2 flex align-items-center gap-2">
                                 <i className="pi pi-calendar text-primary"></i>
-                                Date Range
+                                {lang === 'en' ? 'Date Range' : 'نطاق التاريخ'}
                             </h3>
                             <div className="flex gap-3">
                                 <div className="flex-auto">
@@ -128,7 +137,7 @@ export default function Invoices() {
                                         onChange={(e) => setDateRange((prev) => ({ ...prev, from: e.value }))}
                                         showIcon
                                         dateFormat="dd/mm/yy"
-                                        placeholder="From date"
+                                        placeholder={lang === 'en' ? 'From date' : 'من تاريخ'}
                                         className="w-full"
                                         panelClassName="p-datepicker-lg"
                                     />
@@ -140,7 +149,7 @@ export default function Invoices() {
                                         onChange={(e) => setDateRange((prev) => ({ ...prev, to: e.value }))}
                                         showIcon
                                         dateFormat="dd/mm/yy"
-                                        placeholder="To date"
+                                        placeholder={lang === 'en' ? 'To date' : 'إلى تاريخ'}
                                         className="w-full"
                                         panelClassName="p-datepicker-lg"
                                     />
@@ -149,7 +158,13 @@ export default function Invoices() {
                         </div>
                     </div>
                     <div className="w-full">
-                        <input type="text" className="p-inputtext p-component w-full text-lg p-3" placeholder="Search by client name, phone, car details..." value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                        <input
+                            type="text"
+                            className="p-inputtext p-component w-full text-lg p-3"
+                            placeholder={lang === 'en' ? 'Search by client name, phone, car details...' : 'البحث عن طريق اسم العميل، الهاتف، تفاصيل السيارة...'}
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
                     </div>
                 </div>
             </div>
@@ -165,86 +180,86 @@ export default function Invoices() {
                 sortMode="multiple"
                 removableSort
                 responsiveLayout="scroll"
-                emptyMessage="No invoices found"
+                emptyMessage={lang === 'en' ? 'No invoices found' : 'لم يتم العثور على فواتير'}
                 className="p-datatable-striped"
                 showGridlines
             >
-                <Column field="clientName" header="Client Name" sortable style={{ minWidth: '200px' }} />
-                <Column field="phoneNumber" header="Phone Number" style={{ minWidth: '150px' }} />
-                <Column field="carBrand" header="Car Brand" style={{ minWidth: '120px' }} />
-                <Column field="carModel" header="Car Model" style={{ minWidth: '120px' }} />
-                <Column field="date" header="Date" sortable body={dateTemplate} style={{ minWidth: '120px' }} />
-                <Column field="paymentStatus" header="Status" body={statusTemplate} sortable style={{ minWidth: '120px' }} />
-                <Column field="subTotal" header="Subtotal" sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
-                <Column field="fixawiFare" header="Sayyn Fare" body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
-                <Column field="salesTaxAmount" header="Sales Tax" body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
-                <Column field="invoiceTotal" header="Total" sortable body={(row) => priceTemplate(row, { field: 'invoiceTotal' })} style={{ minWidth: '120px' }} />
-                <Column header="Actions" body={actionsTemplate} style={{ minWidth: '100px' }} />
+                <Column field="clientName" header={lang === 'en' ? 'Client Name' : 'اسم العميل'} sortable style={{ minWidth: '200px' }} />
+                <Column field="phoneNumber" header={lang === 'en' ? 'Phone Number' : 'رقم الهاتف'} style={{ minWidth: '150px' }} />
+                <Column field="carBrand" header={lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} style={{ minWidth: '120px' }} />
+                <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} style={{ minWidth: '120px' }} />
+                <Column field="date" header={lang === 'en' ? 'Date' : 'التاريخ'} sortable body={dateTemplate} style={{ minWidth: '120px' }} />
+                <Column field="paymentStatus" header={lang === 'en' ? 'Status' : 'الحالة'} body={statusTemplate} sortable style={{ minWidth: '120px' }} />
+                <Column field="subTotal" header={lang === 'en' ? 'Subtotal' : 'المجموع الفرعي'} sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
+                <Column field="fixawiFare" header={lang === 'en' ? 'Sayyn Fare' : 'رسوم صيّن'} body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
+                <Column field="salesTaxAmount" header={lang === 'en' ? 'Sales Tax' : 'ضريبة المبيعات'} body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
+                <Column field="invoiceTotal" header={lang === 'en' ? 'Total' : 'الإجمالي'} sortable body={(row) => priceTemplate(row, { field: 'invoiceTotal' })} style={{ minWidth: '120px' }} />
+                <Column header={lang === 'en' ? 'Actions' : 'الإجراءات'} body={actionsTemplate} style={{ minWidth: '100px' }} />
             </DataTable>
 
-            <Dialog visible={previewDialog} onHide={() => setPreviewDialog(false)} header="Invoice Preview" style={{ width: '90%', maxWidth: '800px' }} modal className="p-fluid">
+            <Dialog visible={previewDialog} dir={isRTL ? 'rtl' : 'ltr'} onHide={() => setPreviewDialog(false)} header={lang === 'en' ? 'Invoice Preview' : 'معاينة الفاتورة'} style={{ width: '90%', maxWidth: '800px' }} modal className="p-fluid">
                 {selectedInvoice && (
                     <div className="grid">
                         <div className="col-12 md:col-6">
-                            <h3 className="text-xl mb-3">Client Information</h3>
+                            <h3 className="text-xl mb-3">{lang === 'en' ? 'Client Information' : 'معلومات العميل'}</h3>
                             <div className="surface-100 p-3 border-round mb-3">
                                 <p>
-                                    <strong>Name:</strong> {selectedInvoice.clientName}
+                                    <strong>{lang === 'en' ? 'Name:' : 'الاسم:'}</strong> {selectedInvoice.clientName}
                                 </p>
                                 <p>
-                                    <strong>Phone:</strong> {selectedInvoice.phoneNumber}
+                                    <strong>{lang === 'en' ? 'Phone:' : 'الهاتف:'}</strong> {selectedInvoice.phoneNumber}
                                 </p>
                                 <p>
-                                    <strong>Car:</strong> {selectedInvoice.carBrand} {selectedInvoice.carModel}
+                                    <strong>{lang === 'en' ? 'Car:' : 'السيارة:'}</strong> {selectedInvoice.carBrand} {selectedInvoice.carModel}
                                 </p>
                                 <p>
-                                    <strong>Date:</strong> {dateTemplate(selectedInvoice)}
+                                    <strong>{lang === 'en' ? 'Date:' : 'التاريخ:'}</strong> {dateTemplate(selectedInvoice)}
                                 </p>
                             </div>
                         </div>
                         <div className="col-12 md:col-6">
-                            <h3 className="text-xl mb-3">Invoice Status</h3>
+                            <h3 className="text-xl mb-3">{lang === 'en' ? 'Invoice Status' : 'حالة الفاتورة'}</h3>
                             <div className="surface-100 p-3 border-round mb-3">
                                 <p>
-                                    <strong>Payment Status:</strong> {statusTemplate(selectedInvoice)}
+                                    <strong>{lang === 'en' ? 'Payment Status:' : 'حالة الدفع:'}</strong> {statusTemplate(selectedInvoice)}
                                 </p>
                                 <p>
-                                    <strong>Created:</strong> {timestampTemplate(selectedInvoice, 'createdAt')}
+                                    <strong>{lang === 'en' ? 'Created:' : 'تاريخ الإنشاء:'}</strong> {timestampTemplate(selectedInvoice, 'createdAt')}
                                 </p>
                                 <p>
-                                    <strong>Updated:</strong> {timestampTemplate(selectedInvoice, 'updatedAt')}
+                                    <strong>{lang === 'en' ? 'Updated:' : 'تاريخ التحديث:'}</strong> {timestampTemplate(selectedInvoice, 'updatedAt')}
                                 </p>
                             </div>
                         </div>
                         <div className="col-12">
                             <Divider />
-                            <h3 className="text-xl mb-3">Services</h3>
+                            <h3 className="text-xl mb-3">{lang === 'en' ? 'Services' : 'الخدمات'}</h3>
                             <div className="surface-100 p-3 border-round mb-3">
                                 <DataTable value={selectedInvoice.invoiceDetails} showGridlines className="mb-3">
-                                    <Column field="service" header="Service" />
-                                    <Column field="quantity" header="Quantity" />
-                                    <Column field="price" header="Price" body={(row) => `${row.price?.toFixed(2)} EGP`} />
-                                    <Column field="amount" header="Amount" body={(row) => `${row.amount?.toFixed(2)} EGP`} />
+                                    <Column field="service" header={lang === 'en' ? 'Service' : 'الخدمة'} />
+                                    <Column field="quantity" header={lang === 'en' ? 'Quantity' : 'الكمية'} />
+                                    <Column field="price" header={lang === 'en' ? 'Price' : 'السعر'} body={(row) => `${row.price?.toFixed(2)} EGP`} />
+                                    <Column field="amount" header={lang === 'en' ? 'Amount' : 'المبلغ'} body={(row) => `${row.amount?.toFixed(2)} EGP`} />
                                 </DataTable>
                             </div>
                         </div>
                         <div className="col-12">
                             <div className="surface-ground p-3 border-round">
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">Subtotal:</span>
+                                    <span className="font-semibold">{lang === 'en' ? 'Subtotal:' : 'المجموع الفرعي:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">Sayyn Fare:</span>
+                                    <span className="font-semibold">{lang === 'en' ? 'Sayyn Fare:' : 'رسوم صيّن:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'fixawiFare' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">Sales Tax:</span>
+                                    <span className="font-semibold">{lang === 'en' ? 'Sales Tax:' : 'ضريبة المبيعات:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'salesTaxAmount' })}</span>
                                 </div>
                                 <Divider />
                                 <div className="flex justify-content-between">
-                                    <span className="font-bold text-xl">Total:</span>
+                                    <span className="font-bold text-xl">{lang === 'en' ? 'Total:' : 'الإجمالي:'}</span>
                                     <span className="font-bold text-xl">{priceTemplate(selectedInvoice, { field: 'invoiceTotal' })}</span>
                                 </div>
                             </div>
