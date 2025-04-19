@@ -9,6 +9,7 @@ import { Tag } from 'primereact/tag';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function PromotionsPage({ params: { lang } }) {
     const isRTL = lang === 'ar';
@@ -189,6 +190,10 @@ export default function PromotionsPage({ params: { lang } }) {
                     dir={lang === 'en' ? 'ltr' : 'rtl'}
                 >
                     <div className="p-fluid formgrid grid card mx-0">
+                        <div className={'field col-12 flex justify-content-center mb-3 align-items-center'}>
+                            <Image src={infoDialog.data?.imageUrl} alt="Promotion Image" width={200} height={200} className="" />
+                        </div>
+
                         <div className={'field col-12'}>
                             <h5>{lang === 'en' ? 'Promotion Title' : 'عنوان العرض'}</h5>
                             <p className="text-lg">{infoDialog.data?.promotionTitle}</p>

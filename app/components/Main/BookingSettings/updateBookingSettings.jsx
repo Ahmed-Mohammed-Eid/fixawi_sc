@@ -7,10 +7,10 @@ import { toast } from 'react-hot-toast';
 
 export default function UpdateBookingSettings({ lang }) {
     const isRTL = lang === 'ar';
-
     const [services, setServices] = React.useState([]);
     const [bookingPlan, setBookingPlan] = React.useState([]);
     const [bookingSettingsId, setBookingSettingsId] = React.useState('');
+    const [maximumCapacity, setMaximumCapacity] = React.useState(1);
 
     function addNewService() {
         setBookingPlan([
@@ -33,11 +33,11 @@ export default function UpdateBookingSettings({ lang }) {
         if (!isValid) {
             return toast.error(lang === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول');
         }
-
         axios
             .put(
                 `${process.env.API_URL}/update/booking/settings`,
                 {
+                    maximumCapacity,
                     services: bookingPlan,
                     bookingSettingsId
                 },
@@ -89,6 +89,10 @@ export default function UpdateBookingSettings({ lang }) {
                 const settings = response.data?.bookingSettings;
                 if (settings) {
                     setBookingSettingsId(settings._id);
+                    // Set maximum capacity if available
+                    if (settings.maximumCapacity) {
+                        setMaximumCapacity(settings.maximumCapacity);
+                    }
                     // Transform services data to match expected format
                     const transformedServices = settings.services.map((service) => ({
                         serviceId: service.serviceId._id,
@@ -110,10 +114,30 @@ export default function UpdateBookingSettings({ lang }) {
 
     return (
         <form onSubmit={updateBookingSettings} dir={isRTL ? 'rtl' : 'ltr'}>
+            {' '}
             <div className={'card'}>
                 <h3 className={'text-2xl mb-5 uppercase'}>{lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز'}</h3>
                 <hr />
 
+                <div className={'p-fluid formgrid grid mb-4'}>
+                    <div className={'field col-12'}>
+                        <label className={'font-bold'} htmlFor="maximumCapacity">
+                            {lang === 'en' ? 'Maximum Capacity' : 'الحد الأقصى للسعة'}
+                        </label>
+                        <Dropdown
+                            id="maximumCapacity"
+                            value={maximumCapacity}
+                            options={Array.from({ length: 10 }, (_, i) => ({
+                                label: (i + 1).toString(),
+                                value: i + 1
+                            }))}
+                            onChange={(e) => setMaximumCapacity(e.value)}
+                            placeholder={lang === 'en' ? 'Select Maximum Capacity' : 'اختر الحد الأقصى للسعة'}
+                        />
+                    </div>
+                </div>
+
+                <h4 className={'text-xl mb-3'}>{lang === 'en' ? 'Services' : 'الخدمات'}</h4>
                 {bookingPlan.length > 0 &&
                     bookingPlan.map((item, index) => (
                         <div className={'p-fluid formgrid grid mb-2 align-items-center'} key={index}>
@@ -171,7 +195,7 @@ export default function UpdateBookingSettings({ lang }) {
                                     placeholder={lang === 'en' ? 'Select Time' : 'اختر الوقت'}
                                 />
                             </div>
-                            <div className={'field col-2 flex flex-column align-items-center'}>
+                            <div className={'field col-2 flex flex-column align-items-end'}>
                                 <label className={'font-bold'}>{lang === 'en' ? 'Delete' : 'حذف'}</label>
                                 <Button
                                     icon="pi pi-trash"
@@ -190,7 +214,6 @@ export default function UpdateBookingSettings({ lang }) {
                     {lang === 'en' ? 'Add Service' : 'إضافة خدمة'}
                 </button>
             </div>
-
             <div className={'flex justify-center mt-5'}>
                 <Button
                     label={lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز'}

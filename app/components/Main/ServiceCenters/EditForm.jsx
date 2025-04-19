@@ -57,6 +57,7 @@ export default function EditServiceCenterForm({ lang }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [closingDays, setClosingDays] = useState([]); // Store the closing days
 
     // HANDLERS
     function handleSubmit(e) {
@@ -93,6 +94,7 @@ export default function EditServiceCenterForm({ lang }) {
         formData.append('website', website);
         formData.append('carBrands', JSON.stringify(carBrands));
         formData.append('username', username);
+        formData.append('closingDay', JSON.stringify(closingDays));
 
         if (password) {
             formData.append('password', password);
@@ -228,6 +230,7 @@ export default function EditServiceCenterForm({ lang }) {
                 setWebsite(serviceCenter.website);
                 setCarBrands(serviceCenter.carBrands);
                 setUsername(serviceCenter.username);
+                setClosingDays(serviceCenter.closingDay);
             })
             .catch((err) => {
                 console.log(err);
@@ -536,6 +539,27 @@ export default function EditServiceCenterForm({ lang }) {
                                 onChange={(e) => setVisitType(e.target.value)}
                                 placeholder={lang === 'en' ? 'Visit Type' : 'نوع الزيارة'}
                                 filter={true}
+                            />
+                        </div>
+                        <div className="col-12 mb-2 lg:mb-2" dir={'ltr'}>
+                            <label className={'mb-2 block'} htmlFor="closingDays" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+                                {lang === 'en' ? 'Closing Days' : 'أيام الإغلاق'}
+                            </label>
+
+                            <MultiSelect
+                                id="closingDays"
+                                value={closingDays}
+                                options={[
+                                    { label: lang === 'en' ? 'Saturday' : 'السبت', value: 'saturday' },
+                                    { label: lang === 'en' ? 'Sunday' : 'الأحد', value: 'sunday' },
+                                    { label: lang === 'en' ? 'Monday' : 'الأثنين', value: 'monday' },
+                                    { label: lang === 'en' ? 'Tuesday' : 'الثلاثاء', value: 'tuesday' },
+                                    { label: lang === 'en' ? 'Wednesday' : 'الأربعاء', value: 'wednesday' },
+                                    { label: lang === 'en' ? 'Thursday' : 'الخميس', value: 'thursday' },
+                                    { label: lang === 'en' ? 'Friday' : 'الجمعة', value: 'friday' }
+                                ]}
+                                onChange={(e) => setClosingDays(e.target.value)}
+                                placeholder={lang === 'en' ? 'Closing Days' : 'أيام الإغلاق'}
                             />
                         </div>
                         <div className={'field col-12'}>

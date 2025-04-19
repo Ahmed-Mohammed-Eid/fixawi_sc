@@ -21,7 +21,9 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             icon: 'pi pi-fw pi-map-marker',
             items: [
                 // UPDATE SERVICE CENTER INFO
-                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` }
+                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` },
+                // SERVICE CENTER FINANCIALS
+                { label: lang === 'en' ? 'Service Center Financials' : 'البيانات المالية لمركز الخدمة', icon: 'pi pi-fw pi-money-bill', to: `/${lang}/service-centers/financials` }
             ]
         },
         {

@@ -145,6 +145,7 @@ export default function GetCheckReports({ lang }) {
                                 <Column field="quantity" header={lang === 'en' ? 'Quantity' : 'الكمية'} />
                                 <Column field="price" header={lang === 'en' ? 'Price' : 'السعر'} />
                                 <Column field="amount" header={lang === 'en' ? 'Amount' : 'المبلغ'} />
+                                <Column field="clientApproved" header={lang === 'en' ? 'Client Approved' : 'موافقة العميل'} body={(row) => (row.clientApproved ? <i className="pi pi-check" /> : <i className="pi pi-times" />)} />
                             </DataTable>
                         </div>
                     </div>

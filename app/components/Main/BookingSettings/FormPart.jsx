@@ -7,9 +7,9 @@ import { toast } from 'react-hot-toast';
 
 export default function BookingSettingsFormPart({ lang }) {
     const isRTL = lang === 'ar';
-
     const [services, setServices] = React.useState([]);
     const [bookingPlan, setBookingPlan] = React.useState([]);
+    const [maximumCapacity, setMaximumCapacity] = React.useState(1);
 
     function addNewService() {
         setBookingPlan([
@@ -32,11 +32,13 @@ export default function BookingSettingsFormPart({ lang }) {
         if (!isValid) {
             return toast.error(lang === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول');
         }
-
         axios
             .post(
                 `${process.env.API_URL}/create/booking/plan`,
-                { services: bookingPlan },
+                {
+                    maximumCapacity,
+                    services: bookingPlan
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -81,10 +83,30 @@ export default function BookingSettingsFormPart({ lang }) {
 
     return (
         <form onSubmit={createBookingPlan} dir={isRTL ? 'rtl' : 'ltr'}>
+            {' '}
             <div className={'card'}>
                 <h3 className={'text-2xl mb-5 uppercase'}>{lang === 'en' ? 'Booking Settings' : 'إعدادات الحجز'}</h3>
                 <hr />
 
+                <div className={'p-fluid formgrid grid mb-4'}>
+                    <div className={'field col-12'}>
+                        <label className={'font-bold'} htmlFor="maximumCapacity">
+                            {lang === 'en' ? 'Maximum Capacity' : 'الحد الأقصى للسعة'}
+                        </label>
+                        <Dropdown
+                            id="maximumCapacity"
+                            value={maximumCapacity}
+                            options={Array.from({ length: 10 }, (_, i) => ({
+                                label: (i + 1).toString(),
+                                value: i + 1
+                            }))}
+                            onChange={(e) => setMaximumCapacity(e.value)}
+                            placeholder={lang === 'en' ? 'Select Maximum Capacity' : 'اختر الحد الأقصى للسعة'}
+                        />
+                    </div>
+                </div>
+
+                <h4 className={'text-xl mb-3'}>{lang === 'en' ? 'Services' : 'الخدمات'}</h4>
                 {bookingPlan.length > 0 &&
                     bookingPlan.map((item, index) => (
                         <div className={'p-fluid formgrid grid mb-2 align-items-center'} key={index}>
@@ -161,7 +183,6 @@ export default function BookingSettingsFormPart({ lang }) {
                     {lang === 'en' ? 'Add Service' : 'إضافة خدمة'}
                 </button>
             </div>
-
             <div className={'flex justify-center mt-5'}>
                 <Button
                     label={lang === 'en' ? 'Create Booking Plan' : 'إنشاء خطة الحجز'}

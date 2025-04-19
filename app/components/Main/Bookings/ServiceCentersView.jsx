@@ -19,6 +19,7 @@ export default function ServiceCentersView({ lang, data }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
+    const [cancelReason, setCancelReason] = useState('');
     const [bookings, setBookings] = useState(data || []); // Use state for bookings to allow dynamic updates
     const router = useRouter();
 
@@ -98,14 +99,17 @@ export default function ServiceCentersView({ lang, data }) {
             }
         };
     };
-
     const handleCancelBooking = (serviceId, clientId, slotId, date, phone) => {
         setSelectedBooking({ serviceId, clientId, slotId, date, phone });
+        setCancelReason('');
         setCancelDialogVisible(true);
     };
-
     const confirmCancelBooking = async () => {
         if (!selectedBooking) return;
+        if (!cancelReason.trim()) {
+            toast.error(lang === 'en' ? 'Please provide a cancellation reason.' : 'يرجى تقديم سبب الإلغاء.');
+            return;
+        }
 
         const { serviceId, clientId, slotId, date, phone } = selectedBooking;
 
@@ -119,7 +123,8 @@ export default function ServiceCentersView({ lang, data }) {
                     slotId: slotId,
                     date: formatDate(date),
                     phone: phone,
-                    clientId: clientId
+                    clientId: clientId,
+                    reason: cancelReason
                 },
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -254,11 +259,10 @@ export default function ServiceCentersView({ lang, data }) {
             <h3 className="text-2xl">{lang === 'en' ? 'No Bookings Available' : 'لا توجد حجوزات متاحة'}</h3>
         </div>
     );
-
     const cancelDialogFooter = (
         <div>
             <Button label={lang === 'en' ? 'No' : 'لا'} icon="pi pi-times" onClick={() => setCancelDialogVisible(false)} className="p-button-text" />
-            <Button label={lang === 'en' ? 'Yes' : 'نعم'} icon="pi pi-check" onClick={confirmCancelBooking} autoFocus />
+            <Button label={lang === 'en' ? 'Yes' : 'نعم'} icon="pi pi-check" onClick={confirmCancelBooking} autoFocus disabled={!cancelReason.trim()} />
         </div>
     );
 
@@ -313,10 +317,18 @@ export default function ServiceCentersView({ lang, data }) {
                         </div>
                     </>
                 ))
-            )}
-
+            )}{' '}
             <Dialog header={lang === 'en' ? 'Cancel Booking' : 'إلغاء الحجز'} visible={cancelDialogVisible} style={{ width: '50vw' }} footer={cancelDialogFooter} onHide={() => setCancelDialogVisible(false)}>
-                <p>{lang === 'en' ? 'Are you sure you want to cancel this booking?' : 'هل أنت متأكد أنك تريد إلغاء هذا الحجز؟'}</p>
+                <div className="confirmation-content">
+                    <span>{lang === 'en' ? 'Are you sure you want to cancel this booking? Please provide a reason.' : 'هل أنت متأكد أنك تريد إلغاء هذا الحجز؟ يرجى تقديم سبب.'}</span>
+
+                    <div className="field mt-3">
+                        <label htmlFor="cancelReason" className="block mb-2">
+                            {lang === 'en' ? 'Cancellation Reason' : 'سبب الإلغاء'}
+                        </label>
+                        <textarea id="cancelReason" value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} required rows={3} className="w-full p-2" style={{ resize: 'vertical' }} />
+                    </div>
+                </div>
             </Dialog>
         </div>
     );

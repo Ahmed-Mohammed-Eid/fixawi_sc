@@ -12,6 +12,8 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+import CustomFileUpload from '../../../../components/Main/Layout/customFileUpload/customFileUpload';
+
 export default function EditPromotion({ params: { lang, id } }) {
     const router = useRouter();
 
@@ -23,6 +25,7 @@ export default function EditPromotion({ params: { lang, id } }) {
         expiryDate: null
     });
 
+    const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
     // FETCH PROMOTION DATA
@@ -117,9 +120,7 @@ export default function EditPromotion({ params: { lang, id } }) {
             ...prev,
             promotionConditions: prev.promotionConditions.filter((_, i) => i !== index)
         }));
-    };
-
-    // HANDLE SUBMIT
+    }; // HANDLE SUBMIT
     const handleSubmit = async (e, saveAndClear = false) => {
         e.preventDefault();
         setLoading(true);
@@ -131,21 +132,38 @@ export default function EditPromotion({ params: { lang, id } }) {
             return;
         }
 
-        // Clean empty details and conditions
-        const cleanedData = {
-            ...formData,
-            promotionDetails: formData.promotionDetails.filter((detail) => detail.title && detail.discount > 0),
-            promotionConditions: formData.promotionConditions.filter((condition) => condition.trim()),
-            expiryDate: formData.expiryDate.toISOString(),
-            promotionId: id
-        };
+        // Create FormData instance
+        const formDataToSend = new FormData();
+
+        // Add promotion ID
+        formDataToSend.append('promotionId', id);
+
+        // Add basic promotion data
+        formDataToSend.append('promotionTitle', formData.promotionTitle);
+        formDataToSend.append('expiryDate', formData.expiryDate.toISOString());
+
+        // Filter and add promotion details
+        const cleanedDetails = formData.promotionDetails.filter((detail) => detail.title && detail.discount > 0);
+        formDataToSend.append('promotionDetails', JSON.stringify(cleanedDetails));
+
+        // Filter and add conditions
+        const cleanedConditions = formData.promotionConditions.filter((condition) => condition.trim());
+        formDataToSend.append('promotionConditions', JSON.stringify(cleanedConditions));
+
+        // Add files
+        if (files && files.length > 0) {
+            files.forEach((file) => {
+                formDataToSend.append('files', file);
+            });
+        }
 
         const token = localStorage.getItem('token');
 
         try {
-            await axios.put(`${process.env.API_URL}/update/promotion`, cleanedData, {
+            await axios.put(`${process.env.API_URL}/update/promotion`, formDataToSend, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
 
@@ -158,6 +176,7 @@ export default function EditPromotion({ params: { lang, id } }) {
                     promotionConditions: [''],
                     expiryDate: null
                 });
+                setFiles([]);
             } else {
                 router.push(`/${lang}/promotions`);
             }
@@ -273,6 +292,12 @@ export default function EditPromotion({ params: { lang, id } }) {
                                 ))}
                                 <Button type="button" label={lang === 'en' ? 'Add Condition' : 'إضافة شرط'} icon="pi pi-plus" severity="secondary" onClick={addCondition} className="mt-3 p-button-outlined" />
                             </div>
+                        </div>
+
+                        {/* FILES */}
+                        <div className={'field col-12'}>
+                            <label htmlFor="files">{lang === 'en' ? 'Images' : 'الصور'}</label>
+                            <CustomFileUpload id="files" multiple={false} setFiles={(files) => setFiles(files)} removeThisItem={() => setFiles([])} />
                         </div>
                     </div>
                     <div className="flex justify-content-center mt-5 gap-5">

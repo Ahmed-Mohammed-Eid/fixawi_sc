@@ -161,6 +161,11 @@ export default function CreateInvoice() {
     const handleSubmit = async () => {
         // GET TOKEN
         const token = localStorage.getItem('token');
+        const checkReportId = searchParams.get('check-report-id');
+        if (!checkReportId) {
+            toast.error('Please select a check report to create an invoice.');
+            return;
+        }
 
         try {
             // Format the date as MM-DD-YYYY
@@ -185,7 +190,8 @@ export default function CreateInvoice() {
                 subTotal: invoice.subTotal,
                 fixawiFare: invoice.fixawiFare,
                 salesTaxAmount: invoice.salesTaxAmount,
-                invoiceTotal: invoice.invoiceTotal
+                invoiceTotal: invoice.invoiceTotal,
+                checkId: checkReportId
             };
 
             const response = await axios.post(`${process.env.API_URL}/create/invoice`, invoiceData, {

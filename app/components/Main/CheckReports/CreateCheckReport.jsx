@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
@@ -17,6 +17,7 @@ export default function CreateCheckReport({ lang }) {
     // SEARCH PARAMS
     const searchParams = useSearchParams();
     const visitId = searchParams?.get('visitId') || null;
+    const userId = searchParams?.get('userId') || null;
 
     if (!visitId) {
         new Promise(() => router.push(`/${lang}`)).then(() => {
@@ -24,8 +25,9 @@ export default function CreateCheckReport({ lang }) {
         });
     }
 
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [checkReport, setCheckReport] = React.useState({
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [checkReport, setCheckReport] = useState({
         clientName: '',
         phoneNumber: '',
         carBrand: '',
@@ -43,7 +45,7 @@ export default function CreateCheckReport({ lang }) {
 
             try {
                 const response = await axios.get(`${process.env.API_URL}/visitor/details`, {
-                    params: { userId: visitId },
+                    params: { userId: userId, visitId: visitId },
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -75,7 +77,7 @@ export default function CreateCheckReport({ lang }) {
         };
 
         fetchVisitorDetails();
-    }, [visitId]);
+    }, [visitId, lang, userId]);
 
     function addCheckDetail() {
         setCheckReport((prev) => ({
@@ -145,8 +147,15 @@ export default function CreateCheckReport({ lang }) {
         // Get token
         const token = localStorage.getItem('token') || null;
 
+        // Prepare payload
+        const payload = {
+            ...checkReport,
+            visitId: visitId
+        };
+
         try {
-            await axios.post(`${process.env.API_URL}/create/check/report`, checkReport, {
+            setIsSubmitting(true);
+            await axios.post(`${process.env.API_URL}/create/check/report`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -154,9 +163,11 @@ export default function CreateCheckReport({ lang }) {
 
             toast.success(lang === 'en' ? 'Check report created successfully' : 'تم إنشاء تقرير الفحص بنجاح');
 
-            router.push(`/${lang}/check-reports`);
+            router.push(`/${lang}/check-reports/get-check-reports`);
         } catch (error) {
             toast.error(error.response?.data?.message || (lang === 'en' ? 'Something went wrong' : 'حدث خطأ ما'));
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -301,7 +312,7 @@ export default function CreateCheckReport({ lang }) {
                 </div>
 
                 <div className="flex justify-center mt-5">
-                    <Button label={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير الفحص'} icon="pi pi-check" type="submit" />
+                    <Button label={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير الفحص'} icon="pi pi-check" type="submit" loading={isSubmitting} disabled={isSubmitting} />
                 </div>
             </form>
         </>
