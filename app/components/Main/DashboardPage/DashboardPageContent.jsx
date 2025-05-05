@@ -57,7 +57,8 @@ export default function DashboardPageContent({ lang }) {
                         car: carInfo,
                         visitStatus: visit?.visitStatus,
                         _id: visit?._id,
-                        userId: visit?.userId?._id
+                        userId: visit?.userId?._id,
+                        checkReportId: visit?.checkReportId
                     };
                 });
 
@@ -248,6 +249,17 @@ export default function DashboardPageContent({ lang }) {
                                                     tooltipOptions={{ position: 'top' }}
                                                     onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}`)}
                                                 />
+                                                {/* CREATE INVOICE */}
+                                                {rowData?.checkReportId && (
+                                                    <Button
+                                                        icon="pi pi-file"
+                                                        className="p-button-info p-button-sm"
+                                                        tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
+                                                        tooltipOptions={{ position: 'top' }}
+                                                        onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}`)}
+                                                    />
+                                                )}
+
                                                 {rowData.visitStatus === 'pending' && (
                                                     <Button
                                                         icon="pi pi-times-circle"
@@ -285,6 +297,25 @@ export default function DashboardPageContent({ lang }) {
                                 header={lang === 'en' ? 'Bookings' : 'الحجوزات'}
                             >
                                 <Column field={'clientName'} header={lang === 'en' ? 'Client Name' : 'اسم العميل'} sortable filter={true} />
+                                {/*  TIME  */}
+                                <Column
+                                    field={'createdAt'}
+                                    header={lang === 'en' ? 'Time' : 'الوقت'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const date = new Date(rowData.createdAt);
+                                        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: 'numeric',
+                                            minute: 'numeric'
+                                        });
+                                    }}
+                                />
+
                                 <Column field={'phone'} header={lang === 'en' ? 'Phone' : 'رقم الهاتف'} sortable filter={true} />
                                 <Column field={'carInfo'} header={lang === 'en' ? 'Car Info' : 'معلومات السيارة'} sortable body={(rowData) => `${rowData.carBrand} - ${rowData.carModel}`} />
                                 {/* Add Actions Column for Bookings */}

@@ -31,6 +31,8 @@ export default function EditServiceCenterForm({ lang }) {
     const [serviceCenterImage, setServiceCenterImage] = useState(''); // Store the service center image
     const [averageRating, setAverageRating] = useState(0); // Store the average rating
     const [serviceTypes, setServiceTypes] = useState([]); // Store the service types for display
+    const [isActive, setIsActive] = useState(false); // Store active status
+    const [isApproved, setIsApproved] = useState(false); // Store approval status
 
     // CATEGORIES
     const [subCategories, setSubCategories] = useState([]);
@@ -203,6 +205,10 @@ export default function EditServiceCenterForm({ lang }) {
 
                 // Store the average rating
                 setAverageRating(serviceCenter.averageRating || 0);
+                
+                // Store active and approved status
+                setIsActive(serviceCenter.isActive || false);
+                setIsApproved(serviceCenter.isApproved || false);
 
                 // HANDLE THE DATE
                 // Create Date objects from the time values
@@ -279,7 +285,17 @@ export default function EditServiceCenterForm({ lang }) {
                             <i className="pi pi-eye mr-2"></i>
                             {lang === 'en' ? 'Service Center Preview' : 'معاينة مركز الخدمة'}
                         </h2>
-                        <div className="flex align-items-center">
+                        <div className="flex align-items-center gap-2">
+                            <Tag
+                                icon={`pi pi-${isActive ? 'check' : 'times'}`}
+                                value={lang === 'en' ? `${isActive ? 'Active' : 'Inactive'}` : `${isActive ? 'نشط' : 'غير نشط'}`}
+                                severity={isActive ? 'success' : 'danger'}
+                            />
+                            <Tag
+                                icon={`pi pi-${isApproved ? 'verified' : 'ban'}`}
+                                value={lang === 'en' ? `${isApproved ? 'Approved' : 'Not Approved'}` : `${isApproved ? 'معتمد' : 'غير معتمد'}`}
+                                severity={isApproved ? 'info' : 'warning'}
+                            />
                             <Tag value={lang === 'en' ? 'Current Data' : 'البيانات الحالية'} severity="info" />
                         </div>
                     </div>

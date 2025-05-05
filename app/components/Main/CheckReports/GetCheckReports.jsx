@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 export default function GetCheckReports({ lang }) {
     const isRTL = lang === 'ar';
 
-    const Router = useRouter();
+    const router = useRouter();
 
     const [date, setDate] = useState(new Date());
     const [reports, setReports] = useState([]);
@@ -83,6 +83,9 @@ export default function GetCheckReports({ lang }) {
                 <Column field="carBrand" header={lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} sortable />
                 <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} sortable />
                 <Column field="total" header={lang === 'en' ? 'Total' : 'الإجمالي'} sortable body={(row) => `${row.total} ${lang === 'en' ? 'EGP' : 'ج.م'}`} />
+                {/* reportStatus */}
+                <Column field="reportStatus" header={lang === 'en' ? 'Report Status' : 'حالة التقرير'} sortable />
+                {/* clientApproved */}
                 <Column
                     body={(row) => (
                         <div className="flex gap-2">
@@ -91,7 +94,7 @@ export default function GetCheckReports({ lang }) {
                                 tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                 icon="pi pi-file"
                                 className="p-button-rounded p-button-success p-button-text"
-                                onClick={() => Router.push(`/invoices/create?check-report-id=${row._id}`)}
+                                onClick={() => router.push(`/invoices/create?check-report-id=${row._id}`)}
                             />
 
                             <Button

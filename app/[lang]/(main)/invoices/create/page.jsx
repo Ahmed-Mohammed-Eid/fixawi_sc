@@ -83,12 +83,20 @@ export default function CreateInvoice() {
                 const { checkReport, fixawiFareType, fareValue, salesTaxRate } = response.data;
 
                 // Map check details to invoice details format
-                const mappedDetails = checkReport.checkDetails.map((detail) => ({
-                    service: detail.service,
-                    quantity: detail.quantity,
-                    price: detail.price,
-                    amount: detail.amount
-                }));
+                let mappedDetails = checkReport.checkDetails.map((detail) => {
+                    if(detail.clientApproved) {
+                        return {
+                            service: detail.service,
+                            quantity: detail.quantity,
+                            price: detail.price,
+                            amount: detail.amount
+                        };
+                    }else{
+                        return;
+                    }
+                });
+
+                mappedDetails = mappedDetails.filter((detail) => detail !== undefined);
 
                 // Set invoice state with check report data
                 setInvoice((prev) => ({
