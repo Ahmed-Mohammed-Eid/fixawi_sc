@@ -299,20 +299,34 @@ export default function DashboardPageContent({ lang }) {
                                 <Column field={'clientName'} header={lang === 'en' ? 'Client Name' : 'اسم العميل'} sortable filter={true} />
                                 {/*  TIME  */}
                                 <Column
-                                    field={'createdAt'}
+                                    field={'time'}
                                     header={lang === 'en' ? 'Time' : 'الوقت'}
                                     sortable
                                     filter={true}
                                     body={(rowData) => {
-                                        const date = new Date(rowData.createdAt);
-                                        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: 'numeric',
-                                            minute: 'numeric'
-                                        });
+                                        return <span>{rowData.time}:00</span>;
+                                    }}
+                                />
+                                {/* bookingStatus */}
+                                <Column
+                                    field={'bookingStatus'}
+                                    header={lang === 'en' ? 'Status' : 'الحالة'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const getBadgeSeverity = (status) => {
+                                            switch (status) {
+                                                case 'pending':
+                                                    return 'warning';
+                                                case 'checking':
+                                                    return 'secondary';
+                                                case 'invoiced':
+                                                    return 'info';
+                                                default:
+                                                    return 'success';
+                                            }
+                                        };
+                                        return <Badge value={rowData.bookingStatus} severity={getBadgeSeverity(rowData.bookingStatus)} />;
                                     }}
                                 />
 
@@ -323,6 +337,23 @@ export default function DashboardPageContent({ lang }) {
                                     header={lang === 'en' ? 'Actions' : 'الإجراءات'}
                                     body={(rowData) => (
                                         <div className="flex gap-2">
+                                            <Button
+                                                icon="pi pi-file-edit"
+                                                className="p-button-success p-button-sm"
+                                                tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
+                                                tooltipOptions={{ position: 'top' }}
+                                                onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}`)}
+                                            />
+                                            {/* CREATE INVOICE */}
+                                            {rowData?.checkReportId && (
+                                                <Button
+                                                    icon="pi pi-file"
+                                                    className="p-button-info p-button-sm"
+                                                    tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
+                                                    tooltipOptions={{ position: 'top' }}
+                                                    onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}`)}
+                                                />
+                                            )}
                                             {/* Add Cancel Button */}
                                             <Button
                                                 icon="pi pi-times-circle"

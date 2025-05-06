@@ -18,6 +18,10 @@ export default function CreateCheckReport({ lang }) {
     const searchParams = useSearchParams();
     const visitId = searchParams?.get('visitId') || null;
     const userId = searchParams?.get('userId') || null;
+    const isBooking = searchParams?.get('isBooking') || null;
+    const time = searchParams?.get('time') || null;
+    const date = searchParams?.get('date') || null;
+    const bookingId = searchParams?.get('bookingId') || null;
 
     if (!visitId) {
         new Promise(() => router.push(`/${lang}`)).then(() => {
@@ -144,13 +148,21 @@ export default function CreateCheckReport({ lang }) {
             return toast.error(lang === 'en' ? 'Please fill all check detail fields' : 'يرجى ملء جميع حقول تفاصيل الفحص');
         }
 
+        if(isBooking === 'true' && (!time || !date || !bookingId)) {
+            return toast.error(lang === 'en' ? 'Please select a time and date for the booking' : 'يرجى تحديد الوقت والتاريخ للحجز');
+        }
+
         // Get token
         const token = localStorage.getItem('token') || null;
 
         // Prepare payload
         const payload = {
             ...checkReport,
-            visitId: visitId
+            visitId: visitId,
+            isBooking: isBooking === 'true' ? true : false,
+            date: checkReport.date.toISOString(),
+            time: time,
+            bookingId: bookingId,
         };
 
         try {
