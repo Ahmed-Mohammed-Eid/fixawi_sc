@@ -31,7 +31,7 @@ export default function CreateInvoice() {
         subTotal: 0,
         fixawiFare: 0,
         fixawiFareType: '',
-        salesTaxRate: 0.14,
+        salesTaxRate: 0.00,
         salesTaxAmount: 0,
         invoiceTotal: 0
     });

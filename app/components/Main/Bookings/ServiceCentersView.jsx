@@ -168,7 +168,7 @@ export default function ServiceCentersView({ lang, data }) {
                     <Button
                         icon="pi pi-file-edit"
                         className="p-button-success p-button-outlined"
-                        onClick={() => router.push(`/${lang}/check-reports?visitId=${client.clientId || client._id}`)}
+                        onClick={() => router.push(`/${lang}/check-reports?userId=${client.clientId || client._id}&visitId=${slotId}`)}
                         tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                         tooltipOptions={{ position: 'top' }}
                     />

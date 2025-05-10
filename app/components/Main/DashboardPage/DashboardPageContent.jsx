@@ -337,15 +337,17 @@ export default function DashboardPageContent({ lang }) {
                                     header={lang === 'en' ? 'Actions' : 'الإجراءات'}
                                     body={(rowData) => (
                                         <div className="flex gap-2">
-                                            <Button
-                                                icon="pi pi-file-edit"
-                                                className="p-button-success p-button-sm"
-                                                tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
-                                                tooltipOptions={{ position: 'top' }}
-                                                onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}`)}
-                                            />
+                                            {rowData?.bookingStatus !== 'invoiced' && (
+                                                <Button
+                                                    icon="pi pi-file-edit"
+                                                    className="p-button-success p-button-sm"
+                                                    tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
+                                                    tooltipOptions={{ position: 'top' }}
+                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}`)}
+                                                />
+                                            )}
                                             {/* CREATE INVOICE */}
-                                            {rowData?.checkReportId && (
+                                            {rowData?.checkReportId && rowData?.bookingStatus !== 'invoiced' && (
                                                 <Button
                                                     icon="pi pi-file"
                                                     className="p-button-info p-button-sm"
@@ -355,16 +357,18 @@ export default function DashboardPageContent({ lang }) {
                                                 />
                                             )}
                                             {/* Add Cancel Button */}
-                                            <Button
-                                                icon="pi pi-times-circle"
-                                                className="p-button-warning p-button-sm"
-                                                tooltip={lang === 'en' ? 'Cancel Booking' : 'إلغاء الحجز'}
-                                                tooltipOptions={{ position: 'top' }}
-                                                onClick={() => {
-                                                    setSelectedBooking(rowData); // Store the whole booking object
-                                                    setCancelBookingDialogVisible(true);
-                                                }}
-                                            />
+                                            {rowData?.bookingStatus !== 'invoiced' && (
+                                                <Button
+                                                    icon="pi pi-times-circle"
+                                                    className="p-button-warning p-button-sm"
+                                                    tooltip={lang === 'en' ? 'Cancel Booking' : 'إلغاء الحجز'}
+                                                    tooltipOptions={{ position: 'top' }}
+                                                    onClick={() => {
+                                                        setSelectedBooking(rowData); // Store the whole booking object
+                                                        setCancelBookingDialogVisible(true);
+                                                    }}
+                                                />
+                                            )}
                                             {/* Potentially add other actions like 'Create Visit' later */}
                                         </div>
                                     )}
