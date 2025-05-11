@@ -333,9 +333,3 @@ export default function ServiceCentersView({ lang, data }) {
         </div>
     );
 }
-
-// serviceId: 67098c548bb9fe07b30f1a64
-// slotId: 678aa8f3ad1b62cd47e686c1
-// date: 2024-11-14
-// phone: 01066553558
-// clientId: 678af46a57da4e6f5e45e96d

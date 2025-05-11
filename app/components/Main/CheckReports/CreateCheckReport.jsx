@@ -31,6 +31,7 @@ export default function CreateCheckReport({ lang }) {
 
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
     const [checkReport, setCheckReport] = useState({
         clientName: '',
         phoneNumber: '',
@@ -40,6 +41,58 @@ export default function CreateCheckReport({ lang }) {
         checkDetails: [],
         total: 0
     });
+
+    const validateForm = () => {
+        const newErrors = { checkDetails: [] };
+        let isValid = true;
+
+        if (!checkReport.clientName) {
+            newErrors.clientName = lang === 'en' ? 'Client Name is required.' : 'اسم العميل مطلوب.';
+            isValid = false;
+        }
+        if (!checkReport.phoneNumber) {
+            newErrors.phoneNumber = lang === 'en' ? 'Phone Number is required.' : 'رقم الهاتف مطلوب.';
+            isValid = false;
+        }
+        if (!checkReport.carBrand) {
+            newErrors.carBrand = lang === 'en' ? 'Car Brand is required.' : 'ماركة السيارة مطلوبة.';
+            isValid = false;
+        }
+        if (!checkReport.carModel) {
+            newErrors.carModel = lang === 'en' ? 'Car Model is required.' : 'موديل السيارة مطلوب.';
+            isValid = false;
+        }
+        if (!checkReport.date) {
+            newErrors.date = lang === 'en' ? 'Date is required.' : 'التاريخ مطلوب.';
+            isValid = false;
+        }
+
+        if (checkReport.checkDetails.length === 0) {
+            newErrors.checkDetailsGeneral = lang === 'en' ? 'Please add at least one check detail.' : 'يرجى إضافة تفصيل فحص واحد على الأقل.';
+            isValid = false;
+        } else {
+            checkReport.checkDetails.forEach((detail, index) => {
+                const detailErrors = {};
+                if (!detail.service) {
+                    detailErrors.service = lang === 'en' ? 'Service is required.' : 'الخدمة مطلوبة.';
+                    isValid = false;
+                }
+                if (!(detail.quantity > 0)) {
+                    detailErrors.quantity = lang === 'en' ? 'Quantity must be greater than 0.' : 'يجب أن تكون الكمية أكبر من 0.';
+                    isValid = false;
+                }
+                if (!(detail.price > 0)) {
+                    detailErrors.price = lang === 'en' ? 'Price must be greater than 0.' : 'يجب أن يكون السعر أكبر من 0.';
+                    isValid = false;
+                }
+                newErrors.checkDetails[index] = detailErrors;
+            });
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
 
     useEffect(() => {
         const fetchVisitorDetails = async () => {
@@ -131,25 +184,17 @@ export default function CreateCheckReport({ lang }) {
 
     async function submitCheckReport(event) {
         event.preventDefault();
+        setIsSubmitting(true);
 
-        // Validate required fields
-        if (!checkReport.clientName || !checkReport.phoneNumber || !checkReport.carBrand || !checkReport.carModel || !checkReport.date) {
-            return toast.error(lang === 'en' ? 'Please fill all required fields' : 'يرجى ملء جميع الحقول المطلوبة');
-        }
-
-        // Validate check details
-        if (checkReport.checkDetails.length === 0) {
-            return toast.error(lang === 'en' ? 'Please add at least one check detail' : 'يرجى إضافة تفاصيل الفحص على الأقل');
-        }
-
-        const isValidDetails = checkReport.checkDetails.every((item) => item.service && item.quantity > 0 && item.price > 0);
-
-        if (!isValidDetails) {
-            return toast.error(lang === 'en' ? 'Please fill all check detail fields' : 'يرجى ملء جميع حقول تفاصيل الفحص');
+        if (!validateForm()) {
+            setIsSubmitting(false);
+            return;
         }
 
         if(isBooking === 'true' && (!time || !date || !bookingId)) {
-            return toast.error(lang === 'en' ? 'Please select a time and date for the booking' : 'يرجى تحديد الوقت والتاريخ للحجز');
+            toast.error(lang === 'en' ? 'Please select a time and date for the booking' : 'يرجى تحديد الوقت والتاريخ للحجز');
+            setIsSubmitting(false);
+            return;
         }
 
         // Get token
@@ -166,7 +211,7 @@ export default function CreateCheckReport({ lang }) {
         };
 
         try {
-            setIsSubmitting(true);
+            // setIsSubmitting(true); // Moved up
             await axios.post(`${process.env.API_URL}/create/check/report`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -193,7 +238,7 @@ export default function CreateCheckReport({ lang }) {
                     <div className="formgrid grid">
                         <div className="field col-12 md:col-6">
                             <label htmlFor="clientName" className="font-bold">
-                                {lang === 'en' ? 'Client Name' : 'اسم العميل'}
+                                {lang === 'en' ? 'Client Name' : 'اسم العميل'} <span className="text-red-500">*</span>
                             </label>
                             <InputText
                                 id="clientName"
@@ -205,12 +250,14 @@ export default function CreateCheckReport({ lang }) {
                                     }))
                                 }
                                 placeholder={lang === 'en' ? 'Enter client name' : 'أدخل اسم العميل'}
+                                className={errors.clientName ? 'p-invalid' : ''}
                             />
+                            {errors.clientName && <small className="p-error">{errors.clientName}</small>}
                         </div>
 
                         <div className="field col-12 md:col-6">
                             <label htmlFor="phoneNumber" className="font-bold">
-                                {lang === 'en' ? 'Phone Number' : 'رقم الهاتف'}
+                                {lang === 'en' ? 'Phone Number' : 'رقم الهاتف'} <span className="text-red-500">*</span>
                             </label>
                             <InputText
                                 id="phoneNumber"
@@ -222,12 +269,14 @@ export default function CreateCheckReport({ lang }) {
                                     }))
                                 }
                                 placeholder={lang === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف'}
+                                className={errors.phoneNumber ? 'p-invalid' : ''}
                             />
+                            {errors.phoneNumber && <small className="p-error">{errors.phoneNumber}</small>}
                         </div>
 
                         <div className="field col-12 md:col-6">
                             <label htmlFor="carBrand" className="font-bold">
-                                {lang === 'en' ? 'Car Brand' : 'ماركة السيارة'}
+                                {lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} <span className="text-red-500">*</span>
                             </label>
                             <InputText
                                 id="carBrand"
@@ -239,12 +288,14 @@ export default function CreateCheckReport({ lang }) {
                                     }))
                                 }
                                 placeholder={lang === 'en' ? 'Enter car brand' : 'أدخل ماركة السيارة'}
+                                className={errors.carBrand ? 'p-invalid' : ''}
                             />
+                            {errors.carBrand && <small className="p-error">{errors.carBrand}</small>}
                         </div>
 
                         <div className="field col-12 md:col-6">
                             <label htmlFor="carModel" className="font-bold">
-                                {lang === 'en' ? 'Car Model' : 'موديل السيارة'}
+                                {lang === 'en' ? 'Car Model' : 'موديل السيارة'} <span className="text-red-500">*</span>
                             </label>
                             <InputText
                                 id="carModel"
@@ -256,12 +307,14 @@ export default function CreateCheckReport({ lang }) {
                                     }))
                                 }
                                 placeholder={lang === 'en' ? 'Enter car model' : 'أدخل موديل السيارة'}
+                                className={errors.carModel ? 'p-invalid' : ''}
                             />
+                            {errors.carModel && <small className="p-error">{errors.carModel}</small>}
                         </div>
 
                         <div className="field col-12">
                             <label htmlFor="date" className="font-bold">
-                                {lang === 'en' ? 'Date' : 'التاريخ'}
+                                {lang === 'en' ? 'Date' : 'التاريخ'} <span className="text-red-500">*</span>
                             </label>
                             <Calendar
                                 id="date"
@@ -275,29 +328,35 @@ export default function CreateCheckReport({ lang }) {
                                     }))
                                 }
                                 placeholder={lang === 'en' ? 'Select date' : 'اختر التاريخ'}
+                                className={errors.date ? 'p-invalid' : ''}
                             />
+                            {errors.date && <small className="p-error">{errors.date}</small>}
                         </div>
                     </div>
                 </div>
 
                 <div className="card mt-5">
-                    <h4 className="text-xl mb-3">{lang === 'en' ? 'Check Details' : 'تفاصيل الفحص'}</h4>
+                    <h4 className="text-xl mb-3">{lang === 'en' ? 'Check Details' : 'تفاصيل الفحص'} <span className="text-red-500">*</span></h4>
+                    {errors.checkDetailsGeneral && <small className="p-error d-block mb-2">{errors.checkDetailsGeneral}</small>}
 
                     {checkReport.checkDetails.map((detail, index) => (
                         <div className="formgrid grid mb-3" key={index}>
                             <div className="field col-12 md:col-4">
-                                <label htmlFor={`service-${index}`}>{lang === 'en' ? 'Service' : 'الخدمة'}</label>
-                                <InputText id={`service-${index}`} value={detail.service} onChange={(e) => updateCheckDetail(index, 'service', e.target.value)} placeholder={lang === 'en' ? 'Enter service' : 'أدخل الخدمة'} />
+                                <label htmlFor={`service-${index}`}>{lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span></label>
+                                <InputText id={`service-${index}`} value={detail.service} onChange={(e) => updateCheckDetail(index, 'service', e.target.value)} placeholder={lang === 'en' ? 'Enter service' : 'أدخل الخدمة'} className={errors.checkDetails?.[index]?.service ? 'p-invalid' : ''} />
+                                {errors.checkDetails?.[index]?.service && <small className="p-error">{errors.checkDetails[index].service}</small>}
                             </div>
 
                             <div className="field col-12 md:col-3">
-                                <label htmlFor={`quantity-${index}`}>{lang === 'en' ? 'Quantity' : 'الكمية'}</label>
-                                <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateCheckDetail(index, 'quantity', e.value)} min={1} placeholder={lang === 'en' ? 'Quantity' : 'الكمية'} />
+                                <label htmlFor={`quantity-${index}`}>{lang === 'en' ? 'Quantity' : 'الكمية'} <span className="text-red-500">*</span></label>
+                                <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateCheckDetail(index, 'quantity', e.value)} min={1} placeholder={lang === 'en' ? 'Quantity' : 'الكمية'} className={errors.checkDetails?.[index]?.quantity ? 'p-invalid' : ''} />
+                                {errors.checkDetails?.[index]?.quantity && <small className="p-error">{errors.checkDetails[index].quantity}</small>}
                             </div>
 
                             <div className="field col-12 md:col-2">
-                                <label htmlFor={`price-${index}`}>{lang === 'en' ? 'Price' : 'السعر'}</label>
-                                <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateCheckDetail(index, 'price', e.value)} min={0} placeholder={lang === 'en' ? 'Price' : 'السعر'} />
+                                <label htmlFor={`price-${index}`}>{lang === 'en' ? 'Price' : 'السعر'} <span className="text-red-500">*</span></label>
+                                <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateCheckDetail(index, 'price', e.value)} min={0} placeholder={lang === 'en' ? 'Price' : 'السعر'} className={errors.checkDetails?.[index]?.price ? 'p-invalid' : ''} />
+                                {errors.checkDetails?.[index]?.price && <small className="p-error">{errors.checkDetails[index].price}</small>}
                             </div>
 
                             <div className="field col-12 md:col-2">

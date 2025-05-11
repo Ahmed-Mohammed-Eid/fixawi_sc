@@ -13,6 +13,7 @@ export default function CreateInvoice() {
     const router = useRouter();
 
     const searchParams = useSearchParams();
+    const [errors, setErrors] = useState({});
 
     const [invoice, setInvoice] = useState({
         clientName: '',
@@ -49,6 +50,16 @@ export default function CreateInvoice() {
             ...prev,
             invoiceDetails: updatedDetails
         }));
+
+        // Clear specific error
+        const errorKey = `invoiceDetails.${index}.${field}`;
+        if (errors[errorKey]) {
+            setErrors(prevErrors => {
+                const newErrors = {...prevErrors};
+                delete newErrors[errorKey];
+                return newErrors;
+            });
+        }
     };
 
     const addNewRow = () => {
@@ -65,6 +76,17 @@ export default function CreateInvoice() {
                 ...prev,
                 invoiceDetails: updatedDetails
             }));
+
+            // Clear errors related to invoiceDetails as indices have shifted or items removed
+            setErrors(prevErrors => {
+                const newErrors = {...prevErrors};
+                Object.keys(newErrors).forEach(key => {
+                    if (key.startsWith('invoiceDetails.')) {
+                        delete newErrors[key];
+                    }
+                });
+                return newErrors;
+            });
         }
     };
 
@@ -167,11 +189,48 @@ export default function CreateInvoice() {
     }, []);
 
     const handleSubmit = async () => {
+        setErrors({}); // Clear previous errors at the beginning of a new submission attempt
+
+        const validateForm = () => {
+            const newErrors = {};
+            const { clientName, phoneNumber, carBrand, carModel, date, invoiceDetails } = invoice;
+
+            if (!clientName.trim()) newErrors.clientName = 'Client Name is required';
+            if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
+            if (!carBrand.trim()) newErrors.carBrand = 'Car Brand is required';
+            if (!carModel.trim()) newErrors.carModel = 'Car Model is required';
+            if (!date) newErrors.date = 'Date is required';
+
+            invoiceDetails.forEach((detail, index) => {
+                if (!detail.service.trim()) newErrors[`invoiceDetails.${index}.service`] = 'Service is required';
+                if (detail.quantity === null || detail.quantity === undefined || detail.quantity <= 0) {
+                    newErrors[`invoiceDetails.${index}.quantity`] = 'Quantity must be greater than 0';
+                }
+                if (detail.price === null || detail.price === undefined || detail.price <= 0) {
+                    newErrors[`invoiceDetails.${index}.price`] = 'Price must be greater than 0';
+                }
+            });
+            return newErrors;
+        };
+
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            toast.error('Please correct the errors in the form.');
+            return;
+        }
+
         // GET TOKEN
         const token = localStorage.getItem('token');
         const checkReportId = searchParams.get('check-report-id');
+        const userId = localStorage.getItem('userId');
         if (!checkReportId) {
             toast.error('Please select a check report to create an invoice.');
+            return;
+        }
+
+        if(!userId) {
+            toast.error('User ID not found.');
             return;
         }
 
@@ -188,7 +247,7 @@ export default function CreateInvoice() {
                 : null;
 
             const invoiceData = {
-                userId: '6713955d7ef45c01cb906e00', // This should come from authentication context in a real app
+                userId: userId,
                 clientName: invoice.clientName,
                 phoneNumber: invoice.phoneNumber,
                 carBrand: invoice.carBrand,
@@ -237,41 +296,97 @@ export default function CreateInvoice() {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="clientName" className="font-semibold">
-                                    Client Name
+                                    Client Name <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="clientName" value={invoice.clientName} onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))} placeholder="Enter client's full name" className="w-full" />
+                                <InputText
+                                    id="clientName"
+                                    value={invoice.clientName}
+                                    onChange={(e) => {
+                                        setInvoice((prev) => ({ ...prev, clientName: e.target.value }));
+                                        if (errors.clientName) setErrors(prev => ({ ...prev, clientName: null }));
+                                    }}
+                                    placeholder="Enter client's full name"
+                                    className="w-full"
+                                    invalid={!!errors.clientName}
+                                />
+                                {errors.clientName && <small className="p-error block mt-1">{errors.clientName}</small>}
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="phoneNumber" className="font-semibold">
-                                    Phone Number
+                                    Phone Number <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="phoneNumber" value={invoice.phoneNumber} onChange={(e) => setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="Enter phone number" className="w-full" />
+                                <InputText
+                                    id="phoneNumber"
+                                    value={invoice.phoneNumber}
+                                    onChange={(e) => {
+                                        setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }));
+                                        if (errors.phoneNumber) setErrors(prev => ({ ...prev, phoneNumber: null }));
+                                    }}
+                                    placeholder="Enter phone number"
+                                    className="w-full"
+                                    invalid={!!errors.phoneNumber}
+                                />
+                                {errors.phoneNumber && <small className="p-error block mt-1">{errors.phoneNumber}</small>}
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carBrand" className="font-semibold">
-                                    Car Brand
+                                    Car Brand <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="carBrand" value={invoice.carBrand} onChange={(e) => setInvoice((prev) => ({ ...prev, carBrand: e.target.value }))} placeholder="Enter car brand" className="w-full" />
+                                <InputText
+                                    id="carBrand"
+                                    value={invoice.carBrand}
+                                    onChange={(e) => {
+                                        setInvoice((prev) => ({ ...prev, carBrand: e.target.value }));
+                                        if (errors.carBrand) setErrors(prev => ({ ...prev, carBrand: null }));
+                                    }}
+                                    placeholder="Enter car brand"
+                                    className="w-full"
+                                    invalid={!!errors.carBrand}
+                                />
+                                {errors.carBrand && <small className="p-error block mt-1">{errors.carBrand}</small>}
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carModel" className="font-semibold">
-                                    Car Model
+                                    Car Model <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="carModel" value={invoice.carModel} onChange={(e) => setInvoice((prev) => ({ ...prev, carModel: e.target.value }))} placeholder="Enter car model" className="w-full" />
+                                <InputText
+                                    id="carModel"
+                                    value={invoice.carModel}
+                                    onChange={(e) => {
+                                        setInvoice((prev) => ({ ...prev, carModel: e.target.value }));
+                                        if (errors.carModel) setErrors(prev => ({ ...prev, carModel: null }));
+                                    }}
+                                    placeholder="Enter car model"
+                                    className="w-full"
+                                    invalid={!!errors.carModel}
+                                />
+                                {errors.carModel && <small className="p-error block mt-1">{errors.carModel}</small>}
                             </div>
                         </div>
                         <div className="col-12">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="date" className="font-semibold">
-                                    Date
+                                    Date <span className="text-red-500">*</span>
                                 </label>
-                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className="w-full" />
+                                <Calendar
+                                    id="date"
+                                    value={invoice.date}
+                                    onChange={(e) => {
+                                        setInvoice((prev) => ({ ...prev, date: e.value }));
+                                        if (errors.date) setErrors(prev => ({ ...prev, date: null }));
+                                    }}
+                                    placeholder="Select date"
+                                    showIcon
+                                    className="w-full"
+                                    invalid={!!errors.date}
+                                />
+                                {errors.date && <small className="p-error block mt-1">{errors.date}</small>}
                             </div>
                         </div>
                     </div>
@@ -289,25 +404,53 @@ export default function CreateInvoice() {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`service-${index}`} className="font-semibold">
-                                        Service
+                                        Service <span className="text-red-500">*</span>
                                     </label>
-                                    <InputText id={`service-${index}`} value={detail.service} onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)} placeholder="Enter service description" className="w-full" />
+                                    <InputText
+                                        id={`service-${index}`}
+                                        value={detail.service}
+                                        onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)}
+                                        placeholder="Enter service description"
+                                        className="w-full"
+                                        invalid={!!errors[`invoiceDetails.${index}.service`]}
+                                    />
+                                    {errors[`invoiceDetails.${index}.service`] && <small className="p-error block mt-1">{errors[`invoiceDetails.${index}.service`]}</small>}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`quantity-${index}`} className="font-semibold">
-                                        Quantity
+                                        Quantity <span className="text-red-500">*</span>
                                     </label>
-                                    <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)} placeholder="0" mode="decimal" minFractionDigits={0} className="w-full" />
+                                    <InputNumber
+                                        id={`quantity-${index}`}
+                                        value={detail.quantity}
+                                        onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)}
+                                        placeholder="0"
+                                        mode="decimal"
+                                        minFractionDigits={0}
+                                        className="w-full"
+                                        invalid={!!errors[`invoiceDetails.${index}.quantity`]}
+                                    />
+                                    {errors[`invoiceDetails.${index}.quantity`] && <small className="p-error block mt-1">{errors[`invoiceDetails.${index}.quantity`]}</small>}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`price-${index}`} className="font-semibold">
-                                        Price
+                                        Price <span className="text-red-500">*</span>
                                     </label>
-                                    <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)} placeholder="0.00" mode="decimal" minFractionDigits={2} className="w-full" />
+                                    <InputNumber
+                                        id={`price-${index}`}
+                                        value={detail.price}
+                                        onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)}
+                                        placeholder="0.00"
+                                        mode="decimal"
+                                        minFractionDigits={2}
+                                        className="w-full"
+                                        invalid={!!errors[`invoiceDetails.${index}.price`]}
+                                    />
+                                    {errors[`invoiceDetails.${index}.price`] && <small className="p-error block mt-1">{errors[`invoiceDetails.${index}.price`]}</small>}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">

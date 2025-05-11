@@ -27,6 +27,61 @@ export default function AddPromotion({ params: { lang } }) {
 
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+
+    // VALIDATE FORM
+    const validateForm = () => {
+        const newErrors = {};
+        let isValid = true;
+
+        // Validate promotionTitle
+        if (!formData.promotionTitle.trim()) {
+            newErrors.promotionTitle = lang === 'en' ? 'Promotion Title is a required field.' : 'عنوان العرض مطلوب.';
+            isValid = false;
+        }
+
+        // Validate expiryDate
+        if (!formData.expiryDate) {
+            newErrors.expiryDate = lang === 'en' ? 'Expiry Date is a required field.' : 'تاريخ الإنتهاء مطلوب.';
+            isValid = false;
+        }
+
+        // Validate promotionDetails
+        newErrors.promotionDetails = [];
+        formData.promotionDetails.forEach((detail, index) => {
+            const detailErrors = {};
+            if (!detail.title.trim()) {
+                detailErrors.title = lang === 'en' ? 'Detail Title is a required field.' : 'عنوان التفصيل مطلوب.';
+                isValid = false;
+            }
+            if (detail.discount <= 0) {
+                detailErrors.discount = lang === 'en' ? 'Discount must be a positive value.' : 'يجب أن يكون الخصم قيمة موجبة.';
+                isValid = false;
+            }
+            if (Object.keys(detailErrors).length > 0) {
+                newErrors.promotionDetails[index] = detailErrors;
+            }
+        });
+        if (newErrors.promotionDetails.every(err => !err)) {
+            delete newErrors.promotionDetails;
+        }
+
+
+        // Validate promotionConditions
+        newErrors.promotionConditions = [];
+        formData.promotionConditions.forEach((condition, index) => {
+            if (!condition.trim()) {
+                newErrors.promotionConditions[index] = lang === 'en' ? 'Condition cannot be empty.' : 'لا يمكن أن يكون الشرط فارغًا.';
+                isValid = false;
+            }
+        });
+        if (newErrors.promotionConditions.every(err => !err)) {
+            delete newErrors.promotionConditions;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
 
     // HANDLE INPUT CHANGES
     const handleChange = (e) => {
@@ -99,9 +154,7 @@ export default function AddPromotion({ params: { lang } }) {
         e.preventDefault();
         setLoading(true);
 
-        // Validation
-        if (!formData.promotionTitle || !formData.expiryDate) {
-            toast.error(lang === 'en' ? 'Please fill all required fields' : 'يرجى ملء جميع الحقول المطلوبة');
+        if (!validateForm()) {
             setLoading(false);
             return;
         }
@@ -171,7 +224,8 @@ export default function AddPromotion({ params: { lang } }) {
                                 {lang === 'en' ? 'Promotion Title' : 'عنوان العرض'}
                                 <span className="text-red-500"> *</span>
                             </label>
-                            <InputText id="promotionTitle" name="promotionTitle" value={formData.promotionTitle} onChange={handleChange} placeholder={lang === 'en' ? 'Enter promotion title' : 'أدخل عنوان العرض'} required className="w-full" />
+                            <InputText id="promotionTitle" name="promotionTitle" value={formData.promotionTitle} onChange={handleChange} placeholder={lang === 'en' ? 'Enter promotion title' : 'أدخل عنوان العرض'} required className={`w-full ${errors.promotionTitle ? 'p-invalid' : ''}`} />
+                            {errors.promotionTitle && <small className="p-error">{errors.promotionTitle}</small>}
                         </div>
 
                         {/* Expiry Date Section */}
@@ -189,8 +243,9 @@ export default function AddPromotion({ params: { lang } }) {
                                 minDate={new Date()}
                                 placeholder={lang === 'en' ? 'Select expiry date' : 'اختر تاريخ الانتهاء'}
                                 required
-                                className="w-full"
+                                className={`w-full ${errors.expiryDate ? 'p-invalid' : ''}`}
                             />
+                            {errors.expiryDate && <small className="p-error">{errors.expiryDate}</small>}
                         </div>
 
                         {/* Promotion Details Section */}
@@ -205,18 +260,21 @@ export default function AddPromotion({ params: { lang } }) {
                                         <div className="col-12 md:col-6 field mb-2 md:mb-0">
                                             <label htmlFor={`detail-title-${index}`} className="block mb-2">
                                                 {lang === 'en' ? 'Detail Title' : 'عنوان الخدمة'}
+                                                <span className="text-red-500"> *</span>
                                             </label>
                                             <InputText
                                                 id={`detail-title-${index}`}
                                                 value={detail.title}
                                                 onChange={(e) => handleDetailsChange(index, 'title', e.target.value)}
                                                 placeholder={lang === 'en' ? 'Enter detail title' : 'أدخل عنوان الخدمة'}
-                                                className="w-full"
+                                                className={`w-full ${errors.promotionDetails?.[index]?.title ? 'p-invalid' : ''}`}
                                             />
+                                            {errors.promotionDetails?.[index]?.title && <small className="p-error">{errors.promotionDetails[index].title}</small>}
                                         </div>
                                         <div className="col-12 md:col-5 field mb-2 md:mb-0">
                                             <label htmlFor={`detail-discount-${index}`} className="block mb-2">
                                                 {lang === 'en' ? 'Discount' : 'الخصم'}
+                                                <span className="text-red-500"> *</span>
                                             </label>
                                             <InputNumber
                                                 id={`detail-discount-${index}`}
@@ -230,8 +288,9 @@ export default function AddPromotion({ params: { lang } }) {
                                                 step={0.01}
                                                 showButtons
                                                 placeholder={lang === 'en' ? '0.00-1.00' : '0.00-1.00'}
-                                                className="w-full"
+                                                className={`w-full ${errors.promotionDetails?.[index]?.discount ? 'p-invalid' : ''}`}
                                             />
+                                            {errors.promotionDetails?.[index]?.discount && <small className="p-error">{errors.promotionDetails[index].discount}</small>}
                                         </div>
                                         <div className="col-12 md:col-1 mt-auto flex align-items-end justify-content-center">
                                             <Button type="button" icon="pi pi-trash" severity="danger" onClick={() => removeDetail(index)} disabled={formData.promotionDetails.length === 1} className="p-button-rounded p-button-outlined" />
@@ -254,8 +313,10 @@ export default function AddPromotion({ params: { lang } }) {
                                         <div className="col-12 md:col-11 field mb-2 md:mb-0">
                                             <label htmlFor={`condition-${index}`} className="block mb-2">
                                                 {lang === 'en' ? `Condition ${index + 1}` : `الشرط ${index + 1}`}
+                                                <span className="text-red-500"> *</span>
                                             </label>
-                                            <InputText id={`condition-${index}`} value={condition} onChange={(e) => handleConditionChange(index, e.target.value)} placeholder={lang === 'en' ? 'Enter condition' : 'أدخل الشرط'} className="w-full" />
+                                            <InputText id={`condition-${index}`} value={condition} onChange={(e) => handleConditionChange(index, e.target.value)} placeholder={lang === 'en' ? 'Enter condition' : 'أدخل الشرط'} className={`w-full ${errors.promotionConditions?.[index] ? 'p-invalid' : ''}`} />
+                                            {errors.promotionConditions?.[index] && <small className="p-error">{errors.promotionConditions[index]}</small>}
                                         </div>
                                         <div className="col-12 md:col-1 mt-auto flex align-items-end justify-content-center">
                                             <Button type="button" icon="pi pi-trash" severity="danger" onClick={() => removeCondition(index)} disabled={formData.promotionConditions.length === 1} className="p-button-rounded p-button-outlined" />

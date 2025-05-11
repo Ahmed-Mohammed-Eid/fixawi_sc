@@ -6,9 +6,11 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 export default function EditInvoice({ params: { id } }) {
+    const router = useRouter();
     const [invoice, setInvoice] = useState({
         invoiceId: '',
         userId: '',
@@ -20,7 +22,7 @@ export default function EditInvoice({ params: { id } }) {
         invoiceDetails: [
             {
                 service: '',
-                quantity: 0,
+                quantity: 1, // Default quantity to 1
                 price: 0,
                 amount: 0
             }
@@ -30,6 +32,7 @@ export default function EditInvoice({ params: { id } }) {
         salesTaxAmount: 0,
         invoiceTotal: 0
     });
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -98,7 +101,7 @@ export default function EditInvoice({ params: { id } }) {
     const addNewRow = () => {
         setInvoice((prev) => ({
             ...prev,
-            invoiceDetails: [...prev.invoiceDetails, { service: '', quantity: 0, price: 0, amount: 0 }]
+            invoiceDetails: [...prev.invoiceDetails, { service: '', quantity: 1, price: 0, amount: 0 }]
         }));
     };
 
@@ -126,11 +129,37 @@ export default function EditInvoice({ params: { id } }) {
         }));
     }, [invoice.invoiceDetails, invoice.fixawiFare]);
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!invoice.clientName) newErrors.clientName = 'Client Name is a required field.';
+        if (!invoice.date) newErrors.date = 'Date is a required field.';
+
+        invoice.invoiceDetails.forEach((detail, index) => {
+            if (!detail.service) {
+                if (!newErrors.invoiceDetails) newErrors.invoiceDetails = [];
+                newErrors.invoiceDetails[index] = { ...newErrors.invoiceDetails[index], service: 'Service is a required field.' };
+            }
+            // Quantity and Price are numbers, 0 is a valid value if not strictly positive.
+            // If quantity or price must be greater than 0, add validation here.
+            // e.g. if (detail.quantity <= 0) newErrors.invoiceDetails[index] = { ...newErrors.invoiceDetails[index], quantity: 'Quantity must be greater than 0' };
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            toast.error('Please fill in all required fields.');
+            return;
+        }
+
         // GET TOKEN FROM LOCAL STORAGE
         const token = localStorage.getItem('token');
+        let toastId;
 
         try {
+            toastId = toast.loading('Updating invoice...');
             const invoiceData = {
                 invoiceId: invoice.invoiceId,
                 userId: invoice.userId,
@@ -159,17 +188,18 @@ export default function EditInvoice({ params: { id } }) {
             });
 
             if (response.data.success) {
-                toast.success('Invoice updated successfully');
+                toast.success('Invoice updated successfully', { id: toastId });
 
                 // Use Next.js router for navigation
                 const timer = setTimeout(() => {
                     router.push('/invoices');
                     clearTimeout(timer);
                 }, 1000);
+            } else {
+                toast.error(response.data.message || 'Failed to update invoice', { id: toastId });
             }
         } catch (error) {
-            toast.error('Failed to update invoice');
-            toast.dismiss(toastId);
+            toast.error(error.response?.data?.message || error.message || 'Failed to update invoice', { id: toastId });
         }
     };
 
@@ -187,9 +217,10 @@ export default function EditInvoice({ params: { id } }) {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="clientName" className="font-semibold">
-                                    Client Name
+                                    Client Name <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="clientName" value={invoice.clientName} onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))} placeholder="Enter client's full name" className="w-full" />
+                                <InputText id="clientName" value={invoice.clientName} onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))} placeholder="Enter client's full name" className={`w-full ${errors.clientName ? 'p-invalid' : ''}`} />
+                                {errors.clientName && <small className="p-error">{errors.clientName}</small>}
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
@@ -219,9 +250,10 @@ export default function EditInvoice({ params: { id } }) {
                         <div className="col-12">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="date" className="font-semibold">
-                                    Date
+                                    Date <span className="text-red-500">*</span>
                                 </label>
-                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className="w-full" />
+                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className={`w-full ${errors.date ? 'p-invalid' : ''}`} />
+                                {errors.date && <small className="p-error">{errors.date}</small>}
                             </div>
                         </div>
                     </div>
@@ -239,25 +271,34 @@ export default function EditInvoice({ params: { id } }) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`service-${index}`} className="font-semibold">
-                                        Service
+                                        Service <span className="text-red-500">*</span>
                                     </label>
-                                    <InputText id={`service-${index}`} value={detail.service} onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)} placeholder="Enter service description" className="w-full" />
+                                    <InputText
+                                        id={`service-${index}`}
+                                        value={detail.service}
+                                        onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)}
+                                        placeholder="Enter service description"
+                                        className={`w-full ${errors.invoiceDetails?.[index]?.service ? 'p-invalid' : ''}`}
+                                    />
+                                    {errors.invoiceDetails?.[index]?.service && <small className="p-error">{errors.invoiceDetails[index].service}</small>}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`quantity-${index}`} className="font-semibold">
-                                        Quantity
+                                        Quantity {/* Assuming quantity can be 0 or 1, not marking as required with asterisk unless specified */}
                                     </label>
-                                    <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)} placeholder="0" mode="decimal" minFractionDigits={0} className="w-full" />
+                                    <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)} placeholder="1" mode="decimal" minFractionDigits={0} className="w-full" />
+                                    {/* Add error display for quantity if needed */}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`price-${index}`} className="font-semibold">
-                                        Price
+                                        Price {/* Assuming price can be 0, not marking as required with asterisk unless specified */}
                                     </label>
                                     <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)} placeholder="0.00" mode="decimal" minFractionDigits={2} className="w-full" />
+                                    {/* Add error display for price if needed */}
                                 </div>
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">

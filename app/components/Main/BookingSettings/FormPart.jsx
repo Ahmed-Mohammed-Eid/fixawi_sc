@@ -10,6 +10,7 @@ export default function BookingSettingsFormPart({ lang }) {
     const [services, setServices] = React.useState([]);
     const [bookingPlan, setBookingPlan] = React.useState([]);
     const [maximumCapacity, setMaximumCapacity] = React.useState(1);
+    const [errors, setErrors] = React.useState({});
 
     function addNewService() {
         setBookingPlan([
@@ -22,16 +23,54 @@ export default function BookingSettingsFormPart({ lang }) {
         ]);
     }
 
+    function validateForm() {
+        const newErrors = {};
+        let isValid = true;
+
+        // Validate maximumCapacity
+        if (!maximumCapacity) {
+            newErrors.maximumCapacity = lang === 'en' ? 'Maximum Capacity is required.' : 'الحد الأقصى للسعة مطلوب.';
+            isValid = false;
+        }
+
+        // Validate bookingPlan
+        const bookingPlanErrors = [];
+        bookingPlan.forEach((item, index) => {
+            const itemErrors = {};
+            if (!item.serviceId) {
+                itemErrors.serviceId = lang === 'en' ? 'Service is a required field.' : 'الخدمة مطلوبة.';
+                isValid = false;
+            }
+            if (!item.capacity || item.capacity <= 0) {
+                itemErrors.capacity = lang === 'en' ? 'Capacity is required.' : 'السعة مطلوبة.';
+                isValid = false;
+            }
+            if (!item.averageTime || item.averageTime <= 0) {
+                itemErrors.averageTime = lang === 'en' ? 'Average Time is required.' : 'متوسط الوقت مطلوب.';
+                isValid = false;
+            }
+            if (Object.keys(itemErrors).length > 0) {
+                bookingPlanErrors[index] = itemErrors;
+            }
+        });
+
+        if (bookingPlanErrors.length > 0) {
+            newErrors.bookingPlan = bookingPlanErrors;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    }
+
     async function createBookingPlan(event) {
         event.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
         const token = localStorage.getItem('token') || null;
 
-        // Validate all fields are filled
-        const isValid = bookingPlan.every((item) => item.serviceId);
-        if (!isValid) {
-            return toast.error(lang === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول');
-        }
         axios
             .post(
                 `${process.env.API_URL}/create/booking/plan`,
@@ -49,7 +88,7 @@ export default function BookingSettingsFormPart({ lang }) {
                 toast.success(lang === 'en' ? 'Booking Plan Created Successfully' : 'تم إنشاء خطة الحجز بنجاح');
             })
             .catch((err) => {
-                toast.error(err.response?.data?.message || lang === 'en' ? 'Something went wrong' : 'حدث خطأ ما');
+                toast.error(err.response?.data?.message || (lang === 'en' ? 'Something went wrong' : 'حدث خطأ ما'));
             });
     }
 
@@ -64,13 +103,13 @@ export default function BookingSettingsFormPart({ lang }) {
             })
             .then((response) => {
                 console.log(response.data);
-                const services = response.data?.serviceCenter?.serviceCategoryIds.map((service) => ({
+                const servicesData = response.data?.serviceCenter?.serviceCategoryIds.map((service) => ({
                     value: service._id,
                     label: lang === 'en' ? service.subCategoryNameEn : service.subCategoryName
                 }));
 
-                console.log(services);
-                setServices(services || []);
+                console.log(servicesData);
+                setServices(servicesData || []);
             })
             .catch((error) => {
                 console.log(error);
@@ -91,7 +130,7 @@ export default function BookingSettingsFormPart({ lang }) {
                 <div className={'p-fluid formgrid grid mb-4'}>
                     <div className={'field col-12'}>
                         <label className={'font-bold'} htmlFor="maximumCapacity">
-                            {lang === 'en' ? 'Maximum Capacity' : 'الحد الأقصى للسعة'}
+                            {lang === 'en' ? 'Maximum Capacity' : 'الحد الأقصى للسعة'} <span className="text-red-500">*</span>
                         </label>
                         <Dropdown
                             id="maximumCapacity"
@@ -102,7 +141,9 @@ export default function BookingSettingsFormPart({ lang }) {
                             }))}
                             onChange={(e) => setMaximumCapacity(e.value)}
                             placeholder={lang === 'en' ? 'Select Maximum Capacity' : 'اختر الحد الأقصى للسعة'}
+                            className={`${errors.maximumCapacity ? 'p-invalid' : ''}`}
                         />
+                        {errors.maximumCapacity && <small className="p-error">{errors.maximumCapacity}</small>}
                     </div>
                 </div>
 
@@ -112,7 +153,7 @@ export default function BookingSettingsFormPart({ lang }) {
                         <div className={'p-fluid formgrid grid mb-2 align-items-center'} key={index}>
                             <div className={'field col-4'}>
                                 <label className={'font-bold'} htmlFor={`serviceId${index}`}>
-                                    {lang === 'en' ? 'Service' : 'الخدمة'}
+                                    {lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span>
                                 </label>
                                 <Dropdown
                                     id={`serviceId${index}`}
@@ -124,11 +165,13 @@ export default function BookingSettingsFormPart({ lang }) {
                                         setBookingPlan(plan);
                                     }}
                                     placeholder={lang === 'en' ? 'Select Service' : 'اختر الخدمة'}
+                                    className={`${errors.bookingPlan?.[index]?.serviceId ? 'p-invalid' : ''}`}
                                 />
+                                {errors.bookingPlan?.[index]?.serviceId && <small className="p-error">{errors.bookingPlan[index].serviceId}</small>}
                             </div>
                             <div className={'field col-3'}>
                                 <label className={'font-bold'} htmlFor={`capacity${index}`}>
-                                    {lang === 'en' ? 'Capacity' : 'السعة'}
+                                    {lang === 'en' ? 'Capacity' : 'السعة'} <span className="text-red-500">*</span>
                                 </label>
                                 <Dropdown
                                     id={`capacity${index}`}
@@ -143,11 +186,13 @@ export default function BookingSettingsFormPart({ lang }) {
                                         setBookingPlan(plan);
                                     }}
                                     placeholder={lang === 'en' ? 'Select Capacity' : 'اختر السعة'}
+                                    className={`${errors.bookingPlan?.[index]?.capacity ? 'p-invalid' : ''}`}
                                 />
+                                {errors.bookingPlan?.[index]?.capacity && <small className="p-error">{errors.bookingPlan[index].capacity}</small>}
                             </div>
                             <div className={'field col-3'}>
                                 <label className={'font-bold'} htmlFor={`averageTime${index}`}>
-                                    {lang === 'en' ? 'Average Time (hrs)' : 'متوسط الوقت (ساعات)'}
+                                    {lang === 'en' ? 'Average Time (hrs)' : 'متوسط الوقت (ساعات)'} <span className="text-red-500">*</span>
                                 </label>
                                 <Dropdown
                                     id={`averageTime${index}`}
@@ -162,7 +207,9 @@ export default function BookingSettingsFormPart({ lang }) {
                                         setBookingPlan(plan);
                                     }}
                                     placeholder={lang === 'en' ? 'Select Time' : 'اختر الوقت'}
+                                    className={`${errors.bookingPlan?.[index]?.averageTime ? 'p-invalid' : ''}`}
                                 />
+                                {errors.bookingPlan?.[index]?.averageTime && <small className="p-error">{errors.bookingPlan[index].averageTime}</small>}
                             </div>
                             <div className={'field col-2 flex flex-column align-items-center'}>
                                 <label className={'font-bold'}>{lang === 'en' ? 'Delete' : 'حذف'}</label>

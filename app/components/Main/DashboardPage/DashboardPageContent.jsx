@@ -353,7 +353,7 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-info p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}`)}
+                                                    onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData._id}`)}
                                                 />
                                             )}
                                             {/* Add Cancel Button */}

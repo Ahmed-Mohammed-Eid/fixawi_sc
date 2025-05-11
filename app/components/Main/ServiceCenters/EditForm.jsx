@@ -33,6 +33,7 @@ export default function EditServiceCenterForm({ lang }) {
     const [serviceTypes, setServiceTypes] = useState([]); // Store the service types for display
     const [isActive, setIsActive] = useState(false); // Store active status
     const [isApproved, setIsApproved] = useState(false); // Store approval status
+    const [errors, setErrors] = useState({}); // Store form errors
 
     // CATEGORIES
     const [subCategories, setSubCategories] = useState([]);
@@ -61,24 +62,74 @@ export default function EditServiceCenterForm({ lang }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [closingDays, setClosingDays] = useState([]); // Store the closing days
 
+    // VALIDATION FUNCTION
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!serviceCenterTitle) {
+            newErrors.serviceCenterTitle = lang === 'en' ? 'Service Center Title is required.' : 'اسم المركز مطلوب.';
+        }
+        if (!serviceCenterTitleEn) {
+            newErrors.serviceCenterTitleEn = lang === 'en' ? 'Service Center Title (English) is required.' : 'اسم المركز (إنجليزي) مطلوب.';
+        }
+        if (!address) {
+            newErrors.address = lang === 'en' ? 'Address is required.' : 'العنوان مطلوب.';
+        }
+        if (!area) {
+            newErrors.area = lang === 'en' ? 'Area is required.' : 'المنطقة مطلوبة.';
+        }
+        if (!lat) {
+            newErrors.lat = lang === 'en' ? 'Latitude is required.' : 'خط العرض مطلوب.';
+        }
+        if (!lng) {
+            newErrors.lng = lang === 'en' ? 'Longitude is required.' : 'خط الطول مطلوب.';
+        }
+        if (!serviceType || serviceType.length === 0) {
+            newErrors.serviceType = lang === 'en' ? 'Please select at least one Service Type.' : 'يرجى اختيار نوع خدمة واحد على الأقل.';
+        }
+        if (!openAt) {
+            newErrors.openAt = lang === 'en' ? 'Open At time is required.' : 'وقت الفتح مطلوب.';
+        }
+        if (!closeAt) {
+            newErrors.closeAt = lang === 'en' ? 'Close At time is required.' : 'وقت الإغلاق مطلوب.';
+        }
+        if (!contacts) {
+            newErrors.contacts = lang === 'en' ? 'Contacts are required.' : 'معلومات الاتصال مطلوبة.';
+        }
+        if (!carBrands || carBrands.length === 0) {
+            newErrors.carBrands = lang === 'en' ? 'Please select at least one Car Brand.' : 'يرجى اختيار ماركة سيارة واحدة على الأقل.';
+        }
+        if (!visitType) {
+            newErrors.visitType = lang === 'en' ? 'Visit Type is required.' : 'نوع الزيارة مطلوب.';
+        }
+        if (!username) {
+            newErrors.username = lang === 'en' ? 'Username is required.' : 'اسم المستخدم مطلوب.';
+        }
+
+        if (password && !confirmPassword) {
+            newErrors.confirmPassword = lang === 'en' ? 'Please confirm your password.' : 'يرجى تأكيد كلمة المرور.';
+        } else if (password && confirmPassword && password !== confirmPassword) {
+            newErrors.confirmPassword = lang === 'en' ? 'Passwords do not match.' : 'كلمات المرور غير متطابقة.';
+        }
+
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     // HANDLERS
     function handleSubmit(e) {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
         const token = localStorage.getItem('token');
 
-        // FORM VALIDATION LOGIC...
-        if (!serviceCenterTitle || !serviceCenterTitleEn || !address || !area || !lng || !lat || !serviceType || !openAt || !closeAt || !contacts || !carBrands) {
-            return toast.error(lang === 'en' ? 'Please fill all the fields' : 'يرجى ملء جميع الحقول');
-        }
-
-        if (password !== confirmPassword) {
-            return toast.error(lang === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة');
-        }
-
         // Formatting openAt and closeAt (time format logic)
-        const openAtFormatted = openAt.getHours();
-        const closeAtFormatted = closeAt.getHours();
+        const openAtFormatted = openAt instanceof Date ? openAt.getHours() : null;
+        const closeAtFormatted = closeAt instanceof Date ? closeAt.getHours() : null;
 
         const formData = new FormData();
         formData.append('serviceCenterTitle', serviceCenterTitle);
@@ -456,15 +507,17 @@ export default function EditServiceCenterForm({ lang }) {
 
                     <div className={'p-fluid formgrid grid'}>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="serviceCenterTitle">{lang === 'en' ? 'Service Center Title' : 'اسم المركز'}</label>
-                            <InputText id="serviceCenterTitle" value={serviceCenterTitle} onChange={(e) => setServiceCenterTitle(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title' : 'اسم المركز'} />
+                            <label htmlFor="serviceCenterTitle">{lang === 'en' ? 'Service Center Title' : 'اسم المركز'} <span className="text-red-500">*</span></label>
+                            <InputText id="serviceCenterTitle" value={serviceCenterTitle} onChange={(e) => setServiceCenterTitle(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title' : 'اسم المركز'} className={errors.serviceCenterTitle ? 'p-invalid' : ''} />
+                            {errors.serviceCenterTitle && <small className="p-error">{errors.serviceCenterTitle}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="serviceCenterTitleEn">{lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'}</label>
-                            <InputText id="serviceCenterTitleEn" value={serviceCenterTitleEn} onChange={(e) => setServiceCenterTitleEn(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'} />
+                            <label htmlFor="serviceCenterTitleEn">{lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'} <span className="text-red-500">*</span></label>
+                            <InputText id="serviceCenterTitleEn" value={serviceCenterTitleEn} onChange={(e) => setServiceCenterTitleEn(e.target.value)} placeholder={lang === 'en' ? 'Service Center Title (English)' : 'اسم المركز (إنجليزي)'} className={errors.serviceCenterTitleEn ? 'p-invalid' : ''} />
+                            {errors.serviceCenterTitleEn && <small className="p-error">{errors.serviceCenterTitleEn}</small>}
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="area">{lang === 'en' ? 'Area' : 'المنطقة'}</label>
+                            <label htmlFor="area">{lang === 'en' ? 'Area' : 'المنطقة'} <span className="text-red-500">*</span></label>
                             <Dropdown
                                 id="area"
                                 value={area}
@@ -474,22 +527,27 @@ export default function EditServiceCenterForm({ lang }) {
                                 onChange={(e) => setArea(e.target.value)}
                                 placeholder={lang === 'en' ? 'Area' : 'المنطقة'}
                                 filter={true}
+                                className={errors.area ? 'p-invalid' : ''}
                             />
+                            {errors.area && <small className="p-error">{errors.area}</small>}
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="address">{lang === 'en' ? 'Address' : 'العنوان'}</label>
-                            <InputTextarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder={lang === 'en' ? 'Address' : 'العنوان'} style={{ height: '100px' }} />
+                            <label htmlFor="address">{lang === 'en' ? 'Address' : 'العنوان'} <span className="text-red-500">*</span></label>
+                            <InputTextarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder={lang === 'en' ? 'Address' : 'العنوان'} style={{ height: '100px' }} className={errors.address ? 'p-invalid' : ''} />
+                            {errors.address && <small className="p-error">{errors.address}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="lat">{lang === 'en' ? 'Latitude' : 'خط العرض'}</label>
-                            <InputText id="lat" value={lat} onChange={(e) => setLat(e.target.value)} placeholder={lang === 'en' ? 'Latitude' : 'خط العرض'} />
+                            <label htmlFor="lat">{lang === 'en' ? 'Latitude' : 'خط العرض'} <span className="text-red-500">*</span></label>
+                            <InputText id="lat" value={lat} onChange={(e) => setLat(e.target.value)} placeholder={lang === 'en' ? 'Latitude' : 'خط العرض'} className={errors.lat ? 'p-invalid' : ''} />
+                            {errors.lat && <small className="p-error">{errors.lat}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="lng">{lang === 'en' ? 'Longitude' : 'خط الطول'}</label>
-                            <InputText id="lng" value={lng} onChange={(e) => setLng(e.target.value)} placeholder={lang === 'en' ? 'Longitude' : 'خط الطول'} />
+                            <label htmlFor="lng">{lang === 'en' ? 'Longitude' : 'خط الطول'} <span className="text-red-500">*</span></label>
+                            <InputText id="lng" value={lng} onChange={(e) => setLng(e.target.value)} placeholder={lang === 'en' ? 'Longitude' : 'خط الطول'} className={errors.lng ? 'p-invalid' : ''} />
+                            {errors.lng && <small className="p-error">{errors.lng}</small>}
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="serviceType">{lang === 'en' ? 'Service Types' : 'أنواع الخدمات'}</label>
+                            <label htmlFor="serviceType">{lang === 'en' ? 'Service Types' : 'أنواع الخدمات'} <span className="text-red-500">*</span></label>
                             <MultiSelect
                                 id="serviceType"
                                 value={serviceType}
@@ -503,19 +561,24 @@ export default function EditServiceCenterForm({ lang }) {
                                 placeholder={lang === 'en' ? 'Service Types' : 'أنواع الخدمات'}
                                 filter={true}
                                 showClear={true}
+                                className={errors.serviceType ? 'p-invalid' : ''}
                             />
+                            {errors.serviceType && <small className="p-error">{errors.serviceType}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="openAt">{lang === 'en' ? 'Open At' : 'يفتح في'}</label>
-                            <Calendar id="openAt" value={openAt} onChange={(e) => setOpenAt(e.target.value)} placeholder={lang === 'en' ? 'Open At' : 'يفتح في'} showTime={true} timeOnly={true} stepMinute={60} />
+                            <label htmlFor="openAt">{lang === 'en' ? 'Open At' : 'يفتح في'} <span className="text-red-500">*</span></label>
+                            <Calendar id="openAt" value={openAt} onChange={(e) => setOpenAt(e.target.value)} placeholder={lang === 'en' ? 'Open At' : 'يفتح في'} showTime={true} timeOnly={true} stepMinute={60} className={errors.openAt ? 'p-invalid' : ''} />
+                            {errors.openAt && <small className="p-error">{errors.openAt}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="closeAt">{lang === 'en' ? 'Close At' : 'يغلق في'}</label>
-                            <Calendar id="closeAt" value={closeAt} onChange={(e) => setCloseAt(e.target.value)} placeholder={lang === 'en' ? 'Close At' : 'يغلق في'} showTime={true} timeOnly={true} stepMinute={60} />
+                            <label htmlFor="closeAt">{lang === 'en' ? 'Close At' : 'يغلق في'} <span className="text-red-500">*</span></label>
+                            <Calendar id="closeAt" value={closeAt} onChange={(e) => setCloseAt(e.target.value)} placeholder={lang === 'en' ? 'Close At' : 'يغلق في'} showTime={true} timeOnly={true} stepMinute={60} className={errors.closeAt ? 'p-invalid' : ''} />
+                            {errors.closeAt && <small className="p-error">{errors.closeAt}</small>}
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="contacts">{lang === 'en' ? 'Contacts' : 'الاتصالات'}</label>
-                            <InputText id="contacts" value={contacts} onChange={(e) => setContacts(e.target.value)} placeholder={lang === 'en' ? 'Contacts' : 'الاتصالات'} />
+                            <label htmlFor="contacts">{lang === 'en' ? 'Contacts' : 'الاتصالات'} <span className="text-red-500">*</span></label>
+                            <InputText id="contacts" value={contacts} onChange={(e) => setContacts(e.target.value)} placeholder={lang === 'en' ? 'Contacts' : 'الاتصالات'} className={errors.contacts ? 'p-invalid' : ''} />
+                            {errors.contacts && <small className="p-error">{errors.contacts}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
                             <label htmlFor="email">{lang === 'en' ? 'Email' : 'البريد الإلكتروني'}</label>
@@ -526,8 +589,9 @@ export default function EditServiceCenterForm({ lang }) {
                             <InputText id="website" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder={lang === 'en' ? 'Website' : 'الموقع الإلكتروني'} />
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="carBrands">{lang === 'en' ? 'Car Brands' : 'ماركات السيارات'}</label>
+                            <label htmlFor="carBrands">{lang === 'en' ? 'Car Brands' : 'ماركات السيارات'} <span className="text-red-500">*</span></label>
                             <MultiSelect
+                                id="carBrands" // Added id here
                                 value={carBrands}
                                 options={cars}
                                 optionLabel={'label'}
@@ -537,10 +601,12 @@ export default function EditServiceCenterForm({ lang }) {
                                 filter={true}
                                 showClear={true}
                                 itemTemplate={carTemplate}
+                                className={errors.carBrands ? 'p-invalid' : ''}
                             />
+                            {errors.carBrands && <small className="p-error">{errors.carBrands}</small>}
                         </div>
                         <div className={'field col-12'}>
-                            <label htmlFor="visitType">{lang === 'en' ? 'Visit Type' : 'نوع الزيارة'}</label>
+                            <label htmlFor="visitType">{lang === 'en' ? 'Visit Type' : 'نوع الزيارة'} <span className="text-red-500">*</span></label>
                             {/*booking || direct visit*/}
                             <Dropdown
                                 id="visitType"
@@ -555,7 +621,9 @@ export default function EditServiceCenterForm({ lang }) {
                                 onChange={(e) => setVisitType(e.target.value)}
                                 placeholder={lang === 'en' ? 'Visit Type' : 'نوع الزيارة'}
                                 filter={true}
+                                className={errors.visitType ? 'p-invalid' : ''}
                             />
+                            {errors.visitType && <small className="p-error">{errors.visitType}</small>}
                         </div>
                         <div className="col-12 mb-2 lg:mb-2" dir={'ltr'}>
                             <label className={'mb-2 block'} htmlFor="closingDays" dir={lang === 'en' ? 'ltr' : 'rtl'}>
@@ -589,11 +657,12 @@ export default function EditServiceCenterForm({ lang }) {
                 <div className={`card mt-5`}>
                     <div className={'p-fluid formgrid grid'}>
                         <div className={'field col-12'}>
-                            <label htmlFor="username">{lang === 'en' ? 'Username' : 'اسم المستخدم'}</label>
-                            <InputText id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder={lang === 'en' ? 'Username' : 'اسم المستخدم'} />
+                            <label htmlFor="username">{lang === 'en' ? 'Username' : 'اسم المستخدم'} <span className="text-red-500">*</span></label>
+                            <InputText id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder={lang === 'en' ? 'Username' : 'اسم المستخدم'} className={errors.username ? 'p-invalid' : ''} />
+                            {errors.username && <small className="p-error">{errors.username}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="password">{lang === 'en' ? 'Password' : 'كلمة المرور'}</label>
+                            <label htmlFor="password">{lang === 'en' ? 'Password' : 'كلمة المرور'} <span className="text-red-500">*</span></label>
                             <Password
                                 id="password"
                                 value={password}
@@ -602,10 +671,12 @@ export default function EditServiceCenterForm({ lang }) {
                                 toggleMask={true}
                                 header={<Header lang={lang} />}
                                 footer={<Footer lang={lang} />}
+                                className={errors.password ? 'p-invalid' : ''}
                             />
+                             {errors.password && <small className="p-error">{errors.password}</small>}
                         </div>
                         <div className={'field col-12 md:col-6'}>
-                            <label htmlFor="confirmPassword">{lang === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'}</label>
+                            <label htmlFor="confirmPassword">{lang === 'en' ? 'Confirm Password' : 'تأكيد كلمة المرور'} <span className="text-red-500">*</span></label>
                             <Password
                                 id="confirmPassword"
                                 value={confirmPassword}
@@ -614,7 +685,9 @@ export default function EditServiceCenterForm({ lang }) {
                                 toggleMask={true}
                                 header={<Header lang={lang} />}
                                 footer={<Footer lang={lang} />}
+                                className={errors.confirmPassword ? 'p-invalid' : ''}
                             />
+                            {errors.confirmPassword && <small className="p-error">{errors.confirmPassword}</small>}
                         </div>
                     </div>
                 </div>

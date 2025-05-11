@@ -94,7 +94,7 @@ export default function GetCheckReports({ lang }) {
                                 tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                 icon="pi pi-file"
                                 className="p-button-rounded p-button-success p-button-text"
-                                onClick={() => router.push(`/invoices/create?check-report-id=${row._id}`)}
+                                onClick={() => router.push(`/invoices/create?check-report-id=${row._id}&userId=${row.userId}`)}
                             />
 
                             <Button
