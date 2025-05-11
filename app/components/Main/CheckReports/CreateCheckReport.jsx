@@ -93,7 +93,6 @@ export default function CreateCheckReport({ lang }) {
         return isValid;
     };
 
-
     useEffect(() => {
         const fetchVisitorDetails = async () => {
             if (!visitId) return;
@@ -113,6 +112,8 @@ export default function CreateCheckReport({ lang }) {
                 let defaultCar = visitor.user.userCars?.findIndex((car) => car.isDefaultCar);
                 defaultCar = defaultCar !== -1 ? visitor.user.userCars[defaultCar] : visitor.user.userCars[0];
 
+                console.log(visitor);
+
                 const objectToSet = {
                     clientName: visitor?.user?.fullName,
                     phoneNumber: visitor.user?.phoneNumber,
@@ -120,12 +121,10 @@ export default function CreateCheckReport({ lang }) {
                     carModel: defaultCar?.carModel || ''
                 };
 
-                if (visitor.user.userCars.length > 0) {
-                    setCheckReport((prev) => ({
-                        ...prev,
-                        ...objectToSet
-                    }));
-                }
+                setCheckReport((prev) => ({
+                    ...prev,
+                    ...objectToSet
+                }));
             } catch (error) {
                 toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch visitor details' : 'فشل في جلب بيانات الزائر'));
             } finally {
@@ -191,7 +190,7 @@ export default function CreateCheckReport({ lang }) {
             return;
         }
 
-        if(isBooking === 'true' && (!time || !date || !bookingId)) {
+        if (isBooking === 'true' && (!time || !date || !bookingId)) {
             toast.error(lang === 'en' ? 'Please select a time and date for the booking' : 'يرجى تحديد الوقت والتاريخ للحجز');
             setIsSubmitting(false);
             return;
@@ -207,7 +206,7 @@ export default function CreateCheckReport({ lang }) {
             isBooking: isBooking === 'true' ? true : false,
             date: checkReport.date.toISOString(),
             time: time,
-            bookingId: bookingId,
+            bookingId: bookingId
         };
 
         try {
@@ -336,26 +335,54 @@ export default function CreateCheckReport({ lang }) {
                 </div>
 
                 <div className="card mt-5">
-                    <h4 className="text-xl mb-3">{lang === 'en' ? 'Check Details' : 'تفاصيل الفحص'} <span className="text-red-500">*</span></h4>
+                    <h4 className="text-xl mb-3">
+                        {lang === 'en' ? 'Check Details' : 'تفاصيل الفحص'} <span className="text-red-500">*</span>
+                    </h4>
                     {errors.checkDetailsGeneral && <small className="p-error d-block mb-2">{errors.checkDetailsGeneral}</small>}
 
                     {checkReport.checkDetails.map((detail, index) => (
                         <div className="formgrid grid mb-3" key={index}>
                             <div className="field col-12 md:col-4">
-                                <label htmlFor={`service-${index}`}>{lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span></label>
-                                <InputText id={`service-${index}`} value={detail.service} onChange={(e) => updateCheckDetail(index, 'service', e.target.value)} placeholder={lang === 'en' ? 'Enter service' : 'أدخل الخدمة'} className={errors.checkDetails?.[index]?.service ? 'p-invalid' : ''} />
+                                <label htmlFor={`service-${index}`}>
+                                    {lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span>
+                                </label>
+                                <InputText
+                                    id={`service-${index}`}
+                                    value={detail.service}
+                                    onChange={(e) => updateCheckDetail(index, 'service', e.target.value)}
+                                    placeholder={lang === 'en' ? 'Enter service' : 'أدخل الخدمة'}
+                                    className={errors.checkDetails?.[index]?.service ? 'p-invalid' : ''}
+                                />
                                 {errors.checkDetails?.[index]?.service && <small className="p-error">{errors.checkDetails[index].service}</small>}
                             </div>
 
                             <div className="field col-12 md:col-3">
-                                <label htmlFor={`quantity-${index}`}>{lang === 'en' ? 'Quantity' : 'الكمية'} <span className="text-red-500">*</span></label>
-                                <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateCheckDetail(index, 'quantity', e.value)} min={1} placeholder={lang === 'en' ? 'Quantity' : 'الكمية'} className={errors.checkDetails?.[index]?.quantity ? 'p-invalid' : ''} />
+                                <label htmlFor={`quantity-${index}`}>
+                                    {lang === 'en' ? 'Quantity' : 'الكمية'} <span className="text-red-500">*</span>
+                                </label>
+                                <InputNumber
+                                    id={`quantity-${index}`}
+                                    value={detail.quantity}
+                                    onValueChange={(e) => updateCheckDetail(index, 'quantity', e.value)}
+                                    min={1}
+                                    placeholder={lang === 'en' ? 'Quantity' : 'الكمية'}
+                                    className={errors.checkDetails?.[index]?.quantity ? 'p-invalid' : ''}
+                                />
                                 {errors.checkDetails?.[index]?.quantity && <small className="p-error">{errors.checkDetails[index].quantity}</small>}
                             </div>
 
                             <div className="field col-12 md:col-2">
-                                <label htmlFor={`price-${index}`}>{lang === 'en' ? 'Price' : 'السعر'} <span className="text-red-500">*</span></label>
-                                <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateCheckDetail(index, 'price', e.value)} min={0} placeholder={lang === 'en' ? 'Price' : 'السعر'} className={errors.checkDetails?.[index]?.price ? 'p-invalid' : ''} />
+                                <label htmlFor={`price-${index}`}>
+                                    {lang === 'en' ? 'Price' : 'السعر'} <span className="text-red-500">*</span>
+                                </label>
+                                <InputNumber
+                                    id={`price-${index}`}
+                                    value={detail.price}
+                                    onValueChange={(e) => updateCheckDetail(index, 'price', e.value)}
+                                    min={0}
+                                    placeholder={lang === 'en' ? 'Price' : 'السعر'}
+                                    className={errors.checkDetails?.[index]?.price ? 'p-invalid' : ''}
+                                />
                                 {errors.checkDetails?.[index]?.price && <small className="p-error">{errors.checkDetails[index].price}</small>}
                             </div>
 

@@ -1,6 +1,5 @@
 'use client';
 
-import { TabView, TabPanel } from 'primereact/tabview';
 import { Tag } from 'primereact/tag';
 import { format } from 'date-fns';
 import { Avatar } from 'primereact/avatar';
@@ -16,7 +15,6 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 export default function ServiceCentersView({ lang, data }) {
-    const [activeIndex, setActiveIndex] = useState(0);
     const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [cancelReason, setCancelReason] = useState('');
@@ -135,12 +133,10 @@ export default function ServiceCentersView({ lang, data }) {
                 // Remove the canceled booking from the UI
 
                 toast.success(lang === 'en' ? 'Booking canceled successfully!' : 'تم إلغاء الحجز بنجاح!');
-            } else {
-                toast.error(lang === 'en' ? 'Failed to cancel booking.' : 'فشل إلغاء الحجز.');
             }
         } catch (error) {
             console.error('Error canceling booking:', error);
-            toast.error(lang === 'en' ? 'An error occurred while canceling the booking.' : 'حدث خطأ أثناء إلغاء الحجز.');
+            toast.error(error.response?.data?.message);
         } finally {
             setCancelDialogVisible(false);
             setSelectedBooking(null);
@@ -165,13 +161,15 @@ export default function ServiceCentersView({ lang, data }) {
                     )}
                 </div>
                 <div className="flex gap-2">
-                    <Button
-                        icon="pi pi-file-edit"
-                        className="p-button-success p-button-outlined"
-                        onClick={() => router.push(`/${lang}/check-reports?userId=${client.clientId || client._id}&visitId=${slotId}`)}
-                        tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
-                        tooltipOptions={{ position: 'top' }}
-                    />
+                    {client?.bookingStatus !== 'invoiced' && (
+                        <Button
+                            icon="pi pi-file-edit"
+                            className="p-button-success p-button-outlined"
+                            onClick={() => router.push(`/${lang}/check-reports?userId=${client.clientId || client._id}&visitId=${slotId}`)}
+                            tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
+                            tooltipOptions={{ position: 'top' }}
+                        />
+                    )}
                     <Button
                         icon="pi pi-times"
                         className="p-button-danger p-button-outlined"
@@ -280,10 +278,6 @@ export default function ServiceCentersView({ lang, data }) {
                                         <i className="pi pi-wrench mr-2"></i>
                                         {booking.serviceName}
                                     </h2>
-                                    <p className="m-0 text-500">
-                                        {lang === 'en' ? 'Created on: ' : 'تم الإنشاء في: '}
-                                        {formatDate(booking.createdAt)}
-                                    </p>
                                 </div>
                                 <Tag value={`${booking.calendar.reduce((acc, cal) => acc + cal.slots.reduce((slotAcc, slot) => slotAcc + slot.clients.length, 0), 0)} ${lang === 'en' ? 'Bookings' : 'حجوزات'}`} severity="primary" rounded />
                             </div>
@@ -294,26 +288,22 @@ export default function ServiceCentersView({ lang, data }) {
                         </div>
 
                         <div className="card">
-                            <TabView className="booking-tabs" activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-                                {booking.calendar.map((calendarItem) => (
-                                    <TabPanel
-                                        key={calendarItem.date}
-                                        header={
-                                            <div className="flex align-items-center gap-2">
-                                                <i className="pi pi-calendar"></i>
-                                                <span>{formatDate(calendarItem.date)}</span>
-                                                <Badge value={calendarItem.slots.reduce((acc, slot) => acc + slot.clients.length, 0)} severity="info" />
-                                            </div>
-                                        }
-                                    >
+                            {booking.calendar.map((calendarItem) => (
+                                <div key={calendarItem.date} className="mb-5">
+                                    <div className="flex align-items-center gap-2 p-3 surface-section border-bottom-1 surface-border">
+                                        <i className="pi pi-calendar text-xl"></i>
+                                        <span className="font-bold text-xl">{formatDate(calendarItem.date)}</span>
+                                        <Badge value={calendarItem.slots.reduce((acc, slot) => acc + slot.clients.length, 0)} severity="info" />
+                                    </div>
+                                    <div className="p-3">
                                         {calendarItem.slots
                                             .sort((a, b) => a.time - b.time)
                                             .map((slot, index) => (
                                                 <TimeSlotPanel key={index} slot={slot} serviceId={booking.serviceId} date={calendarItem.date} />
                                             ))}
-                                    </TabPanel>
-                                ))}
-                            </TabView>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </>
                 ))

@@ -106,10 +106,12 @@ export default function DashboardPageContent({ lang }) {
         }
 
         const token = localStorage.getItem('token') || null;
-        const { serviceId, slotId, phone, clientId, _id: bookingId } = selectedBooking; // Assuming these fields exist in the booking object
+        const { serviceId, slotId, phone, clientId, bookingDate, _id: bookingId } = selectedBooking; // Assuming these fields exist in the booking object
+
+        console.log('Selected Booking:', selectedBooking);
 
         // Format date to MM-DD-YYYY as per the Postman request example
-        const formattedDate = new Date(date)
+        const formattedDate = new Date(bookingDate)
             .toLocaleDateString('en-US', {
                 month: '2-digit',
                 day: '2-digit',
