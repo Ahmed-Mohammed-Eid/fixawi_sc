@@ -244,15 +244,15 @@ export default function DashboardPageContent({ lang }) {
                                         console.log(rowData);
                                         return rowData.visitStatus === 'canceled' ? null : (
                                             <div className="flex gap-2">
-                                                <Button
+                                                {rowData.visitStatus !== "visited" && (<Button
                                                     icon="pi pi-file-edit"
                                                     className="p-button-success p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                                                     tooltipOptions={{ position: 'top' }}
                                                     onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}`)}
-                                                />
+                                                />)}
                                                 {/* CREATE INVOICE */}
-                                                {rowData?.checkReportId && (
+                                                {(rowData?.checkReportId && rowData.visitStatus !== "visited") && (
                                                     <Button
                                                         icon="pi pi-file"
                                                         className="p-button-info p-button-sm"

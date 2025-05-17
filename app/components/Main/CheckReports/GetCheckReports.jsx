@@ -90,12 +90,12 @@ export default function GetCheckReports({ lang }) {
                     body={(row) => (
                         <div className="flex gap-2">
                             {/* add a button for creating an invoice which will redirect to the /invoices/create?check-report-id */}
-                            <Button
+                            {row.reportStatus !== "invoiced" && (<Button
                                 tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                 icon="pi pi-file"
                                 className="p-button-rounded p-button-success p-button-text"
                                 onClick={() => router.push(`/invoices/create?check-report-id=${row._id}&userId=${row.userId}`)}
-                            />
+                            />)}
 
                             <Button
                                 tooltip={lang === 'en' ? 'Check Report Details' : 'تفاصيل تقرير الفحص'}
