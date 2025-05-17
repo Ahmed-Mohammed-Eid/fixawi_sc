@@ -223,7 +223,7 @@ export default function CreateInvoice() {
         // GET TOKEN
         const token = localStorage.getItem('token');
         const checkReportId = searchParams.get('check-report-id');
-        const userId = localStorage.getItem('userId');
+        const userId = searchParams.get('userId');
         if (!checkReportId) {
             toast.error('Please select a check report to create an invoice.');
             return;
