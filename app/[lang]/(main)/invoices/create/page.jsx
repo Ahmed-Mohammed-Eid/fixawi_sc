@@ -32,7 +32,7 @@ export default function CreateInvoice() {
         subTotal: 0,
         fixawiFare: 0,
         fixawiFareType: '',
-        salesTaxRate: 0.00,
+        salesTaxRate: 0.0,
         salesTaxAmount: 0,
         invoiceTotal: 0
     });
@@ -54,8 +54,8 @@ export default function CreateInvoice() {
         // Clear specific error
         const errorKey = `invoiceDetails.${index}.${field}`;
         if (errors[errorKey]) {
-            setErrors(prevErrors => {
-                const newErrors = {...prevErrors};
+            setErrors((prevErrors) => {
+                const newErrors = { ...prevErrors };
                 delete newErrors[errorKey];
                 return newErrors;
             });
@@ -78,9 +78,9 @@ export default function CreateInvoice() {
             }));
 
             // Clear errors related to invoiceDetails as indices have shifted or items removed
-            setErrors(prevErrors => {
-                const newErrors = {...prevErrors};
-                Object.keys(newErrors).forEach(key => {
+            setErrors((prevErrors) => {
+                const newErrors = { ...prevErrors };
+                Object.keys(newErrors).forEach((key) => {
                     if (key.startsWith('invoiceDetails.')) {
                         delete newErrors[key];
                     }
@@ -106,14 +106,14 @@ export default function CreateInvoice() {
 
                 // Map check details to invoice details format
                 let mappedDetails = checkReport.checkDetails.map((detail) => {
-                    if(detail.clientApproved) {
+                    if (detail.clientApproved) {
                         return {
                             service: detail.service,
                             quantity: detail.quantity,
                             price: detail.price,
                             amount: detail.amount
                         };
-                    }else{
+                    } else {
                         return;
                     }
                 });
@@ -170,7 +170,16 @@ export default function CreateInvoice() {
         // Calculate totals whenever invoice details change
         const subTotal = invoice.invoiceDetails.reduce((sum, item) => sum + (item.amount || 0), 0);
         const salesTaxAmount = subTotal * invoice.salesTaxRate;
-        const invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+
+        const isRatioFare = invoice.fixawiFareType === 'ratio';
+
+        // const invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+        let invoiceTotal;
+        if (isRatioFare) {
+            invoiceTotal = subTotal + subTotal * (invoice.fixawiFare / 100) + salesTaxAmount;
+        }else{
+            invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+        }
 
         setInvoice((prev) => ({
             ...prev,
@@ -229,7 +238,7 @@ export default function CreateInvoice() {
             return;
         }
 
-        if(!userId) {
+        if (!userId) {
             toast.error('User ID not found.');
             return;
         }
@@ -303,7 +312,7 @@ export default function CreateInvoice() {
                                     value={invoice.clientName}
                                     onChange={(e) => {
                                         setInvoice((prev) => ({ ...prev, clientName: e.target.value }));
-                                        if (errors.clientName) setErrors(prev => ({ ...prev, clientName: null }));
+                                        if (errors.clientName) setErrors((prev) => ({ ...prev, clientName: null }));
                                     }}
                                     placeholder="Enter client's full name"
                                     className="w-full"
@@ -322,7 +331,7 @@ export default function CreateInvoice() {
                                     value={invoice.phoneNumber}
                                     onChange={(e) => {
                                         setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }));
-                                        if (errors.phoneNumber) setErrors(prev => ({ ...prev, phoneNumber: null }));
+                                        if (errors.phoneNumber) setErrors((prev) => ({ ...prev, phoneNumber: null }));
                                     }}
                                     placeholder="Enter phone number"
                                     className="w-full"
@@ -341,7 +350,7 @@ export default function CreateInvoice() {
                                     value={invoice.carBrand}
                                     onChange={(e) => {
                                         setInvoice((prev) => ({ ...prev, carBrand: e.target.value }));
-                                        if (errors.carBrand) setErrors(prev => ({ ...prev, carBrand: null }));
+                                        if (errors.carBrand) setErrors((prev) => ({ ...prev, carBrand: null }));
                                     }}
                                     placeholder="Enter car brand"
                                     className="w-full"
@@ -360,7 +369,7 @@ export default function CreateInvoice() {
                                     value={invoice.carModel}
                                     onChange={(e) => {
                                         setInvoice((prev) => ({ ...prev, carModel: e.target.value }));
-                                        if (errors.carModel) setErrors(prev => ({ ...prev, carModel: null }));
+                                        if (errors.carModel) setErrors((prev) => ({ ...prev, carModel: null }));
                                     }}
                                     placeholder="Enter car model"
                                     className="w-full"
@@ -379,7 +388,7 @@ export default function CreateInvoice() {
                                     value={invoice.date}
                                     onChange={(e) => {
                                         setInvoice((prev) => ({ ...prev, date: e.value }));
-                                        if (errors.date) setErrors(prev => ({ ...prev, date: null }));
+                                        if (errors.date) setErrors((prev) => ({ ...prev, date: null }));
                                     }}
                                     placeholder="Select date"
                                     showIcon
@@ -480,7 +489,10 @@ export default function CreateInvoice() {
                         </div>
                         <div className="flex justify-content-between p-3 surface-100 border-round">
                             <span className="font-semibold">Sayyn Fare:</span>
-                            <span>{invoice.fixawiFare?.toFixed(2)} EGP</span>
+                            <span>
+                                {invoice.fixawiFare?.toFixed(2)}
+                                {invoice.fixawiFareType === 'ratio' ? '(%)' : '(EGP)'}
+                            </span>
                         </div>
                         <div className="flex justify-content-between p-3 surface-100 border-round</div>">
                             <span className="font-semibold">Sales Tax ({(invoice.salesTaxRate * 100).toFixed(0)}%):</span>
@@ -489,7 +501,7 @@ export default function CreateInvoice() {
                         <Divider />
                         <div className="flex justify-content-between p-3 bg-primary border-round">
                             <span className="font-bold text-xl text-white">Total:</span>
-                            <span className="font-bold text-xl text-white">{invoice.invoiceTotal.toFixed(2)} EGP</span>
+                            <span className="font-bold text-xl text-white">{invoice?.invoiceTotal?.toFixed(2)} EGP</span>
                         </div>
                     </div>
                 </div>

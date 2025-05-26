@@ -118,8 +118,17 @@ export default function EditInvoice({ params: { id } }) {
     useEffect(() => {
         // Calculate totals whenever invoice details change
         const subTotal = invoice.invoiceDetails.reduce((sum, item) => sum + (item.amount || 0), 0);
-        const salesTaxAmount = subTotal * 0.14; // 14% tax
-        const invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+        const salesTaxAmount = subTotal * invoice.salesTaxRate;
+
+        const isRatioFare = invoice.fixawiFareType === 'ratio';
+
+        // const invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+        let invoiceTotal;
+        if (isRatioFare) {
+            invoiceTotal = subTotal + subTotal * (invoice.fixawiFare / 100) + salesTaxAmount;
+        }else{
+            invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
+        }
 
         setInvoice((prev) => ({
             ...prev,
@@ -327,18 +336,22 @@ export default function EditInvoice({ params: { id } }) {
                             <span>{invoice.subTotal.toFixed(2)} EGP</span>
                         </div>
                         <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Fixawi Fare:</span>
-                            <span>{invoice.fixawiFare.toFixed(2)} EGP</span>
+                            <span className="font-semibold">Sayyn Fare:</span>
+                            <span>
+                                {invoice.fixawiFare?.toFixed(2)}
+                                {invoice.fixawiFareType === 'ratio' ? '(%)' : '(EGP)'}
+                            </span>
                         </div>
-                        <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Sales Tax (14%):</span>
-                            <span>{invoice.salesTaxAmount.toFixed(2)} EGP</span>
+                        <div className="flex justify-content-between p-3 surface-100 border-round</div>">
+                            <span className="font-semibold">Sales Tax ({(invoice.salesTaxRate * 100).toFixed(0)}%):</span>
+                            <span>{invoice.salesTaxAmount?.toFixed(2)} EGP</span>
                         </div>
                         <Divider />
                         <div className="flex justify-content-between p-3 bg-primary border-round">
                             <span className="font-bold text-xl text-white">Total:</span>
-                            <span className="font-bold text-xl text-white">{invoice.invoiceTotal.toFixed(2)} EGP</span>
+                            <span className="font-bold text-xl text-white">{invoice?.invoiceTotal?.toFixed(2)} EGP</span>
                         </div>
+
                     </div>
                 </div>
                 <div className="flex gap-3 justify-content-end mt-6">
