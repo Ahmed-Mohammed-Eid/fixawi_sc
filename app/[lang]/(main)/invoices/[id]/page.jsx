@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 export default function EditInvoice({ params: { id } }) {
-    const router = useRouter();    const [invoice, setInvoice] = useState({
+    const router = useRouter();
+    const [invoice, setInvoice] = useState({
         invoiceId: '',
         userId: '',
         clientName: '',
@@ -31,7 +32,8 @@ export default function EditInvoice({ params: { id } }) {
         salesTaxRate: 0.0,
         salesTaxAmount: 0,
         invoiceTotal: 0
-    });    const [errors, setErrors] = useState({});
+    });
+    const [errors, setErrors] = useState({});
 
     // GET SALES TAX RATE FROM API
     const getSalesTaxRate = async () => {
@@ -89,8 +91,8 @@ export default function EditInvoice({ params: { id } }) {
                         })),
                         subTotal: data.invoice.subTotal,
                         fixawiFare: data.invoice.fixawiFare,
-                        // salesTaxAmount: data.invoice.salesTaxAmount,
-                        invoiceTotal: data.invoice.invoiceTotal,
+                        salesTaxAmount: data.invoice.salesTaxAmount || 0,
+                        invoiceTotal: data.invoice.invoiceTotal
                     };
 
                     setInvoice(invoiceData);
@@ -98,7 +100,8 @@ export default function EditInvoice({ params: { id } }) {
             } catch (error) {
                 toast.error('Failed to fetch invoice details');
             }
-        };        if (id) {
+        };
+        if (id) {
             fetchInvoice();
             getSalesTaxRate();
         }
@@ -135,29 +138,6 @@ export default function EditInvoice({ params: { id } }) {
             }));
         }
     };
-
-    useEffect(() => {
-        // Calculate totals whenever invoice details change
-        const subTotal = invoice.invoiceDetails.reduce((sum, item) => sum + (item.amount || 0), 0);
-        const salesTaxAmount = subTotal * invoice.salesTaxRate;
-
-        const isRatioFare = invoice.fixawiFareType === 'ratio';
-
-        // const invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
-        let invoiceTotal;
-        if (isRatioFare) {
-            invoiceTotal = subTotal + subTotal * (invoice.fixawiFare / 100) + salesTaxAmount;
-        }else{
-            invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
-        }
-
-        setInvoice((prev) => ({
-            ...prev,
-            subTotal,
-            salesTaxAmount,
-            invoiceTotal
-        }));
-    }, [invoice.invoiceDetails, invoice.fixawiFare, invoice.fixawiFareType, invoice.salesTaxRate]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -236,7 +216,7 @@ export default function EditInvoice({ params: { id } }) {
     return (
         <div className="">
             <div className="card">
-                <h2 className="text-3xl font-bold mb-6 text-primary">Edit Invoice</h2>
+                <h2 className="text-3xl font-bold mb-6 text-primary">Invoice</h2>
 
                 <div className="mb-6">
                     <div className="flex align-items-center mb-4">
@@ -249,7 +229,14 @@ export default function EditInvoice({ params: { id } }) {
                                 <label htmlFor="clientName" className="font-semibold">
                                     Client Name <span className="text-red-500">*</span>
                                 </label>
-                                <InputText id="clientName" value={invoice.clientName} onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))} placeholder="Enter client's full name" className={`w-full ${errors.clientName ? 'p-invalid' : ''}`} />
+                                <InputText
+                                    id="clientName"
+                                    value={invoice.clientName}
+                                    onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))}
+                                    placeholder="Enter client's full name"
+                                    className={`w-full ${errors.clientName ? 'p-invalid' : ''}`}
+                                    disabled
+                                />
                                 {errors.clientName && <small className="p-error">{errors.clientName}</small>}
                             </div>
                         </div>
@@ -258,7 +245,7 @@ export default function EditInvoice({ params: { id } }) {
                                 <label htmlFor="phoneNumber" className="font-semibold">
                                     Phone Number
                                 </label>
-                                <InputText id="phoneNumber" value={invoice.phoneNumber} onChange={(e) => setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="Enter phone number" className="w-full" />
+                                <InputText id="phoneNumber" value={invoice.phoneNumber} onChange={(e) => setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="Enter phone number" className="w-full" disabled />
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
@@ -266,7 +253,7 @@ export default function EditInvoice({ params: { id } }) {
                                 <label htmlFor="carBrand" className="font-semibold">
                                     Car Brand
                                 </label>
-                                <InputText id="carBrand" value={invoice.carBrand} onChange={(e) => setInvoice((prev) => ({ ...prev, carBrand: e.target.value }))} placeholder="Enter car brand" className="w-full" />
+                                <InputText id="carBrand" value={invoice.carBrand} onChange={(e) => setInvoice((prev) => ({ ...prev, carBrand: e.target.value }))} placeholder="Enter car brand" className="w-full" disabled />
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
@@ -274,7 +261,7 @@ export default function EditInvoice({ params: { id } }) {
                                 <label htmlFor="carModel" className="font-semibold">
                                     Car Model
                                 </label>
-                                <InputText id="carModel" value={invoice.carModel} onChange={(e) => setInvoice((prev) => ({ ...prev, carModel: e.target.value }))} placeholder="Enter car model" className="w-full" />
+                                <InputText id="carModel" value={invoice.carModel} onChange={(e) => setInvoice((prev) => ({ ...prev, carModel: e.target.value }))} placeholder="Enter car model" className="w-full" disabled />
                             </div>
                         </div>
                         <div className="col-12">
@@ -282,7 +269,7 @@ export default function EditInvoice({ params: { id } }) {
                                 <label htmlFor="date" className="font-semibold">
                                     Date <span className="text-red-500">*</span>
                                 </label>
-                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className={`w-full ${errors.date ? 'p-invalid' : ''}`} />
+                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className={`w-full ${errors.date ? 'p-invalid' : ''}`} disabled />
                                 {errors.date && <small className="p-error">{errors.date}</small>}
                             </div>
                         </div>
@@ -291,10 +278,6 @@ export default function EditInvoice({ params: { id } }) {
             </div>
 
             <div className="mb-6 card">
-                <div className="flex justify-content-between align-items-center mb-4">
-                    <h3 className="text-xl m-0">Invoice Details</h3>
-                    <Button label="Add Row" icon="pi pi-plus" onClick={addNewRow} />
-                </div>
                 <div className="flex flex-column gap-3">
                     {invoice.invoiceDetails.map((detail, index) => (
                         <div key={index} className="grid align-items-center">
@@ -302,13 +285,14 @@ export default function EditInvoice({ params: { id } }) {
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`service-${index}`} className="font-semibold">
                                         Service <span className="text-red-500">*</span>
-                                    </label>
+                                    </label>{' '}
                                     <InputText
                                         id={`service-${index}`}
                                         value={detail.service}
                                         onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)}
                                         placeholder="Enter service description"
                                         className={`w-full ${errors.invoiceDetails?.[index]?.service ? 'p-invalid' : ''}`}
+                                        disabled
                                     />
                                     {errors.invoiceDetails?.[index]?.service && <small className="p-error">{errors.invoiceDetails[index].service}</small>}
                                 </div>
@@ -318,7 +302,16 @@ export default function EditInvoice({ params: { id } }) {
                                     <label htmlFor={`quantity-${index}`} className="font-semibold">
                                         Quantity {/* Assuming quantity can be 0 or 1, not marking as required with asterisk unless specified */}
                                     </label>
-                                    <InputNumber id={`quantity-${index}`} value={detail.quantity} onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)} placeholder="1" mode="decimal" minFractionDigits={0} className="w-full" />
+                                    <InputNumber
+                                        id={`quantity-${index}`}
+                                        value={detail.quantity}
+                                        onValueChange={(e) => updateInvoiceDetails(index, 'quantity', e.value)}
+                                        placeholder="1"
+                                        mode="decimal"
+                                        minFractionDigits={0}
+                                        className="w-full"
+                                        disabled
+                                    />
                                     {/* Add error display for quantity if needed */}
                                 </div>
                             </div>
@@ -327,7 +320,7 @@ export default function EditInvoice({ params: { id } }) {
                                     <label htmlFor={`price-${index}`} className="font-semibold">
                                         Price {/* Assuming price can be 0, not marking as required with asterisk unless specified */}
                                     </label>
-                                    <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)} placeholder="0.00" mode="decimal" minFractionDigits={2} className="w-full" />
+                                    <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)} placeholder="0.00" mode="decimal" minFractionDigits={2} className="w-full" disabled />
                                     {/* Add error display for price if needed */}
                                 </div>
                             </div>
@@ -336,12 +329,9 @@ export default function EditInvoice({ params: { id } }) {
                                     <label className="font-semibold">Amount</label>
                                     <div className="p-inputgroup">
                                         <span className="p-inputgroup-addon">EGP</span>
-                                        <InputNumber value={detail.amount} readOnly className="w-full" minFractionDigits={2} />
+                                        <InputNumber value={detail.amount} disabled readOnly className="w-full" minFractionDigits={2} />
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-12 mt-2 mb-4 flex justify-content-center">
-                                <Button icon="pi pi-trash" className="w-full" outlined severity="danger" onClick={() => removeRow(index)} disabled={invoice.invoiceDetails.length === 1} />
                             </div>
                         </div>
                     ))}
@@ -372,12 +362,7 @@ export default function EditInvoice({ params: { id } }) {
                             <span className="font-bold text-xl text-white">Total:</span>
                             <span className="font-bold text-xl text-white">{invoice?.invoiceTotal?.toFixed(2)} EGP</span>
                         </div>
-
                     </div>
-                </div>
-                <div className="flex gap-3 justify-content-end mt-6">
-                    <Button label="Cancel" icon="pi pi-times" size="large" severity="secondary" className="py-3 px-5 text-xl" />
-                    <Button label="Update Invoice" icon="pi pi-save" size="large" severity="success" onClick={handleSubmit} className="py-3 px-5 text-xl" raised style={{ flex: 1 }} />
                 </div>
             </div>
         </div>
