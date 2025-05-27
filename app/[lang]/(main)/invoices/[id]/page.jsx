@@ -10,8 +10,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 export default function EditInvoice({ params: { id } }) {
-    const router = useRouter();
-    const [invoice, setInvoice] = useState({
+    const router = useRouter();    const [invoice, setInvoice] = useState({
         invoiceId: '',
         userId: '',
         clientName: '',
@@ -29,10 +28,33 @@ export default function EditInvoice({ params: { id } }) {
         ],
         subTotal: 0,
         fixawiFare: 50, // Fixed fare
+        salesTaxRate: 0.0,
         salesTaxAmount: 0,
         invoiceTotal: 0
-    });
-    const [errors, setErrors] = useState({});
+    });    const [errors, setErrors] = useState({});
+
+    // GET SALES TAX RATE FROM API
+    const getSalesTaxRate = async () => {
+        // GET TOKEN
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await axios.get(`${process.env.API_URL}/service/center/fees`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (response.status === 200) {
+                setInvoice((prev) => ({
+                    ...prev,
+                    salesTaxRate: response.data.salesTaxRate
+                }));
+            }
+        } catch (error) {
+            console.error('Error getting sales tax rate:', error);
+            toast.error(error.response?.data?.message || 'Failed to get sales tax rate. Please try again.');
+        }
+    };
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -68,7 +90,7 @@ export default function EditInvoice({ params: { id } }) {
                         subTotal: data.invoice.subTotal,
                         fixawiFare: data.invoice.fixawiFare,
                         salesTaxAmount: data.invoice.salesTaxAmount,
-                        invoiceTotal: data.invoice.invoiceTotal
+                        invoiceTotal: data.invoice.invoiceTotal,
                     };
 
                     setInvoice(invoiceData);
@@ -76,10 +98,9 @@ export default function EditInvoice({ params: { id } }) {
             } catch (error) {
                 toast.error('Failed to fetch invoice details');
             }
-        };
-
-        if (id) {
+        };        if (id) {
             fetchInvoice();
+            getSalesTaxRate();
         }
     }, [id]);
 
@@ -136,7 +157,7 @@ export default function EditInvoice({ params: { id } }) {
             salesTaxAmount,
             invoiceTotal
         }));
-    }, [invoice.invoiceDetails, invoice.fixawiFare]);
+    }, [invoice.invoiceDetails, invoice.fixawiFare, invoice.fixawiFareType, invoice.salesTaxRate]);
 
     const validateForm = () => {
         const newErrors = {};
