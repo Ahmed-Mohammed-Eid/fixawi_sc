@@ -89,7 +89,7 @@ export default function EditInvoice({ params: { id } }) {
                         })),
                         subTotal: data.invoice.subTotal,
                         fixawiFare: data.invoice.fixawiFare,
-                        salesTaxAmount: data.invoice.salesTaxAmount,
+                        // salesTaxAmount: data.invoice.salesTaxAmount,
                         invoiceTotal: data.invoice.invoiceTotal,
                     };
 
