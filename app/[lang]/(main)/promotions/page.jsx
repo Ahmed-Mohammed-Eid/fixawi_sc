@@ -115,6 +115,28 @@ export default function PromotionsPage({ params: { lang } }) {
                         body={(rowData) => new Date(rowData.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG')}
                     />
 
+                    {/* discountType */}
+                    <Column
+                        field="discountType"
+                        header={lang === 'en' ? 'Discount Type' : 'نوع الخصم'}
+                        sortable
+                        filter
+                        filterPlaceholder={lang === 'en' ? 'Search by type' : 'ابحث بالنوع'}
+                        style={{ whiteSpace: 'nowrap', minWidth: '150px' }}
+                        body={(rowData) => (rowData.discountType === 'ratio' ? (lang === 'en' ? 'Percentage' : 'نسبة مئوية') : lang === 'en' ? 'Fixed Amount' : 'قيمة ثابتة')}
+                    />
+
+                    {/* discountValue */}
+                    <Column
+                        field="discountValue"
+                        header={lang === 'en' ? 'Discount Value' : 'قيمة الخصم'}
+                        sortable
+                        filter
+                        filterPlaceholder={lang === 'en' ? 'Search by value' : 'ابحث بالقيمة'}
+                        style={{ whiteSpace: 'nowrap', minWidth: '150px' }}
+                        body={(rowData) => `${(rowData.discountValue ).toFixed(0)} ${rowData.discountType === 'ratio' ? '%' : lang === 'en' ? 'EGP' : 'جنيه'}`}
+                    />
+
                     <Column
                         field="approved"
                         header={lang === 'en' ? 'Status' : 'الحالة'}
@@ -227,6 +249,18 @@ export default function PromotionsPage({ params: { lang } }) {
                         <div className={'field col-12 md:col-6'}>
                             <h5>{lang === 'en' ? 'Expiry Date' : 'تاريخ الانتهاء'}</h5>
                             <p>{new Date(infoDialog.data?.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG')}</p>
+                        </div>
+
+                        {/* discountType */}
+                        <div className={'field col-12 md:col-6'}>
+                            <h5>{lang === 'en' ? 'Discount Type' : 'نوع الخصم'}</h5>
+                            <p>{infoDialog.data?.discountType === 'percentage' ? (lang === 'en' ? 'Percentage' : 'نسبة مئوية') : lang === 'en' ? 'Fixed Amount' : 'مبلغ ثابت'}</p>
+                        </div>
+
+                        {/* discountValue */}
+                        <div className={'field col-12 md:col-6'}>
+                            <h5>{lang === 'en' ? 'Discount Value' : 'قيمة الخصم'}</h5>
+                            <p>{`${(infoDialog.data?.discountValue || 0).toFixed(0)} ${infoDialog.data?.discountType === 'ratio' ? '%' : lang === 'en' ? 'EGP' : 'جنيه'}`}</p>
                         </div>
 
                         <div className={'field col-12 md:col-6'}>

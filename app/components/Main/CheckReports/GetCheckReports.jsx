@@ -106,7 +106,7 @@ export default function GetCheckReports({ lang }) {
                                     setDialogVisible(true);
                                 }}
                             />
-                            <Button
+                            {row.reportStatus !== "invoiced" && (<Button
                                 tooltip={lang === 'en' ? 'Delete Report' : 'حذف التقرير'}
                                 icon="pi pi-trash"
                                 className="p-button-rounded p-button-danger p-button-text"
@@ -114,7 +114,7 @@ export default function GetCheckReports({ lang }) {
                                     setReportToDelete(row);
                                     setDeleteDialogVisible(true);
                                 }}
-                            />
+                            />)}
                         </div>
                     )}
                 />

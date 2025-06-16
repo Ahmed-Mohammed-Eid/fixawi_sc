@@ -6,6 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
+import { Dropdown } from 'primereact/dropdown';
 
 // HELPERS
 import { toast } from 'react-hot-toast';
@@ -22,7 +23,9 @@ export default function AddPromotion({ params: { lang } }) {
         promotionTitle: '',
         promotionDetails: [{ title: '', discount: 0 }],
         promotionConditions: [''],
-        expiryDate: null
+        expiryDate: null,
+        discountType: 'ratio',
+        discountAmount: 0
     });
 
     const [files, setFiles] = useState([]);
@@ -46,6 +49,18 @@ export default function AddPromotion({ params: { lang } }) {
             isValid = false;
         }
 
+        // Validate discountType
+        if (!formData.discountType) {
+            newErrors.discountType = lang === 'en' ? 'Discount Type is a required field.' : 'نوع الخصم مطلوب.';
+            isValid = false;
+        }
+
+        // Validate discountAmount
+        if (formData.discountAmount <= 0) {
+            newErrors.discountAmount = lang === 'en' ? 'Discount Amount must be a positive value.' : 'يجب أن يكون مبلغ الخصم قيمة موجبة.';
+            isValid = false;
+        }
+
         // Validate promotionDetails
         newErrors.promotionDetails = [];
         formData.promotionDetails.forEach((detail, index) => {
@@ -54,10 +69,10 @@ export default function AddPromotion({ params: { lang } }) {
                 detailErrors.title = lang === 'en' ? 'Detail Title is a required field.' : 'عنوان التفصيل مطلوب.';
                 isValid = false;
             }
-            if (detail.discount <= 0) {
-                detailErrors.discount = lang === 'en' ? 'Discount must be a positive value.' : 'يجب أن يكون الخصم قيمة موجبة.';
-                isValid = false;
-            }
+            // if (detail.discount <= 0) {
+            //     detailErrors.discount = lang === 'en' ? 'Discount must be a positive value.' : 'يجب أن يكون الخصم قيمة موجبة.';
+            //     isValid = false;
+            // }
             if (Object.keys(detailErrors).length > 0) {
                 newErrors.promotionDetails[index] = detailErrors;
             }
@@ -165,6 +180,8 @@ export default function AddPromotion({ params: { lang } }) {
         // Add basic promotion data
         formDataToSend.append('promotionTitle', formData.promotionTitle);
         formDataToSend.append('expiryDate', formData.expiryDate.toISOString());
+        formDataToSend.append('discountType', formData.discountType);
+        formDataToSend.append('discountValue', formData.discountAmount);
 
         // Filter and add promotion details
         const cleanedDetails = formData.promotionDetails.filter((detail) => detail.title && detail.discount > 0);
@@ -198,7 +215,9 @@ export default function AddPromotion({ params: { lang } }) {
                     promotionTitle: '',
                     promotionDetails: [{ title: '', discount: 0 }],
                     promotionConditions: [''],
-                    expiryDate: null
+                    expiryDate: null,
+                    discountType: 'ratio',
+                    discountAmount: 0
                 });
             } else {
                 router.push(`/${lang}/promotions`);
@@ -248,6 +267,50 @@ export default function AddPromotion({ params: { lang } }) {
                             {errors.expiryDate && <small className="p-error">{errors.expiryDate}</small>}
                         </div>
 
+                        {/* Discount Type Section */}
+                        <div className="field col-12 md:col-6">
+                            <label htmlFor="discountType" className="font-medium mb-2 block">
+                                {lang === 'en' ? 'Discount Type' : 'نوع الخصم'}
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <Dropdown
+                                id="discountType"
+                                name="discountType"
+                                value={formData.discountType}
+                                options={[
+                                    { label: lang === 'en' ? 'Ratio' : 'نسبة', value: 'ratio' },
+                                    { label: lang === 'en' ? 'Fixed Amount' : 'مبلغ ثابت', value: 'fixed amount' }
+                                ]}
+                                onChange={(e) => handleChange({ target: { name: 'discountType', value: e.value } })}
+                                placeholder={lang === 'en' ? 'Select discount type' : 'اختر نوع الخصم'}
+                                required
+                                className={`w-full \${errors.discountType ? 'p-invalid' : ''}`}
+                            />
+                            {errors.discountType && <small className="p-error">{errors.discountType}</small>}
+                        </div>
+
+                        {/* Discount Amount Section */}
+                        <div className="field col-12 md:col-6">
+                            <label htmlFor="discountAmount" className="font-medium mb-2 block">
+                                {lang === 'en' ? 'Discount Amount' : 'مبلغ الخصم'}
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <InputNumber
+                                id="discountAmount"
+                                name="discountAmount"
+                                value={formData.discountAmount}
+                                onValueChange={(e) => handleChange({ target: { name: 'discountAmount', value: e.value } })}
+                                placeholder={lang === 'en' ? 'Enter discount amount' : 'أدخل مبلغ الخصم'}
+                                required
+                                mode="decimal"
+                                minFractionDigits={0}
+                                maxFractionDigits={2}
+                                min={0}
+                                className={`w-full \${errors.discountAmount ? 'p-invalid' : ''}`}
+                            />
+                            {errors.discountAmount && <small className="p-error">{errors.discountAmount}</small>}
+                        </div>
+
                         {/* Promotion Details Section */}
                         <div className="field col-12 mb-4">
                             <label className="font-medium mb-3 block">
@@ -274,7 +337,7 @@ export default function AddPromotion({ params: { lang } }) {
                                         <div className="col-12 md:col-5 field mb-2 md:mb-0">
                                             <label htmlFor={`detail-discount-${index}`} className="block mb-2">
                                                 {lang === 'en' ? 'Discount' : 'الخصم'}
-                                                <span className="text-red-500"> *</span>
+                                                {/* <span className="text-red-500"> *</span> */}
                                             </label>
                                             <InputNumber
                                                 id={`detail-discount-${index}`}

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import ServiceCenterPreview from '../ServiceCenters/ServiceCenterPreview';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Badge } from 'primereact/badge';
@@ -29,6 +30,24 @@ export default function DashboardPageContent({ lang }) {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [cancelReason, setCancelReason] = useState('');
 
+    // Service Center Profile State
+    const [serviceCenterImage, setServiceCenterImage] = useState('');
+    const [averageRating, setAverageRating] = useState(0);
+    const [serviceTypesDisplay, setServiceTypesDisplay] = useState([]);
+    const [isActive, setIsActive] = useState(false);
+    const [isApproved, setIsApproved] = useState(false);
+    const [serviceCenterTitle, setServiceCenterTitle] = useState('');
+    const [serviceCenterTitleEn, setServiceCenterTitleEn] = useState('');
+    const [address, setAddress] = useState('');
+    const [area, setArea] = useState('');
+    const [openAt, setOpenAt] = useState(null);
+    const [closeAt, setCloseAt] = useState(null);
+    const [contacts, setContacts] = useState('');
+    const [email, setEmail] = useState('');
+    const [website, setWebsite] = useState('');
+    const [carBrandsDisplay, setCarBrandsDisplay] = useState([]);
+    const [visitTypeDisplay, setVisitTypeDisplay] = useState('');
+
     // GET THE VISITS HANDLER
     const getVisits = useCallback(() => {
         // Wrap with useCallback
@@ -36,7 +55,7 @@ export default function DashboardPageContent({ lang }) {
         const token = localStorage.getItem('token') || null;
 
         axios
-            .get(`${process.env.API_URL}/service/center/visits`, {
+            .get(`${process.env.API_URL}/sc/visits`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -145,12 +164,76 @@ export default function DashboardPageContent({ lang }) {
             });
     }
 
+    // GET SERVICE CENTER PROFILE HANDLER
+    const getServiceCenterProfile = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error(lang === 'en' ? 'Authentication token not found.' : 'لم يتم العثور على رمز المصادقة.');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`${process.env.API_URL}/service/center/profile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const profileData = response.data?.serviceCenter;
+
+            if (profileData) {
+                setServiceCenterImage(profileData.image || '');
+                setAverageRating(profileData.averageRating || 0);
+                setServiceTypesDisplay(profileData.serviceTypes || []);
+                setIsActive(profileData.isActive || false);
+                setIsApproved(profileData.isApproved || false);
+                setServiceCenterTitle(profileData.serviceCenterTitle || '');
+                setServiceCenterTitleEn(profileData.serviceCenterTitleEn || '');
+                setAddress(profileData.address || '');
+                setArea(profileData.area || '');
+                setOpenAt(profileData.openAt !== undefined ? profileData.openAt : null);
+                setCloseAt(profileData.closeAt !== undefined ? profileData.closeAt : null);
+                setContacts(profileData.contacts || '');
+                setEmail(profileData.email || '');
+                setWebsite(profileData.website || '');
+                setCarBrandsDisplay(profileData.carBrands || []);
+                setVisitTypeDisplay(profileData.visitType || '');
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch service center profile.' : 'فشل في جلب ملف مركز الخدمة.'));
+        }
+    };
+
     useEffect(() => {
         getVisits();
     }, [selectedDate, getVisits]); // Keep getVisits in dependency array
 
+    useEffect(() => {
+        getServiceCenterProfile();
+        // getVisits(); // getVisits is already called in another useEffect
+    }, [lang]);
+
     return (
         <>
+            <ServiceCenterPreview
+                lang={lang}
+                serviceCenterImage={serviceCenterImage}
+                isActive={isActive}
+                isApproved={isApproved}
+                serviceCenterTitle={serviceCenterTitle}
+                serviceCenterTitleEn={serviceCenterTitleEn}
+                averageRating={averageRating}
+                area={area}
+                address={address}
+                openAt={openAt}
+                closeAt={closeAt}
+                contacts={contacts}
+                email={email}
+                website={website}
+                visitType={visitTypeDisplay}
+                serviceTypes={serviceTypesDisplay}
+                carBrands={carBrandsDisplay}
+            />
             <div className="grid" dir={isRTL ? 'rtl' : 'ltr'}>
                 {/* Date Selector */}
                 <div className="col-12">
