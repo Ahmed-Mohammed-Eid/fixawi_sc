@@ -1,0 +1,22 @@
+.ContactSupport{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    background-color: #007bff;
+    padding: 10px 25px;
+    border-radius: 100px;
+}
+
+.ContactSupport h6 {
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 0 5px;
+    text-transform: uppercase;
+}
+
+.ContactSupport p {
+    font-size: 14px;
+    color: #fff;
+    margin: 0;
+}

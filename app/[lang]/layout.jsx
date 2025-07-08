@@ -10,20 +10,21 @@ import '../../styles/layout/layout.scss';
 import '../../styles/globals.scss';
 // PRIME REACT ARABIC THEME
 import '../../styles/primeReactArabicStyle.scss';
+import ContactSupport from '../components/Main/Layout/ContactSupport/ContactSupport';
 
-function RootLayout({ children, params: {lang} }) {
-
+function RootLayout({ children, params: { lang } }) {
     return (
         <html lang={lang || 'en'}>
-        <head>
-            <link id="theme-css" href={`/themes/lara-light-indigo/theme.css`} rel="stylesheet"></link>
-        </head>
-        <body>
-        <PrimeReactProvider>
-            <LayoutProvider>{children}</LayoutProvider>
-            <Toaster position={'bottom-right'} />
-        </PrimeReactProvider>
-        </body>
+            <head>
+                <link id="theme-css" href={`/themes/lara-light-indigo/theme.css`} rel="stylesheet"></link>
+            </head>
+            <body>
+                <PrimeReactProvider>
+                    <LayoutProvider>{children}</LayoutProvider>
+                    <Toaster position={'bottom-right'} />
+                </PrimeReactProvider>
+                <ContactSupport />
+            </body>
         </html>
     );
 }
