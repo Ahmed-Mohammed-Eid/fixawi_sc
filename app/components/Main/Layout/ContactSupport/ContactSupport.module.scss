@@ -6,6 +6,12 @@
     background-color: #007bff;
     padding: 10px 25px;
     border-radius: 100px;
+    z-index: 1000;
+}
+
+html[lang="ar"] .ContactSupport {
+    left: 20px;
+    right: auto;
 }
 
 .ContactSupport h6 {

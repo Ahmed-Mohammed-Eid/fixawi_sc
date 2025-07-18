@@ -18,7 +18,7 @@ export default function DashboardPageContent({ lang }) {
 
     // ROUTER
     const router = useRouter();
-
+    
     // STATE
     const [visits, setVisits] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -29,6 +29,7 @@ export default function DashboardPageContent({ lang }) {
     const [cancelBookingDialogVisible, setCancelBookingDialogVisible] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [cancelReason, setCancelReason] = useState('');
+    
 
     // Service Center Profile State
     const [serviceCenterImage, setServiceCenterImage] = useState('');
@@ -205,8 +206,14 @@ export default function DashboardPageContent({ lang }) {
     };
 
     useEffect(() => {
-        getVisits();
+        getVisits(); // Fetch visits on initial render
+        const interval = setInterval(() => {
+            getVisits(); // Refresh visits every 5 minutes
+        }, 5000 * 60); // Keep the component mounted to avoid unmounting issues
+        return () => clearInterval(interval); // Cleanup on unmount
     }, [selectedDate, getVisits]); // Keep getVisits in dependency array
+
+
 
     useEffect(() => {
         getServiceCenterProfile();
