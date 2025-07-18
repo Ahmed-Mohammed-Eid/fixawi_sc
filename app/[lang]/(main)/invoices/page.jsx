@@ -223,6 +223,11 @@ export default function Invoices({ params: { lang } }) {
                                 <p>
                                     <strong>{lang === 'en' ? 'Payment Status:' : 'حالة الدفع:'}</strong> {statusTemplate(selectedInvoice)}
                                 </p>
+                                {/* paymentMethod */}
+                                <p>
+                                    <strong>{lang === 'en' ? 'Payment Method:' : 'طريقة الدفع:'}</strong> {selectedInvoice.paymentMethod || (lang === 'en' ? 'N/A' : 'غير متوفر')}
+                                </p>
+
                                 <p>
                                     <strong>{lang === 'en' ? 'Created:' : 'تاريخ الإنشاء:'}</strong> {timestampTemplate(selectedInvoice, 'createdAt')}
                                 </p>
