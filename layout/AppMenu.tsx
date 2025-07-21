@@ -16,42 +16,18 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             label: dictionary.sidebar.home.title,
             items: [{ label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}` }]
         },
-        {
-            label: lang === 'en' ? 'Service Centers' : 'مراكز الخدمة',
-            icon: 'pi pi-fw pi-map-marker',
-            items: [
-                // UPDATE SERVICE CENTER INFO
-                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` },
-                // SERVICE CENTER FINANCIALS
-                { label: lang === 'en' ? 'Service Center Financials' : 'البيانات المالية لمركز الخدمة', icon: 'pi pi-fw pi-money-bill', to: `/${lang}/service-centers/financials` }
-            ]
-        },
-        {
-            label: lang === 'en' ? 'Prices List' : 'قائمة الأسعار',
-            icon: 'pi pi-fw pi-money-bill',
-            items: [{ label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` }]
-        },
-        {
-            label: lang === 'en' ? 'Bookings' : 'الحجوزات',
-            icon: 'pi pi-fw pi-calendar',
-            items: [
-                { label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` },
-                { label: lang === 'en' ? 'Create Booking Settings' : 'إنشاء إعدادات الحجز', icon: 'pi pi-fw pi-plus', to: `/${lang}/bookings/settings` },
-                { label: lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز', icon: 'pi pi-fw pi-pencil', to: `/${lang}/bookings/settings/update` }
-            ]
-        },
         // CHECK REPORTS
         {
             label: lang === 'en' ? 'Check Reports' : 'تقارير الفحص',
             icon: 'pi pi-fw pi-chart-bar',
             items: [
+                // {
+                //     label: lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص',
+                //     icon: 'pi pi-fw pi-plus',
+                //     to: `/${lang}/check-reports`
+                // },
                 {
-                    label: lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص',
-                    icon: 'pi pi-fw pi-plus',
-                    to: `/${lang}/check-reports`
-                },
-                {
-                    label: lang === 'en' ? 'Get Check Reports' : 'استرجاع تقارير الفحص',
+                    label: lang === 'en' ? 'Check Reports' : 'تقارير الفحص',
                     icon: 'pi pi-fw pi-search',
                     to: `/${lang}/check-reports/get-check-reports`
                 }
@@ -64,6 +40,25 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             items: [
                 { label: lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة', icon: 'pi pi-fw pi-plus', to: `/${lang}/invoices/create` },
                 { label: lang === 'en' ? 'Get Invoices' : 'استرجاع الفواتير', icon: 'pi pi-fw pi-search', to: `/${lang}/invoices` }
+            ]
+        },
+        {
+            label: lang === 'en' ? 'Service Centers' : 'مراكز الخدمة',
+            icon: 'pi pi-fw pi-map-marker',
+            items: [
+                // UPDATE SERVICE CENTER INFO
+                // SERVICE CENTER FINANCIALS
+                { label: lang === 'en' ? 'Service Center Financials' : 'البيانات المالية لمركز الخدمة', icon: 'pi pi-fw pi-money-bill', to: `/${lang}/service-centers/financials` },
+                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` }
+            ]
+        },
+        {
+            label: lang === 'en' ? 'Bookings' : 'الحجوزات',
+            icon: 'pi pi-fw pi-calendar',
+            items: [
+                { label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` },
+                { label: lang === 'en' ? 'Create Booking Settings' : 'إنشاء إعدادات الحجز', icon: 'pi pi-fw pi-plus', to: `/${lang}/bookings/settings` },
+                { label: lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز', icon: 'pi pi-fw pi-pencil', to: `/${lang}/bookings/settings/update` }
             ]
         },
         // PROMOTIONS
@@ -86,6 +81,7 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
         {
             label: dictionary.sidebar.settings.title,
             items: [
+                { label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` },
                 {
                     label: dictionary.sidebar.settings.logout,
                     icon: lang === 'en' ? 'pi pi-sign-out' : 'pi pi-sign-in',

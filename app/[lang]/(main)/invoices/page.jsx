@@ -190,10 +190,10 @@ export default function Invoices({ params: { lang } }) {
                 <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} style={{ minWidth: '120px' }} />
                 <Column field="date" header={lang === 'en' ? 'Date' : 'التاريخ'} sortable body={dateTemplate} style={{ minWidth: '120px' }} />
                 <Column field="paymentStatus" header={lang === 'en' ? 'Status' : 'الحالة'} body={statusTemplate} sortable style={{ minWidth: '120px' }} />
-                <Column field="subTotal" header={lang === 'en' ? 'Subtotal' : 'المجموع الفرعي'} sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
+                <Column field="subTotal" header={lang === 'en' ? 'Client Total' : 'إجمالي العميل'} sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
                 <Column field="fixawiFare" header={lang === 'en' ? 'Sayyn Fare' : 'رسوم صيّن'} body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
-                <Column field="salesTaxAmount" header={lang === 'en' ? 'Sales Tax' : 'ضريبة المبيعات'} body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
-                <Column field="invoiceTotal" header={lang === 'en' ? 'Total' : 'الإجمالي'} sortable body={(row) => priceTemplate(row, { field: 'invoiceTotal' })} style={{ minWidth: '120px' }} />
+                <Column field="salesTaxAmount" header={lang === 'en' ? 'Tax' : 'ضريبة'} body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
+                <Column field="invoiceTotal" header={lang === 'en' ? 'Center Net' : 'صافي المركز'} sortable body={(row) => priceTemplate(row, { field: 'invoiceTotal' })} style={{ minWidth: '120px' }} />
                 <Column header={lang === 'en' ? 'Actions' : 'الإجراءات'} body={actionsTemplate} style={{ minWidth: '100px' }} />
             </DataTable>
 
@@ -249,22 +249,35 @@ export default function Invoices({ params: { lang } }) {
                             </div>
                         </div>
                         <div className="col-12">
-                            <div className="surface-ground p-3 border-round">
-                                <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">{lang === 'en' ? 'Subtotal:' : 'المجموع الفرعي:'}</span>
-                                    <span>{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
+                            <div className="surface-200 p-3 border-round">
+                                <div className="flex justify-content-between">
+                                    <span className="font-bold text-blue-700">{lang === 'en' ? 'Client Total:' : 'إجمالي العميل:'}</span>
+                                    <span className='text-blue-700 font-bold'>{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
                                 </div>
+                            </div>
+                        </div>
+                        <div className="col-12">
+                            <div className="surface-ground p-3 border-round">
                                 <div className="flex justify-content-between mb-2">
                                     <span className="font-semibold">{lang === 'en' ? 'Sayyn Fare:' : 'رسوم صيّن:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'fixawiFare' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">{lang === 'en' ? 'Sales Tax:' : 'ضريبة المبيعات:'}</span>
+                                    <span className="font-semibold">{lang === 'en' ? 'Tax:' : 'ضريبة:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'salesTaxAmount' })}</span>
                                 </div>
-                                <Divider />
+                                <hr style={{ border: '1px dashed #ccc' }} />
                                 <div className="flex justify-content-between">
-                                    <span className="font-bold text-xl">{lang === 'en' ? 'Total:' : 'الإجمالي:'}</span>
+                                    <span className="font-semibold">{lang === 'en' ? '(Sayyn Total):' : '(الإجمالي):'}</span>
+                                    <span>{(selectedInvoice.fixawiFare + selectedInvoice.salesTaxAmount).toFixed(2)} EGP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-12">
+                            <div className="surface-ground p-3 border-round">
+                                <div className="flex justify-content-between">
+                                    <span className="font-bold text-xl">{lang === 'en' ? 'Center Net:' : 'صافي المركز:'}</span>
                                     <span className="font-bold text-xl">{priceTemplate(selectedInvoice, { field: 'invoiceTotal' })}</span>
                                 </div>
                             </div>
