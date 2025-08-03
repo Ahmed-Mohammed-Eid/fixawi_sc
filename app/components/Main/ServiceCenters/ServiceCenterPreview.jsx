@@ -4,25 +4,7 @@ import { Divider } from 'primereact/divider';
 import { Rating } from 'primereact/rating';
 import Image from 'next/image';
 
-const ServiceCenterPreview = ({
-    lang,
-    serviceCenterImage,
-    isActive,
-    isApproved,
-    serviceCenterTitle,
-    serviceCenterTitleEn,
-    averageRating,
-    area,
-    address,
-    openAt,
-    closeAt,
-    contacts,
-    email,
-    website,
-    visitType,
-    serviceTypes,
-    carBrands
-}) => {
+const ServiceCenterPreview = ({ lang, serviceCenterImage, isActive, isApproved, serviceCenterTitle, serviceCenterTitleEn, averageRating, area, address, openAt, closeAt, contacts, email, website, visitType, serviceTypes, carBrands }) => {
     const getVisitTypeLabel = (type) => {
         if (type === 'booking') return lang === 'en' ? 'Booking' : 'حجز';
         if (type === 'direct visit') return lang === 'en' ? 'Direct Visit' : 'زيارة مباشرة';
@@ -58,16 +40,8 @@ const ServiceCenterPreview = ({
                             {lang === 'en' ? 'Service Center Preview' : 'معاينة مركز الخدمة'}
                         </h2>
                         <div className="flex align-items-center gap-2">
-                            <Tag
-                                icon={`pi pi-${isActive ? 'check' : 'times'}`}
-                                value={lang === 'en' ? `${isActive ? 'Active' : 'Inactive'}` : `${isActive ? 'نشط' : 'غير نشط'}`}
-                                severity={isActive ? 'success' : 'danger'}
-                            />
-                            <Tag
-                                icon={`pi pi-${isApproved ? 'verified' : 'ban'}`}
-                                value={lang === 'en' ? `${isApproved ? 'Approved' : 'Not Approved'}` : `${isApproved ? 'معتمد' : 'غير معتمد'}`}
-                                severity={isApproved ? 'info' : 'warning'}
-                            />
+                            <Tag icon={`pi pi-${isActive ? 'check' : 'times'}`} value={lang === 'en' ? `${isActive ? 'Active' : 'Inactive'}` : `${isActive ? 'نشط' : 'غير نشط'}`} severity={isActive ? 'success' : 'danger'} />
+                            <Tag icon={`pi pi-${isApproved ? 'verified' : 'ban'}`} value={lang === 'en' ? `${isApproved ? 'Approved' : 'Not Approved'}` : `${isApproved ? 'معتمد' : 'غير معتمد'}`} severity={isApproved ? 'info' : 'warning'} />
                             <Tag value={lang === 'en' ? 'Current Data' : 'البيانات الحالية'} severity="info" />
                         </div>
                     </div>
@@ -142,7 +116,7 @@ const ServiceCenterPreview = ({
                                     <div className="flex align-items-center mb-3 p-2 border-round hover:bg-gray-50" style={{ transition: 'background-color 0.2s' }}>
                                         <i className="pi pi-globe mr-2 text-primary text-xl"></i>
                                         <span className="text-blue-500 hover:text-blue-700" style={{ transition: 'color 0.2s' }}>
-                                            <a href={website} target="_blank" rel="noopener noreferrer">
+                                            <a href={website.startsWith('http') ? website : `http://${website}`} target="_blank" rel="noopener noreferrer">
                                                 {website}
                                             </a>
                                         </span>
