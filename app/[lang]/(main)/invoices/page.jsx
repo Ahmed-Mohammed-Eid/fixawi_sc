@@ -105,7 +105,17 @@ export default function Invoices({ params: { lang } }) {
         return (
             <div className="flex gap-2">
                 <Button icon="pi pi-eye" outlined severity="info" onClick={() => showPreviewDialog(rowData)} tooltip={lang === 'en' ? 'Preview' : 'معاينة'} tooltipOptions={{ position: 'left' }} />
-                <Button icon="pi pi-external-link" outlined severity="success" onClick={() => router.push(`/invoices/${rowData._id}`)} tooltip={lang === 'en' ? 'Open Details' : 'عرض التفاصيل'} tooltipOptions={{ position: 'left' }} />
+                <Button
+                    icon="pi pi-external-link"
+                    outlined
+                    severity="success"
+                    type="button"
+                    onClick={() => {
+                        router.push(`/${lang}/invoices/${rowData._id}`);
+                    }}
+                    tooltip={lang === 'en' ? 'Open Details' : 'عرض التفاصيل'}
+                    tooltipOptions={{ position: 'left' }}
+                />
             </div>
         );
     };
@@ -252,7 +262,7 @@ export default function Invoices({ params: { lang } }) {
                             <div className="surface-200 p-3 border-round">
                                 <div className="flex justify-content-between">
                                     <span className="font-bold text-blue-700">{lang === 'en' ? 'Client Total:' : 'إجمالي العميل:'}</span>
-                                    <span className='text-blue-700 font-bold'>{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
+                                    <span className="text-blue-700 font-bold">{priceTemplate(selectedInvoice, { field: 'subTotal' })}</span>
                                 </div>
                             </div>
                         </div>

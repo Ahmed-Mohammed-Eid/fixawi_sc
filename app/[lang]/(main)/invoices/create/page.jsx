@@ -9,7 +9,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export default function CreateInvoice({params: {lang}}) {
+export default function CreateInvoice({ params: { lang } }) {
+    const isRTL = lang === 'ar';
     const router = useRouter();
 
     const searchParams = useSearchParams();
@@ -137,7 +138,7 @@ export default function CreateInvoice({params: {lang}}) {
             }
         } catch (error) {
             console.error('Error getting check report:', error);
-            toast.error(error.response?.data?.message || 'Failed to get check report. Please try again.');
+            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to get check report. Please try again.' : 'فشل الحصول على تقرير الفحص. يرجى المحاولة مرة أخرى.'));
         }
     };
 
@@ -162,7 +163,7 @@ export default function CreateInvoice({params: {lang}}) {
             }
         } catch (error) {
             console.error('Error getting fixawi fare:', error);
-            toast.error(error.response?.data?.message || 'Failed to get fixawi fare. Please try again.');
+            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to get fixawi fare. Please try again.' : 'فشل الحصول على رسوم فيكساوي. يرجى المحاولة مرة أخرى.'));
         }
     };
 
@@ -177,7 +178,7 @@ export default function CreateInvoice({params: {lang}}) {
         let invoiceTotal;
         if (isRatioFare) {
             invoiceTotal = subTotal + subTotal * (invoice.fixawiFare / 100) + salesTaxAmount;
-        }else{
+        } else {
             invoiceTotal = subTotal + invoice.fixawiFare + salesTaxAmount;
         }
 
@@ -204,19 +205,19 @@ export default function CreateInvoice({params: {lang}}) {
             const newErrors = {};
             const { clientName, phoneNumber, carBrand, carModel, date, invoiceDetails } = invoice;
 
-            if (!clientName.trim()) newErrors.clientName = 'Client Name is required';
-            if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
-            if (!carBrand.trim()) newErrors.carBrand = 'Car Brand is required';
-            if (!carModel.trim()) newErrors.carModel = 'Car Model is required';
-            if (!date) newErrors.date = 'Date is required';
+            if (!clientName.trim()) newErrors.clientName = lang === 'en' ? 'Client Name is required' : 'اسم العميل مطلوب';
+            if (!phoneNumber.trim()) newErrors.phoneNumber = lang === 'en' ? 'Phone Number is required' : 'رقم الهاتف مطلوب';
+            if (!carBrand.trim()) newErrors.carBrand = lang === 'en' ? 'Car Brand is required' : 'ماركة السيارة مطلوبة';
+            if (!carModel.trim()) newErrors.carModel = lang === 'en' ? 'Car Model is required' : 'موديل السيارة مطلوب';
+            if (!date) newErrors.date = lang === 'en' ? 'Date is required' : 'التاريخ مطلوب';
 
             invoiceDetails.forEach((detail, index) => {
-                if (!detail.service.trim()) newErrors[`invoiceDetails.${index}.service`] = 'Service is required';
+                if (!detail.service.trim()) newErrors[`invoiceDetails.${index}.service`] = lang === 'en' ? 'Service is required' : 'الخدمة مطلوبة';
                 if (detail.quantity === null || detail.quantity === undefined || detail.quantity <= 0) {
-                    newErrors[`invoiceDetails.${index}.quantity`] = 'Quantity must be greater than 0';
+                    newErrors[`invoiceDetails.${index}.quantity`] = lang === 'en' ? 'Quantity must be greater than 0' : 'يجب أن تكون الكمية أكبر من الصفر';
                 }
                 if (detail.price === null || detail.price === undefined || detail.price <= 0) {
-                    newErrors[`invoiceDetails.${index}.price`] = 'Price must be greater than 0';
+                    newErrors[`invoiceDetails.${index}.price`] = lang === 'en' ? 'Price must be greater than 0' : 'يجب أن يكون السعر أكبر من الصفر';
                 }
             });
             return newErrors;
@@ -225,7 +226,7 @@ export default function CreateInvoice({params: {lang}}) {
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
-            toast.error('Please correct the errors in the form.');
+            toast.error(lang === 'en' ? 'Please correct the errors in the form.' : 'يرجى تصحيح الأخطاء في النموذج.');
             return;
         }
 
@@ -234,12 +235,12 @@ export default function CreateInvoice({params: {lang}}) {
         const checkReportId = searchParams.get('check-report-id');
         const userId = searchParams.get('userId');
         if (!checkReportId) {
-            toast.error('Please select a check report to create an invoice.');
+            toast.error(lang === 'en' ? 'Please select a check report to create an invoice.' : 'يرجى اختيار تقرير فحص لإنشاء الفاتورة.');
             return;
         }
 
         if (!userId) {
-            toast.error('User ID not found.');
+            toast.error(lang === 'en' ? 'User ID not found.' : 'معرف المستخدم غير موجود.');
             return;
         }
 
@@ -278,7 +279,7 @@ export default function CreateInvoice({params: {lang}}) {
             });
 
             if (response.status === 200 || response.status === 201) {
-                toast.success('Invoice created successfully');
+                toast.success(lang === 'en' ? 'Invoice created successfully' : 'تم إنشاء الفاتورة بنجاح');
                 // Use Next.js router for navigation
                 const timer = setTimeout(() => {
                     router.push(`/${lang}/invoices`);
@@ -287,25 +288,25 @@ export default function CreateInvoice({params: {lang}}) {
             }
         } catch (error) {
             console.error('Error creating invoice:', error);
-            toast.error(error.response?.data?.message || 'Failed to create invoice. Please try again.');
+            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to create invoice. Please try again.' : 'فشل إنشاء الفاتورة. يرجى المحاولة مرة أخرى.'));
         }
     };
 
     return (
-        <div className="">
+        <div className="" dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="card">
-                <h2 className="text-3xl font-bold mb-6 text-primary">Create New Invoice</h2>
+                <h2 className="text-3xl font-bold mb-6 text-primary">{lang === 'en' ? 'Create New Invoice' : 'إنشاء فاتورة جديدة'}</h2>
 
                 <div className="mb-6">
-                    <div className="flex align-items-center mb-4">
+                    <div className="flex align-items-center mb-4 gap-2">
                         <i className="pi pi-user mr-2 text-xl"></i>
-                        <h3 className="text-xl m-0">Client & Vehicle Information</h3>
+                        <h3 className="text-xl m-0">{lang === 'en' ? 'Client & Vehicle Information' : 'معلومات العميل والمركبة'}</h3>
                     </div>
                     <div className="grid">
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="clientName" className="font-semibold">
-                                    Client Name <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Client Name' : 'اسم العميل'} <span className="text-red-500">*</span>
                                 </label>
                                 <InputText
                                     id="clientName"
@@ -314,7 +315,7 @@ export default function CreateInvoice({params: {lang}}) {
                                         setInvoice((prev) => ({ ...prev, clientName: e.target.value }));
                                         if (errors.clientName) setErrors((prev) => ({ ...prev, clientName: null }));
                                     }}
-                                    placeholder="Enter client's full name"
+                                    placeholder={lang === 'en' ? "Enter client's full name" : 'أدخل اسم العميل بالكامل'}
                                     className="w-full"
                                     invalid={!!errors.clientName}
                                 />
@@ -324,7 +325,7 @@ export default function CreateInvoice({params: {lang}}) {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="phoneNumber" className="font-semibold">
-                                    Phone Number <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Phone Number' : 'رقم الهاتف'} <span className="text-red-500">*</span>
                                 </label>
                                 <InputText
                                     id="phoneNumber"
@@ -333,7 +334,7 @@ export default function CreateInvoice({params: {lang}}) {
                                         setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }));
                                         if (errors.phoneNumber) setErrors((prev) => ({ ...prev, phoneNumber: null }));
                                     }}
-                                    placeholder="Enter phone number"
+                                    placeholder={lang === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف'}
                                     className="w-full"
                                     invalid={!!errors.phoneNumber}
                                 />
@@ -343,7 +344,7 @@ export default function CreateInvoice({params: {lang}}) {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carBrand" className="font-semibold">
-                                    Car Brand <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} <span className="text-red-500">*</span>
                                 </label>
                                 <InputText
                                     id="carBrand"
@@ -352,7 +353,7 @@ export default function CreateInvoice({params: {lang}}) {
                                         setInvoice((prev) => ({ ...prev, carBrand: e.target.value }));
                                         if (errors.carBrand) setErrors((prev) => ({ ...prev, carBrand: null }));
                                     }}
-                                    placeholder="Enter car brand"
+                                    placeholder={lang === 'en' ? 'Enter car brand' : 'أدخل ماركة السيارة'}
                                     className="w-full"
                                     invalid={!!errors.carBrand}
                                 />
@@ -362,7 +363,7 @@ export default function CreateInvoice({params: {lang}}) {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carModel" className="font-semibold">
-                                    Car Model <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Car Model' : 'موديل السيارة'} <span className="text-red-500">*</span>
                                 </label>
                                 <InputText
                                     id="carModel"
@@ -371,7 +372,7 @@ export default function CreateInvoice({params: {lang}}) {
                                         setInvoice((prev) => ({ ...prev, carModel: e.target.value }));
                                         if (errors.carModel) setErrors((prev) => ({ ...prev, carModel: null }));
                                     }}
-                                    placeholder="Enter car model"
+                                    placeholder={lang === 'en' ? 'Enter car model' : 'أدخل موديل السيارة'}
                                     className="w-full"
                                     invalid={!!errors.carModel}
                                 />
@@ -381,7 +382,7 @@ export default function CreateInvoice({params: {lang}}) {
                         <div className="col-12">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="date" className="font-semibold">
-                                    Date <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Date' : 'التاريخ'} <span className="text-red-500">*</span>
                                 </label>
                                 <Calendar
                                     id="date"
@@ -390,7 +391,7 @@ export default function CreateInvoice({params: {lang}}) {
                                         setInvoice((prev) => ({ ...prev, date: e.value }));
                                         if (errors.date) setErrors((prev) => ({ ...prev, date: null }));
                                     }}
-                                    placeholder="Select date"
+                                    placeholder={lang === 'en' ? 'Select date' : 'اختر التاريخ'}
                                     showIcon
                                     className="w-full"
                                     invalid={!!errors.date}
@@ -404,8 +405,8 @@ export default function CreateInvoice({params: {lang}}) {
 
             <div className="mb-6 card">
                 <div className="flex justify-content-between align-items-center mb-4">
-                    <h3 className="text-xl m-0">Invoice Details</h3>
-                    <Button label="Add Row" icon="pi pi-plus" onClick={addNewRow} />
+                    <h3 className="text-xl m-0">{lang === 'en' ? 'Invoice Details' : 'تفاصيل الفاتورة'}</h3>
+                    <Button label={lang === 'en' ? 'Add Row' : 'إضافة صف'} icon="pi pi-plus" onClick={addNewRow} />
                 </div>
                 <div className="flex flex-column">
                     {invoice.invoiceDetails.map((detail, index) => (
@@ -413,13 +414,13 @@ export default function CreateInvoice({params: {lang}}) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`service-${index}`} className="font-semibold">
-                                        Service <span className="text-red-500">*</span>
+                                        {lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span>
                                     </label>
                                     <InputText
                                         id={`service-${index}`}
                                         value={detail.service}
                                         onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)}
-                                        placeholder="Enter service description"
+                                        placeholder={lang === 'en' ? 'Enter service description' : 'أدخل وصف الخدمة'}
                                         className="w-full"
                                         invalid={!!errors[`invoiceDetails.${index}.service`]}
                                     />
@@ -429,7 +430,7 @@ export default function CreateInvoice({params: {lang}}) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`quantity-${index}`} className="font-semibold">
-                                        Quantity <span className="text-red-500">*</span>
+                                        {lang === 'en' ? 'Quantity' : 'الكمية'} <span className="text-red-500">*</span>
                                     </label>
                                     <InputNumber
                                         id={`quantity-${index}`}
@@ -446,8 +447,8 @@ export default function CreateInvoice({params: {lang}}) {
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
-                                    <label htmlFor={`price-${index}`} className="font-semibold">
-                                        Price <span className="text-red-500">*</span>
+                                    <label htmlFor={`price-${index}`} className="font-semi-bold">
+                                        {lang === 'en' ? 'Price' : 'السعر'} <span className="text-red-500">*</span>
                                     </label>
                                     <InputNumber
                                         id={`price-${index}`}
@@ -464,7 +465,7 @@ export default function CreateInvoice({params: {lang}}) {
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
-                                    <label className="font-semibold">Amount</label>
+                                    <label className="font-semibold">{lang === 'en' ? 'Amount' : 'المبلغ'}</label>
                                     <div className="p-inputgroup">
                                         <span className="p-inputgroup-addon">EGP</span>
                                         <InputNumber value={detail.amount} readOnly className="w-full" minFractionDigits={2} />
@@ -480,18 +481,17 @@ export default function CreateInvoice({params: {lang}}) {
             </div>
 
             <div className="mb-4 card">
-                <h3 className="text-xl mb-4">Invoice Summary</h3>
+                <h3 className="text-xl mb-4">{lang === 'en' ? 'Invoice Summary' : 'ملخص الفاتورة'}</h3>
                 <div className="surface-ground p-4 border-round">
                     <div className="flex flex-column gap-3 w-full md:w-6 ml-auto">
-
                         <div className="flex justify-content-between p-3 bg-primary border-round">
-                            <span className="font-bold text-xl text-white">Total:</span>
+                            <span className="font-bold text-xl text-white">{lang === 'en' ? 'Total:' : 'الإجمالي:'}</span>
                             <span className="font-bold text-xl text-white">{invoice.subTotal?.toFixed(2)} EGP</span>
                         </div>
                     </div>
                 </div>
                 <div className="flex justify-content-end mt-6 ">
-                    <Button label="Create Invoice" icon="pi pi-check" size="large" severity="success" onClick={handleSubmit} className="w-full py-3 px-5 text-xl" raised />
+                    <Button label={lang === 'en' ? 'Create Invoice' : 'إنشاء الفاتورة'} icon="pi pi-check" size="large" severity="success" onClick={handleSubmit} className="w-full py-3 px-5 text-xl" raised />
                 </div>
             </div>
         </div>

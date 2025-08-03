@@ -9,7 +9,8 @@ import { Divider } from 'primereact/divider';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-export default function EditInvoice({ params: { id } }) {
+export default function EditInvoice({ params: { lang, id } }) {
+    const isRTL = lang === 'ar';
     const router = useRouter();
     const [invoice, setInvoice] = useState({
         invoiceId: '',
@@ -54,7 +55,11 @@ export default function EditInvoice({ params: { id } }) {
             }
         } catch (error) {
             console.error('Error getting sales tax rate:', error);
-            toast.error(error.response?.data?.message || 'Failed to get sales tax rate. Please try again.');
+            toast.error(error.response?.data?.message || 
+                (lang === 'en' 
+                    ? 'Failed to get sales tax rate. Please try again.' 
+                    : 'فشل الحصول على معدل ضريبة المبيعات. يرجى المحاولة مرة أخرى.')
+            );
         }
     };
 
@@ -98,7 +103,10 @@ export default function EditInvoice({ params: { id } }) {
                     setInvoice(invoiceData);
                 }
             } catch (error) {
-                toast.error('Failed to fetch invoice details');
+                toast.error(lang === 'en' 
+                    ? 'Failed to fetch invoice details' 
+                    : 'فشل جلب تفاصيل الفاتورة'
+                );
             }
         };
         if (id) {
@@ -141,13 +149,22 @@ export default function EditInvoice({ params: { id } }) {
 
     const validateForm = () => {
         const newErrors = {};
-        if (!invoice.clientName) newErrors.clientName = 'Client Name is a required field.';
-        if (!invoice.date) newErrors.date = 'Date is a required field.';
+        if (!invoice.clientName) newErrors.clientName = lang === 'en' 
+            ? 'Client Name is a required field.' 
+            : 'اسم العميل حقل مطلوب.';
+        if (!invoice.date) newErrors.date = lang === 'en' 
+            ? 'Date is a required field.' 
+            : 'التاريخ حقل مطلوب.';
 
         invoice.invoiceDetails.forEach((detail, index) => {
             if (!detail.service) {
                 if (!newErrors.invoiceDetails) newErrors.invoiceDetails = [];
-                newErrors.invoiceDetails[index] = { ...newErrors.invoiceDetails[index], service: 'Service is a required field.' };
+                newErrors.invoiceDetails[index] = { 
+                    ...newErrors.invoiceDetails[index], 
+                    service: lang === 'en' 
+                        ? 'Service is a required field.' 
+                        : 'الخدمة حقل مطلوب.' 
+                };
             }
             // Quantity and Price are numbers, 0 is a valid value if not strictly positive.
             // If quantity or price must be greater than 0, add validation here.
@@ -160,7 +177,10 @@ export default function EditInvoice({ params: { id } }) {
 
     const handleSubmit = async () => {
         if (!validateForm()) {
-            toast.error('Please fill in all required fields.');
+            toast.error(lang === 'en' 
+                ? 'Please fill in all required fields.' 
+                : 'يرجى ملء جميع الحقول المطلوبة.'
+            );
             return;
         }
 
@@ -169,7 +189,7 @@ export default function EditInvoice({ params: { id } }) {
         let toastId;
 
         try {
-            toastId = toast.loading('Updating invoice...');
+            toastId = toast.loading(lang === 'en' ? 'Updating invoice...' : 'جاري تحديث الفاتورة...');
             const invoiceData = {
                 invoiceId: invoice.invoiceId,
                 userId: invoice.userId,
@@ -198,7 +218,11 @@ export default function EditInvoice({ params: { id } }) {
             });
 
             if (response.data.success) {
-                toast.success('Invoice updated successfully', { id: toastId });
+                toast.success(lang === 'en' 
+                    ? 'Invoice updated successfully' 
+                    : 'تم تحديث الفاتورة بنجاح', 
+                    { id: toastId }
+                );
 
                 // Use Next.js router for navigation
                 const timer = setTimeout(() => {
@@ -206,34 +230,50 @@ export default function EditInvoice({ params: { id } }) {
                     clearTimeout(timer);
                 }, 1000);
             } else {
-                toast.error(response.data.message || 'Failed to update invoice', { id: toastId });
+                toast.error(response.data.message || 
+                    (lang === 'en' 
+                        ? 'Failed to update invoice' 
+                        : 'فشل تحديث الفاتورة'
+                    ), 
+                    { id: toastId }
+                );
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message || 'Failed to update invoice', { id: toastId });
+            toast.error(error.response?.data?.message || error.message || 
+                (lang === 'en' 
+                    ? 'Failed to update invoice' 
+                    : 'فشل تحديث الفاتورة'
+                ), 
+                { id: toastId }
+            );
         }
     };
 
     return (
-        <div className="">
+        <div className="" dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="card">
-                <h2 className="text-3xl font-bold mb-6 text-primary">Invoice</h2>
+                <h2 className="text-3xl font-bold mb-6 text-primary">
+                    {lang === 'en' ? 'Invoice' : 'فاتورة'}
+                </h2>
 
                 <div className="mb-6">
-                    <div className="flex align-items-center mb-4">
+                    <div className="flex align-items-center mb-4 gap-2">
                         <i className="pi pi-user mr-2 text-xl"></i>
-                        <h3 className="text-xl m-0">Client & Vehicle Information</h3>
+                        <h3 className="text-xl m-0">
+                            {lang === 'en' ? 'Client & Vehicle Information' : 'معلومات العميل والمركبة'}
+                        </h3>
                     </div>
                     <div className="grid">
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="clientName" className="font-semibold">
-                                    Client Name <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Client Name' : 'اسم العميل'} <span className="text-red-500">*</span>
                                 </label>
                                 <InputText
                                     id="clientName"
                                     value={invoice.clientName}
                                     onChange={(e) => setInvoice((prev) => ({ ...prev, clientName: e.target.value }))}
-                                    placeholder="Enter client's full name"
+                                    placeholder={lang === 'en' ? "Enter client's full name" : "أدخل اسم العميل بالكامل"}
                                     className={`w-full ${errors.clientName ? 'p-invalid' : ''}`}
                                     disabled
                                 />
@@ -243,33 +283,62 @@ export default function EditInvoice({ params: { id } }) {
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="phoneNumber" className="font-semibold">
-                                    Phone Number
+                                    {lang === 'en' ? 'Phone Number' : 'رقم الهاتف'}
                                 </label>
-                                <InputText id="phoneNumber" value={invoice.phoneNumber} onChange={(e) => setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="Enter phone number" className="w-full" disabled />
+                                <InputText 
+                                    id="phoneNumber" 
+                                    value={invoice.phoneNumber} 
+                                    onChange={(e) => setInvoice((prev) => ({ ...prev, phoneNumber: e.target.value }))} 
+                                    placeholder={lang === 'en' ? "Enter phone number" : "أدخل رقم الهاتف"} 
+                                    className="w-full" 
+                                    disabled 
+                                />
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carBrand" className="font-semibold">
-                                    Car Brand
+                                    {lang === 'en' ? 'Car Brand' : 'ماركة السيارة'}
                                 </label>
-                                <InputText id="carBrand" value={invoice.carBrand} onChange={(e) => setInvoice((prev) => ({ ...prev, carBrand: e.target.value }))} placeholder="Enter car brand" className="w-full" disabled />
+                                <InputText 
+                                    id="carBrand" 
+                                    value={invoice.carBrand} 
+                                    onChange={(e) => setInvoice((prev) => ({ ...prev, carBrand: e.target.value }))} 
+                                    placeholder={lang === 'en' ? "Enter car brand" : "أدخل ماركة السيارة"} 
+                                    className="w-full" 
+                                    disabled 
+                                />
                             </div>
                         </div>
                         <div className="col-12 md:col-6 mb-3">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="carModel" className="font-semibold">
-                                    Car Model
+                                    {lang === 'en' ? 'Car Model' : 'موديل السيارة'}
                                 </label>
-                                <InputText id="carModel" value={invoice.carModel} onChange={(e) => setInvoice((prev) => ({ ...prev, carModel: e.target.value }))} placeholder="Enter car model" className="w-full" disabled />
+                                <InputText 
+                                    id="carModel" 
+                                    value={invoice.carModel} 
+                                    onChange={(e) => setInvoice((prev) => ({ ...prev, carModel: e.target.value }))} 
+                                    placeholder={lang === 'en' ? "Enter car model" : "أدخل موديل السيارة"} 
+                                    className="w-full" 
+                                    disabled 
+                                />
                             </div>
                         </div>
                         <div className="col-12">
                             <div className="flex flex-column gap-2">
                                 <label htmlFor="date" className="font-semibold">
-                                    Date <span className="text-red-500">*</span>
+                                    {lang === 'en' ? 'Date' : 'التاريخ'} <span className="text-red-500">*</span>
                                 </label>
-                                <Calendar id="date" value={invoice.date} onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} placeholder="Select date" showIcon className={`w-full ${errors.date ? 'p-invalid' : ''}`} disabled />
+                                <Calendar 
+                                    id="date" 
+                                    value={invoice.date} 
+                                    onChange={(e) => setInvoice((prev) => ({ ...prev, date: e.value }))} 
+                                    placeholder={lang === 'en' ? "Select date" : "اختر التاريخ"} 
+                                    showIcon 
+                                    className={`w-full ${errors.date ? 'p-invalid' : ''}`} 
+                                    disabled 
+                                />
                                 {errors.date && <small className="p-error">{errors.date}</small>}
                             </div>
                         </div>
@@ -284,13 +353,13 @@ export default function EditInvoice({ params: { id } }) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`service-${index}`} className="font-semibold">
-                                        Service <span className="text-red-500">*</span>
+                                        {lang === 'en' ? 'Service' : 'الخدمة'} <span className="text-red-500">*</span>
                                     </label>{' '}
                                     <InputText
                                         id={`service-${index}`}
                                         value={detail.service}
                                         onChange={(e) => updateInvoiceDetails(index, 'service', e.target.value)}
-                                        placeholder="Enter service description"
+                                        placeholder={lang === 'en' ? "Enter service description" : "أدخل وصف الخدمة"}
                                         className={`w-full ${errors.invoiceDetails?.[index]?.service ? 'p-invalid' : ''}`}
                                         disabled
                                     />
@@ -300,7 +369,7 @@ export default function EditInvoice({ params: { id } }) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`quantity-${index}`} className="font-semibold">
-                                        Quantity {/* Assuming quantity can be 0 or 1, not marking as required with asterisk unless specified */}
+                                        {lang === 'en' ? 'Quantity' : 'الكمية'}
                                     </label>
                                     <InputNumber
                                         id={`quantity-${index}`}
@@ -318,7 +387,7 @@ export default function EditInvoice({ params: { id } }) {
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
                                     <label htmlFor={`price-${index}`} className="font-semibold">
-                                        Price {/* Assuming price can be 0, not marking as required with asterisk unless specified */}
+                                        {lang === 'en' ? 'Price' : 'السعر'}
                                     </label>
                                     <InputNumber id={`price-${index}`} value={detail.price} onValueChange={(e) => updateInvoiceDetails(index, 'price', e.value)} placeholder="0.00" mode="decimal" minFractionDigits={2} className="w-full" disabled />
                                     {/* Add error display for price if needed */}
@@ -326,7 +395,7 @@ export default function EditInvoice({ params: { id } }) {
                             </div>
                             <div className="col-12 md:col-3 mb-2 md:mb-0">
                                 <div className="flex flex-column gap-2">
-                                    <label className="font-semibold">Amount</label>
+                                    <label className="font-semibold">{lang === 'en' ? 'Amount' : 'المبلغ'}</label>
                                     <div className="p-inputgroup">
                                         <span className="p-inputgroup-addon">EGP</span>
                                         <InputNumber value={detail.amount} disabled readOnly className="w-full" minFractionDigits={2} />
@@ -339,28 +408,12 @@ export default function EditInvoice({ params: { id } }) {
             </div>
 
             <div className="mb-4 card">
-                <h3 className="text-xl mb-4">Invoice Summary</h3>
+                <h3 className="text-xl mb-4">{lang === 'en' ? 'Invoice Summary' : 'ملخص الفاتورة'}</h3>
                 <div className="surface-ground p-4 border-round">
                     <div className="flex flex-column gap-3 w-full md:w-6 ml-auto">
-                        <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Subtotal:</span>
-                            <span>{invoice.subTotal.toFixed(2)} EGP</span>
-                        </div>
-                        <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Sayyn Fare:</span>
-                            <span>
-                                {invoice.fixawiFare?.toFixed(2)}
-                                {invoice.fixawiFareType === 'ratio' ? '(%)' : '(EGP)'}
-                            </span>
-                        </div>
-                        <div className="flex justify-content-between p-3 surface-100 border-round</div>">
-                            <span className="font-semibold">Sales Tax ({(invoice.salesTaxRate * 100).toFixed(0)}%):</span>
-                            <span>{invoice.salesTaxAmount?.toFixed(2)} EGP</span>
-                        </div>
-                        <Divider />
                         <div className="flex justify-content-between p-3 bg-primary border-round">
-                            <span className="font-bold text-xl text-white">Total:</span>
-                            <span className="font-bold text-xl text-white">{invoice?.invoiceTotal?.toFixed(2)} EGP</span>
+                            <span className="font-bold text-xl text-white">{lang === 'en' ? 'Total:' : 'الإجمالي:'}</span>
+                            <span className="font-bold text-xl text-white">{invoice.subTotal.toFixed(2)} EGP</span>
                         </div>
                     </div>
                 </div>
