@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export default function CreateInvoice() {
+export default function CreateInvoice({params: {lang}}) {
     const router = useRouter();
 
     const searchParams = useSearchParams();
@@ -281,7 +281,7 @@ export default function CreateInvoice() {
                 toast.success('Invoice created successfully');
                 // Use Next.js router for navigation
                 const timer = setTimeout(() => {
-                    router.push('/invoices');
+                    router.push(`/${lang}/invoices`);
                     clearTimeout(timer);
                 }, 1000);
             }
@@ -483,25 +483,10 @@ export default function CreateInvoice() {
                 <h3 className="text-xl mb-4">Invoice Summary</h3>
                 <div className="surface-ground p-4 border-round">
                     <div className="flex flex-column gap-3 w-full md:w-6 ml-auto">
-                        <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Subtotal:</span>
-                            <span>{invoice.subTotal?.toFixed(2)} EGP</span>
-                        </div>
-                        <div className="flex justify-content-between p-3 surface-100 border-round">
-                            <span className="font-semibold">Sayyn Fare:</span>
-                            <span>
-                                {invoice.fixawiFare?.toFixed(2)}
-                                {invoice.fixawiFareType === 'ratio' ? '(%)' : '(EGP)'}
-                            </span>
-                        </div>
-                        <div className="flex justify-content-between p-3 surface-100 border-round</div>">
-                            <span className="font-semibold">Sales Tax ({(invoice.salesTaxRate * 100).toFixed(0)}%):</span>
-                            <span>{invoice.salesTaxAmount?.toFixed(2)} EGP</span>
-                        </div>
-                        <Divider />
+
                         <div className="flex justify-content-between p-3 bg-primary border-round">
                             <span className="font-bold text-xl text-white">Total:</span>
-                            <span className="font-bold text-xl text-white">{invoice?.invoiceTotal?.toFixed(2)} EGP</span>
+                            <span className="font-bold text-xl text-white">{invoice.subTotal?.toFixed(2)} EGP</span>
                         </div>
                     </div>
                 </div>

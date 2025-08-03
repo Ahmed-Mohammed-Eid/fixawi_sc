@@ -259,7 +259,7 @@ export default function Invoices({ params: { lang } }) {
                         <div className="col-12">
                             <div className="surface-ground p-3 border-round">
                                 <div className="flex justify-content-between mb-2">
-                                    <span className="font-semibold">{lang === 'en' ? 'Sayyn Fare:' : 'رسوم صيّن:'}</span>
+                                    <span className="font-semibold">{lang === 'en' ? 'Sayyn Fare:' : 'رسوم صاين:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'fixawiFare' })}</span>
                                 </div>
                                 <div className="flex justify-content-between mb-2">
