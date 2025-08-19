@@ -78,7 +78,8 @@ export default function DashboardPageContent({ lang }) {
                         visitStatus: visit?.visitStatus,
                         _id: visit?._id,
                         userId: visit?.userId?._id,
-                        checkReportId: visit?.checkReportId
+                        checkReportId: visit?.checkReportId,
+                        promotionId: visit?.promotionId,
                     };
                 });
 
@@ -339,7 +340,7 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-success p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}`)}
+                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}&promotionId=${rowData?.promotionId}`)}
                                                 />)}
                                                 {/* CREATE INVOICE */}
                                                 {(rowData?.checkReportId && rowData.visitStatus !== "visited") && (
@@ -348,7 +349,7 @@ export default function DashboardPageContent({ lang }) {
                                                         className="p-button-info p-button-sm"
                                                         tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                         tooltipOptions={{ position: 'top' }}
-                                                        onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData._id}`)}
+                                                        onClick={() => router.push(`${lang}/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData._id}&promotionId=${rowData?.promotionId}`)}
                                                     />
                                                 )}
 
@@ -445,7 +446,7 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-info p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData.clientId}`)}
+                                                    onClick={() => router.push(`${lang}/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData.clientId}`)}
                                                 />
                                             )}
                                             {/* Add Cancel Button */}

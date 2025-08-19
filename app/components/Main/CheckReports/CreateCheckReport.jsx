@@ -9,6 +9,8 @@ import { Button } from 'primereact/button';
 import { toast } from 'react-hot-toast';
 import { Calendar } from 'primereact/calendar';
 
+import PromotionDetails from "../../Shared/PromotionDetails/PromotionDetails";
+
 export default function CreateCheckReport({ lang }) {
     const isRTL = lang === 'ar';
 
@@ -22,6 +24,7 @@ export default function CreateCheckReport({ lang }) {
     const time = searchParams?.get('time') || null;
     const date = searchParams?.get('date') || null;
     const bookingId = searchParams?.get('bookingId') || null;
+    const promotionId = searchParams?.get('promotionId') || null;
 
     if (!visitId) {
         new Promise(() => router.push(`/${lang}`)).then(() => {
@@ -333,6 +336,8 @@ export default function CreateCheckReport({ lang }) {
                         </div>
                     </div>
                 </div>
+
+                {promotionId && <PromotionDetails promotionId={promotionId} />}
 
                 <div className="card mt-5">
                     <h4 className="text-xl mb-3">

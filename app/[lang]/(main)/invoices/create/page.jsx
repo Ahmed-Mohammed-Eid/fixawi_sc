@@ -5,6 +5,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
+import PromotionDetails from '../../../../components/Shared/PromotionDetails/PromotionDetails';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -403,7 +404,9 @@ export default function CreateInvoice({ params: { lang } }) {
                 </div>
             </div>
 
-            <div className="mb-6 card">
+            <PromotionDetails lang={lang} promotionId={searchParams.get('promotionId')} />
+
+            <div className="mb-6 card mt-2">
                 <div className="flex justify-content-between align-items-center mb-4">
                     <h3 className="text-xl m-0">{lang === 'en' ? 'Invoice Details' : 'تفاصيل الفاتورة'}</h3>
                     <Button label={lang === 'en' ? 'Add Row' : 'إضافة صف'} icon="pi pi-plus" onClick={addNewRow} />
