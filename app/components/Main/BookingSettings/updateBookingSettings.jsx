@@ -3,6 +3,7 @@ import React from 'react';
 import axios from 'axios';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
+import { Checkbox } from 'primereact/checkbox';
 import { toast } from 'react-hot-toast';
 
 export default function UpdateBookingSettings({ lang }) {
@@ -56,7 +57,8 @@ export default function UpdateBookingSettings({ lang }) {
             {
                 serviceId: '',
                 capacity: 1,
-                averageTime: 1
+                averageTime: 1,
+                isMainPlan: false
             }
         ]);
     }
@@ -134,7 +136,8 @@ export default function UpdateBookingSettings({ lang }) {
                     const transformedServices = settings.services.map((service) => ({
                         serviceId: service.serviceId._id,
                         capacity: service.capacity,
-                        averageTime: service.averageTime
+                        averageTime: service.averageTime,
+                        isMainPlan: service.isMainPlan || false
                     }));
                     setBookingPlan(transformedServices || []);
                 }
@@ -219,7 +222,7 @@ export default function UpdateBookingSettings({ lang }) {
                                 />
                                 {errors.bookingPlan?.[index]?.capacity && <small className="p-error">{errors.bookingPlan[index].capacity}</small>}
                             </div>
-                            <div className={'field col-3'}>
+                            <div className={'field col-2'}>
                                 <label className={'font-bold'} htmlFor={`averageTime${index}`}>
                                     {lang === 'en' ? 'Average Time (hrs)' : 'متوسط الوقت (ساعات)'} <span className="text-red-500">*</span>
                                 </label>
@@ -240,7 +243,18 @@ export default function UpdateBookingSettings({ lang }) {
                                 />
                                 {errors.bookingPlan?.[index]?.averageTime && <small className="p-error">{errors.bookingPlan[index].averageTime}</small>}
                             </div>
-                            <div className={'field col-2 flex flex-column align-items-end'}>
+                            <div className={'field col-1 flex flex-column align-items-center'}>
+                                <label className={'font-bold'}>{lang === 'en' ? 'Main Plan' : 'الخطة الرئيسية'}</label>
+                                <Checkbox
+                                    checked={item.isMainPlan}
+                                    onChange={(e) => {
+                                        const plan = [...bookingPlan];
+                                        plan[index].isMainPlan = e.checked;
+                                        setBookingPlan(plan);
+                                    }}
+                                />
+                            </div>
+                            <div className={'field col-1 flex flex-column align-items-end'}>
                                 <label className={'font-bold'}>{lang === 'en' ? 'Delete' : 'حذف'}</label>
                                 <Button
                                     icon="pi pi-trash"

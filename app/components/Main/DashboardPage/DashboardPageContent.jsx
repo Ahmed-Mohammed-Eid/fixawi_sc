@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Calendar } from 'primereact/calendar';
 import { InputTextarea } from 'primereact/inputtextarea'; // Import InputTextarea
+import { Tag } from 'primereact/tag';
 
 export default function DashboardPageContent({ lang }) {
     const isRTL = lang === 'ar';
@@ -324,6 +325,21 @@ export default function DashboardPageContent({ lang }) {
                                             }
                                         };
                                         return <Badge value={rowData.visitStatus} severity={getBadgeSeverity(rowData.visitStatus)} />;
+                                    }}
+                                />
+
+                                {/* PROMOTION ID */}
+                                <Column
+                                    field={'promotionId'}
+                                    header={lang === 'en' ? 'Promotion' : 'عرض'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const promotionId = rowData.promotionId ? "Yes" : "No";
+
+                                        return promotionId ? (
+                                            <Tag value={promotionId} severity={promotionId === "Yes" ? "success" : "danger"} />
+                                        ) : '-';
                                     }}
                                 />
 

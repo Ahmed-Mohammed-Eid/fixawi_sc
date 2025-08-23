@@ -404,7 +404,7 @@ export default function CreateInvoice({ params: { lang } }) {
                 </div>
             </div>
 
-            <PromotionDetails lang={lang} promotionId={searchParams.get('promotionId')} />
+            {searchParams.get('promotionId') && (<PromotionDetails lang={lang} promotionId={searchParams.get('promotionId')} />)}
 
             <div className="mb-6 card mt-2">
                 <div className="flex justify-content-between align-items-center mb-4">
