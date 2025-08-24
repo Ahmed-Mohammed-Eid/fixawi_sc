@@ -201,7 +201,7 @@ export default function AddPromotion({ params: { lang } }) {
         const token = localStorage.getItem('token');
 
         try {
-            await axios.post(`${process.env.API_URL}/create/promotion`, formDataToSend, {
+            await axios.post(`${process.env.API_URL}/sc/create/promotion`, formDataToSend, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
