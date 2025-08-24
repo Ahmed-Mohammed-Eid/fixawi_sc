@@ -14,7 +14,11 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
     const model: AppMenuItem[] = [
         {
             label: dictionary.sidebar.home.title,
-            items: [{ label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}` }]
+            items: [
+                { label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}` },
+                // How to Use
+                { label: dictionary.sidebar.home.howToUse, icon: 'pi pi-fw pi-info', to: `/${lang}/howtouse` }
+            ]
         },
         // CHECK REPORTS
         {

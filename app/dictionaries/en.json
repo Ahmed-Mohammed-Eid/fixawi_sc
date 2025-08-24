@@ -2,7 +2,8 @@
     "sidebar": {
         "home": {
             "title": "HOME",
-            "dashboard": "Dashboard"
+            "dashboard": "Dashboard",
+            "howToUse": "How to Use"
         },
         "settings": {
             "title": "SETTINGS",

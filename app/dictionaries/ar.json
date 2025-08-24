@@ -2,7 +2,8 @@
     "sidebar": {
         "home": {
             "title": "الرئيسية",
-            "dashboard": "لوحة التحكم"
+            "dashboard": "لوحة التحكم",
+            "howToUse": "كيفية الاستخدام"
         },
         "settings": {
             "title": "الإعدادات",
