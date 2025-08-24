@@ -16,8 +16,6 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             label: dictionary.sidebar.home.title,
             items: [
                 { label: dictionary.sidebar.home.dashboard, icon: 'pi pi-fw pi-home', to: `/${lang}` },
-                // How to Use
-                { label: dictionary.sidebar.home.howToUse, icon: 'pi pi-fw pi-info', to: `/${lang}/howtouse` }
             ]
         },
         // CHECK REPORTS
@@ -26,87 +24,89 @@ const AppMenu = ({ dictionary, lang }: ChildContainerProps) => {
             icon: 'pi pi-fw pi-chart-bar',
             items: [
                 // {
-                //     label: lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص',
-                //     icon: 'pi pi-fw pi-plus',
-                //     to: `/${lang}/check-reports`
-                // },
-                {
-                    label: lang === 'en' ? 'Check Reports' : 'تقارير الفحص',
-                    icon: 'pi pi-fw pi-search',
-                    to: `/${lang}/check-reports/get-check-reports`
-                }
-            ]
-        },
-        // INVOICES
-        {
-            label: lang === 'en' ? 'Invoices' : 'الفواتير',
-            icon: 'pi pi-fw pi-file',
-            items: [
-                { label: lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة', icon: 'pi pi-fw pi-plus', to: `/${lang}/invoices/create` },
-                { label: lang === 'en' ? 'Get Invoices' : 'استرجاع الفواتير', icon: 'pi pi-fw pi-search', to: `/${lang}/invoices` }
-            ]
-        },
-        {
-            label: lang === 'en' ? 'Service Centers' : 'مراكز الخدمة',
-            icon: 'pi pi-fw pi-map-marker',
-            items: [
-                // UPDATE SERVICE CENTER INFO
-                // SERVICE CENTER FINANCIALS
-                { label: lang === 'en' ? 'Service Center Financials' : 'البيانات المالية لمركز الخدمة', icon: 'pi pi-fw pi-money-bill', to: `/${lang}/service-centers/financials` },
-                { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` }
-            ]
-        },
-        {
-            label: lang === 'en' ? 'Bookings' : 'الحجوزات',
-            icon: 'pi pi-fw pi-calendar',
-            items: [
-                { label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` },
-                { label: lang === 'en' ? 'Create Booking Settings' : 'إنشاء إعدادات الحجز', icon: 'pi pi-fw pi-plus', to: `/${lang}/bookings/settings` },
-                { label: lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز', icon: 'pi pi-fw pi-pencil', to: `/${lang}/bookings/settings/update` }
-            ]
-        },
-        // PROMOTIONS
-        {
-            label: lang === 'en' ? 'Promotions' : 'العروض الترويجية',
+                    //     label: lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص',
+                    //     icon: 'pi pi-fw pi-plus',
+                    //     to: `/${lang}/check-reports`
+                    // },
+                    {
+                        label: lang === 'en' ? 'Check Reports' : 'تقارير الفحص',
+                        icon: 'pi pi-fw pi-search',
+                        to: `/${lang}/check-reports/get-check-reports`
+                    }
+                ]
+            },
+            // INVOICES
+            {
+                label: lang === 'en' ? 'Invoices' : 'الفواتير',
+                icon: 'pi pi-fw pi-file',
+                items: [
+                    { label: lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة', icon: 'pi pi-fw pi-plus', to: `/${lang}/invoices/create` },
+                    { label: lang === 'en' ? 'Get Invoices' : 'استرجاع الفواتير', icon: 'pi pi-fw pi-search', to: `/${lang}/invoices` }
+                ]
+            },
+            {
+                label: lang === 'en' ? 'Service Centers' : 'مراكز الخدمة',
+                icon: 'pi pi-fw pi-map-marker',
+                items: [
+                    // UPDATE SERVICE CENTER INFO
+                    // SERVICE CENTER FINANCIALS
+                    { label: lang === 'en' ? 'Service Center Financials' : 'البيانات المالية لمركز الخدمة', icon: 'pi pi-fw pi-money-bill', to: `/${lang}/service-centers/financials` },
+                    { label: lang === 'en' ? 'Update Service Center Info' : 'تحديث معلومات مركز الخدمة', icon: 'pi pi-fw pi-pencil', to: `/${lang}/service-centers/Edit` }
+                ]
+            },
+            {
+                label: lang === 'en' ? 'Bookings' : 'الحجوزات',
+                icon: 'pi pi-fw pi-calendar',
+                items: [
+                    { label: lang === 'en' ? 'Bookings Calendar' : 'جدول الحجوزات', icon: 'pi pi-fw pi-calendar', to: `/${lang}/bookings` },
+                    { label: lang === 'en' ? 'Create Booking Settings' : 'إنشاء إعدادات الحجز', icon: 'pi pi-fw pi-plus', to: `/${lang}/bookings/settings` },
+                    { label: lang === 'en' ? 'Update Booking Settings' : 'تحديث إعدادات الحجز', icon: 'pi pi-fw pi-pencil', to: `/${lang}/bookings/settings/update` }
+                ]
+            },
+            // PROMOTIONS
+            {
+                label: lang === 'en' ? 'Promotions' : 'العروض الترويجية',
             icon: 'pi pi-fw pi-gift',
             items: [
                 { label: lang === 'en' ? 'Promotions List' : 'قائمة العروض الترويجية', icon: 'pi pi-fw pi-list', to: `/${lang}/promotions` },
                 { label: lang === 'en' ? 'Add Promotion' : 'إضافة عرض ترويجي', icon: 'pi pi-fw pi-plus', to: `/${lang}/promotions/add` }
             ]
         },
-
+        
         // {
-        //     label: lang === 'en' ? 'Reports' : 'التقارير',
-        //     icon: 'pi pi-fw pi-chart-bar',
-        //     items: [
-        //         {label: lang === 'en' ? 'Reports List' : 'قائمة التقارير', icon: 'pi pi-fw pi-list', to: `/${lang}/reports`},
-        //     ]
-        // },
-        {
-            label: dictionary.sidebar.settings.title,
-            items: [
-                { label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` },
+            //     label: lang === 'en' ? 'Reports' : 'التقارير',
+            //     icon: 'pi pi-fw pi-chart-bar',
+            //     items: [
+                //         {label: lang === 'en' ? 'Reports List' : 'قائمة التقارير', icon: 'pi pi-fw pi-list', to: `/${lang}/reports`},
+                //     ]
+                // },
                 {
-                    label: dictionary.sidebar.settings.logout,
-                    icon: lang === 'en' ? 'pi pi-sign-out' : 'pi pi-sign-in',
-                    to: '/auth/login',
-                    command: () => {
-                        // Clear local storage
-                        localStorage.clear();
-                        // Clear Cookies
-                        document.cookie.split(';').forEach((c) => {
-                            document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
-                        });
-                        // Redirect to login page
-                        window.location.href = '/auth/login';
-                    }
+                    label: dictionary.sidebar.settings.title,
+                    items: [
+                        { label: lang === 'en' ? 'Update Prices' : 'تحديث الأسعار', icon: 'pi pi-fw pi-pencil', to: `/${lang}/price-list` },
+                        // How to Use
+                        { label: dictionary.sidebar.home.howToUse, icon: 'pi pi-fw pi-info', to: `/${lang}/howtouse` },
+                        {
+                            label: dictionary.sidebar.settings.logout,
+                            icon: lang === 'en' ? 'pi pi-sign-out' : 'pi pi-sign-in',
+                            to: '/auth/login',
+                            command: () => {
+                                // Clear local storage
+                                localStorage.clear();
+                                // Clear Cookies
+                                document.cookie.split(';').forEach((c) => {
+                                    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+                                });
+                                // Redirect to login page
+                                window.location.href = '/auth/login';
+                            }
+                        }
+                    ]
                 }
-            ]
-        }
-    ];
-
-    return (
-        <MenuProvider dictionary={dictionary} lang={lang}>
+            ];
+            
+            return (
+                <MenuProvider dictionary={dictionary} lang={lang}>
             <ul className="layout-menu" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
                 {model.map((item, i) => {
                     return !item?.seperator ? <AppMenuitem lang={lang} item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
