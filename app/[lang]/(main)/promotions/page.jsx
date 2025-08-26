@@ -112,7 +112,26 @@ export default function PromotionsPage({ params: { lang } }) {
                         filter
                         filterPlaceholder={lang === 'en' ? 'Search by date' : 'ابحث بالتاريخ'}
                         style={{ whiteSpace: 'nowrap' }}
-                        body={(rowData) => new Date(rowData.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG')}
+                        body={(rowData) => new Date(rowData.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    />
+
+                    {/* Created At */}
+                    <Column
+                        field="createdAt"
+                        header={lang === 'en' ? 'Created At' : 'تاريخ الإنشاء'}
+                        sortable
+                        filter
+                        filterPlaceholder={lang === 'en' ? 'Search by date' : 'ابحث بالتاريخ'}
+                        style={{ whiteSpace: 'nowrap' }}
+                        body={(rowData) => new Date(rowData.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
                     />
 
                     {/* discountType */}
@@ -248,7 +267,20 @@ export default function PromotionsPage({ params: { lang } }) {
 
                         <div className={'field col-12 md:col-6'}>
                             <h5>{lang === 'en' ? 'Expiry Date' : 'تاريخ الانتهاء'}</h5>
-                            <p>{new Date(infoDialog.data?.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG')}</p>
+                            <p>{new Date(infoDialog.data?.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}</p>
+                        </div>
+
+                        <div className={'field col-12 md:col-6'}>
+                            <h5>{lang === 'en' ? 'Created At' : 'تاريخ الإنشاء'}</h5>
+                            <p>{new Date(infoDialog.data?.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}</p>
                         </div>
 
                         {/* discountType */}
