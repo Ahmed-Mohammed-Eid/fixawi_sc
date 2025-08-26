@@ -43,7 +43,7 @@ export default function ServiceCentersView({ lang, data }) {
         let fullSlots = 0;
         let availableSlots = 0;
 
-        booking.calendar.forEach((cal) => {
+        booking?.calendar?.forEach((cal) => {
             const date = formatDate(cal.date);
             dailyBookings[date] = 0;
 
@@ -279,7 +279,7 @@ export default function ServiceCentersView({ lang, data }) {
                                         {booking.serviceName}
                                     </h2>
                                 </div>
-                                <Tag value={`${booking.calendar.reduce((acc, cal) => acc + cal.slots.reduce((slotAcc, slot) => slotAcc + slot.clients.length, 0), 0)} ${lang === 'en' ? 'Bookings' : 'حجوزات'}`} severity="primary" rounded />
+                                <Tag value={`${booking?.calendar?.reduce((acc, cal) => acc + cal.slots.reduce((slotAcc, slot) => slotAcc + slot.clients.length, 0), 0)} ${lang === 'en' ? 'Bookings' : 'حجوزات'}`} severity="primary" rounded />
                             </div>
 
                             <BookingAnalytics booking={booking} />
@@ -288,7 +288,7 @@ export default function ServiceCentersView({ lang, data }) {
                         </div>
 
                         <div className="card">
-                            {booking.calendar.map((calendarItem) => (
+                            {booking?.calendar?.map((calendarItem) => (
                                 <div key={calendarItem.date} className="mb-5">
                                     <div className="flex align-items-center gap-2 p-3 surface-section border-bottom-1 surface-border">
                                         <i className="pi pi-calendar text-xl"></i>

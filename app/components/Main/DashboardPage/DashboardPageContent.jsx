@@ -438,6 +438,38 @@ export default function DashboardPageContent({ lang }) {
                                         return <Badge value={rowData.bookingStatus} severity={getBadgeSeverity(rowData.bookingStatus)} />;
                                     }}
                                 />
+                                
+                                {/* PROMOTION ID */}
+                                <Column
+                                    field={'promotionId'}
+                                    header={lang === 'en' ? 'Promotion' : 'عرض'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const promotionId = rowData.promotionId ? "Yes" : "No";
+
+                                        return promotionId ? (
+                                            <Tag value={promotionId} severity={promotionId === "Yes" ? "success" : "danger"} />
+                                        ) : '-';
+                                    }}
+                                />
+
+                                {/* DATE */}
+                                <Column
+                                    field={'bookingDate'}
+                                    header={lang === 'en' ? 'Date' : 'التاريخ'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const date = new Date(rowData.date);
+                                        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        });
+                                    }}
+                                />
 
                                 <Column field={'phone'} header={lang === 'en' ? 'Phone' : 'رقم الهاتف'} sortable filter={true} />
                                 <Column field={'carInfo'} header={lang === 'en' ? 'Car Info' : 'معلومات السيارة'} sortable body={(rowData) => `${rowData.carBrand} - ${rowData.carModel}`} />
