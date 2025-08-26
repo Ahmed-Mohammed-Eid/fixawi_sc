@@ -484,7 +484,7 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-success p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}`)}
+                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}&promotionId=${rowData?.promotionId}`)}
                                                 />
                                             )}
                                             {/* CREATE INVOICE */}
@@ -494,7 +494,7 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-info p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`${lang}/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData.clientId}`)}
+                                                    onClick={() => router.push(`${lang}/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData.clientId}&promotionId=${rowData?.promotionId}`)}
                                                 />
                                             )}
                                             {/* Add Cancel Button */}

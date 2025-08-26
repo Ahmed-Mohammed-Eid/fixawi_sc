@@ -83,6 +83,37 @@ export default function GetCheckReports({ lang }) {
                 <Column field="carBrand" header={lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} sortable />
                 <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} sortable />
                 <Column field="total" header={lang === 'en' ? 'Total' : 'الإجمالي'} sortable body={(row) => `${row.total} ${lang === 'en' ? 'EGP' : 'ج.م'}`} />
+                <Column
+                    field="date"
+                    header={lang === 'en' ? 'Booking Date' : 'تاريخ الحجز'}
+                    sortable
+                    body={(row) => {
+                        const dateObj = new Date(row.date);
+                        return dateObj.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }}
+                />
+                {/* CreatedAt */}
+                <Column
+                    field="createdAt"
+                    header={lang === 'en' ? 'Created At' : 'تاريخ الإنشاء'}
+                    sortable
+                    body={(row) => {
+                        const dateObj = new Date(row.createdAt);
+                        return dateObj.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }}
+                />
                 {/* reportStatus */}
                 <Column field="reportStatus" header={lang === 'en' ? 'Report Status' : 'حالة التقرير'} sortable />
                 {/* clientApproved */}
@@ -90,12 +121,14 @@ export default function GetCheckReports({ lang }) {
                     body={(row) => (
                         <div className="flex gap-2">
                             {/* add a button for creating an invoice which will redirect to the /invoices/create?check-report-id */}
-                            {row.reportStatus !== "invoiced" && (<Button
-                                tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
-                                icon="pi pi-file"
-                                className="p-button-rounded p-button-success p-button-text"
-                                onClick={() => router.push(`/invoices/create?check-report-id=${row._id}&userId=${row.userId}`)}
-                            />)}
+                            {row.reportStatus !== 'invoiced' && (
+                                <Button
+                                    tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
+                                    icon="pi pi-file"
+                                    className="p-button-rounded p-button-success p-button-text"
+                                    onClick={() => router.push(`/invoices/create?check-report-id=${row._id}&userId=${row.userId}`)}
+                                />
+                            )}
 
                             <Button
                                 tooltip={lang === 'en' ? 'Check Report Details' : 'تفاصيل تقرير الفحص'}
@@ -106,15 +139,17 @@ export default function GetCheckReports({ lang }) {
                                     setDialogVisible(true);
                                 }}
                             />
-                            {row.reportStatus !== "invoiced" && (<Button
-                                tooltip={lang === 'en' ? 'Delete Report' : 'حذف التقرير'}
-                                icon="pi pi-trash"
-                                className="p-button-rounded p-button-danger p-button-text"
-                                onClick={() => {
-                                    setReportToDelete(row);
-                                    setDeleteDialogVisible(true);
-                                }}
-                            />)}
+                            {row.reportStatus !== 'invoiced' && (
+                                <Button
+                                    tooltip={lang === 'en' ? 'Delete Report' : 'حذف التقرير'}
+                                    icon="pi pi-trash"
+                                    className="p-button-rounded p-button-danger p-button-text"
+                                    onClick={() => {
+                                        setReportToDelete(row);
+                                        setDeleteDialogVisible(true);
+                                    }}
+                                />
+                            )}
                         </div>
                     )}
                 />
