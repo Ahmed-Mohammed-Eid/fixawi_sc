@@ -7,8 +7,9 @@ import { Divider } from 'primereact/divider';
 
 function PromotionDetails({ promotionId, lang = 'en' }) {
     const [promotionDetails, setPromotionDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
+    
     // FUNCTION TO GET THE PROMOTION DETAILS
     const getPromotionDetails = useCallback(() => {
         const token = localStorage.getItem('token');
@@ -17,28 +18,28 @@ function PromotionDetails({ promotionId, lang = 'en' }) {
             setLoading(false);
             return;
         }
-
+        
         setLoading(true);
         axios
-            .get(`${process.env.API_URL}/sc/promotion/details?promotionId=${promotionId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            .then((response) => {
-                setPromotionDetails(response.data?.promotion);
-                setLoading(false);
-            })
-            .catch((error) => {
-                toast.error(error.response?.data?.message || 'An error occurred');
-                setLoading(false);
-            });
+        .get(`${process.env.API_URL}/sc/promotion/details?promotionId=${promotionId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then((response) => {
+            setPromotionDetails(response.data?.promotion);
+            setLoading(false);
+        })
+        .catch((error) => {
+            toast.error(error.response?.data?.message || 'An error occurred');
+            setLoading(false);
+        });
     }, [promotionId, lang]);
-
+    
     useEffect(() => {
         getPromotionDetails();
     }, [getPromotionDetails]);
-
+    
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
@@ -62,7 +63,7 @@ function PromotionDetails({ promotionId, lang = 'en' }) {
             </div>
         );
     }
-
+    
     if (!promotionDetails) {
         return (
             <div className="flex flex-column align-items-center justify-content-center h-20rem">
@@ -72,6 +73,8 @@ function PromotionDetails({ promotionId, lang = 'en' }) {
         );
     }
 
+    
+    
     return (
         <div className={styles.promotionDetails}>
             <div className="card">
@@ -86,7 +89,7 @@ function PromotionDetails({ promotionId, lang = 'en' }) {
                             }
                             severity={promotionDetails.approved ? 'success' : 'warning'}
                             className={styles.statusTag}
-                        />
+                            />
                     </div>
                     
                     {promotionDetails.imageUrl && (

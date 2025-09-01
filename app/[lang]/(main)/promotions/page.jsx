@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // PRIME REACT
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -25,13 +25,8 @@ export default function PromotionsPage({ params: { lang } }) {
         data: null
     });
 
-    // EFFECT TO FETCH DATA
-    useEffect(() => {
-        getPromotions();
-    }, []);
-
     // GET PROMOTIONS FUNCTION
-    const getPromotions = () => {
+    const getPromotions = useCallback(() => {
         const token = localStorage.getItem('token');
 
         axios
@@ -48,8 +43,12 @@ export default function PromotionsPage({ params: { lang } }) {
                 console.log(err);
                 toast.error(lang === 'en' ? 'Failed to fetch promotions' : 'فشل في جلب العروض');
             });
-    };
+    }, [lang]);
 
+    // EFFECT TO FETCH DATA
+    useEffect(() => {
+        getPromotions();
+    }, [getPromotions]);
     // DELETE PROMOTION
     const deletePromotion = () => {
         const token = localStorage.getItem('token');
@@ -112,11 +111,13 @@ export default function PromotionsPage({ params: { lang } }) {
                         filter
                         filterPlaceholder={lang === 'en' ? 'Search by date' : 'ابحث بالتاريخ'}
                         style={{ whiteSpace: 'nowrap' }}
-                        body={(rowData) => new Date(rowData.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
+                        body={(rowData) =>
+                            new Date(rowData.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })
+                        }
                     />
 
                     {/* Created At */}
@@ -127,11 +128,13 @@ export default function PromotionsPage({ params: { lang } }) {
                         filter
                         filterPlaceholder={lang === 'en' ? 'Search by date' : 'ابحث بالتاريخ'}
                         style={{ whiteSpace: 'nowrap' }}
-                        body={(rowData) => new Date(rowData.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
+                        body={(rowData) =>
+                            new Date(rowData.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })
+                        }
                     />
 
                     {/* discountType */}
@@ -153,7 +156,7 @@ export default function PromotionsPage({ params: { lang } }) {
                         filter
                         filterPlaceholder={lang === 'en' ? 'Search by value' : 'ابحث بالقيمة'}
                         style={{ whiteSpace: 'nowrap', minWidth: '150px' }}
-                        body={(rowData) => `${(rowData.discountValue ).toFixed(0)} ${rowData.discountType === 'ratio' ? '%' : lang === 'en' ? 'EGP' : 'جنيه'}`}
+                        body={(rowData) => `${rowData.discountValue.toFixed(0)} ${rowData.discountType === 'ratio' ? '%' : lang === 'en' ? 'EGP' : 'جنيه'}`}
                     />
 
                     <Column
@@ -267,20 +270,24 @@ export default function PromotionsPage({ params: { lang } }) {
 
                         <div className={'field col-12 md:col-6'}>
                             <h5>{lang === 'en' ? 'Expiry Date' : 'تاريخ الانتهاء'}</h5>
-                            <p>{new Date(infoDialog.data?.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}</p>
+                            <p>
+                                {new Date(infoDialog.data?.expiryDate).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                            </p>
                         </div>
 
                         <div className={'field col-12 md:col-6'}>
                             <h5>{lang === 'en' ? 'Created At' : 'تاريخ الإنشاء'}</h5>
-                            <p>{new Date(infoDialog.data?.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}</p>
+                            <p>
+                                {new Date(infoDialog.data?.createdAt).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                            </p>
                         </div>
 
                         {/* discountType */}

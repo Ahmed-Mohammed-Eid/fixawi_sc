@@ -1,10 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
-import { Divider } from 'primereact/divider';
 import PromotionDetails from '../../../../components/Shared/PromotionDetails/PromotionDetails';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
@@ -15,6 +14,7 @@ export default function CreateInvoice({ params: { lang } }) {
     const router = useRouter();
 
     const searchParams = useSearchParams();
+    const downPayment = parseInt(searchParams.get('downPayment') || 0);
     const [errors, setErrors] = useState({});
 
     const [invoice, setInvoice] = useState({
@@ -93,58 +93,61 @@ export default function CreateInvoice({ params: { lang } }) {
     };
 
     // GET CHECK REPORT ID
-    const getCheckReportId = async (reportId) => {
-        // GET TOKEN
-        const token = localStorage.getItem('token');
+    const getCheckReportId = useCallback(
+        async (reportId) => {
+            // GET TOKEN
+            const token = localStorage.getItem('token');
 
-        try {
-            const response = await axios.get(`${process.env.API_URL}/sc/check/report/details?checkReportId=${reportId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            if (response.status === 200) {
-                const { checkReport, fixawiFareType, fareValue, salesTaxRate } = response.data;
-
-                // Map check details to invoice details format
-                let mappedDetails = checkReport.checkDetails.map((detail) => {
-                    if (detail.clientApproved) {
-                        return {
-                            service: detail.service,
-                            quantity: detail.quantity,
-                            price: detail.price,
-                            amount: detail.amount
-                        };
-                    } else {
-                        return;
+            try {
+                const response = await axios.get(`${process.env.API_URL}/sc/check/report/details?checkReportId=${reportId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
                 });
+                if (response.status === 200) {
+                    const { checkReport, fixawiFareType, fareValue, salesTaxRate } = response.data;
 
-                mappedDetails = mappedDetails.filter((detail) => detail !== undefined);
+                    // Map check details to invoice details format
+                    let mappedDetails = checkReport.checkDetails.map((detail) => {
+                        if (detail.clientApproved) {
+                            return {
+                                service: detail.service,
+                                quantity: detail.quantity,
+                                price: detail.price,
+                                amount: detail.amount
+                            };
+                        } else {
+                            return;
+                        }
+                    });
 
-                // Set invoice state with check report data
-                setInvoice((prev) => ({
-                    ...prev,
-                    clientName: checkReport.clientName,
-                    phoneNumber: checkReport.phoneNumber,
-                    carBrand: checkReport.carBrand,
-                    carModel: checkReport.carModel,
-                    date: new Date(checkReport.date),
-                    invoiceDetails: mappedDetails,
-                    fixawiFare: fareValue,
-                    fixawiFareType: fixawiFareType,
-                    salesTaxRate: salesTaxRate,
-                    subTotal: checkReport.total
-                }));
+                    mappedDetails = mappedDetails.filter((detail) => detail !== undefined);
+
+                    // Set invoice state with check report data
+                    setInvoice((prev) => ({
+                        ...prev,
+                        clientName: checkReport.clientName,
+                        phoneNumber: checkReport.phoneNumber,
+                        carBrand: checkReport.carBrand,
+                        carModel: checkReport.carModel,
+                        date: new Date(checkReport.date),
+                        invoiceDetails: mappedDetails,
+                        fixawiFare: fareValue,
+                        fixawiFareType: fixawiFareType,
+                        salesTaxRate: salesTaxRate,
+                        subTotal: checkReport.total
+                    }));
+                }
+            } catch (error) {
+                console.error('Error getting check report:', error);
+                toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to get check report. Please try again.' : 'فشل الحصول على تقرير الفحص. يرجى المحاولة مرة أخرى.'));
             }
-        } catch (error) {
-            console.error('Error getting check report:', error);
-            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to get check report. Please try again.' : 'فشل الحصول على تقرير الفحص. يرجى المحاولة مرة أخرى.'));
-        }
-    };
+        },
+        [lang]
+    );
 
     // FIXAWI FARE AMOUNT GET REQUEST
-    const getFixawiFare = async () => {
+    const getFixawiFare = useCallback(async () => {
         // GET TOKEN
         const token = localStorage.getItem('token');
 
@@ -166,7 +169,7 @@ export default function CreateInvoice({ params: { lang } }) {
             console.error('Error getting fixawi fare:', error);
             toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to get fixawi fare. Please try again.' : 'فشل الحصول على رسوم فيكساوي. يرجى المحاولة مرة أخرى.'));
         }
-    };
+    }, [lang]);
 
     useEffect(() => {
         // Calculate totals whenever invoice details change
@@ -189,7 +192,7 @@ export default function CreateInvoice({ params: { lang } }) {
             salesTaxAmount,
             invoiceTotal
         }));
-    }, [invoice.invoiceDetails, invoice.fixawiFare]);
+    }, [invoice.invoiceDetails, invoice.fixawiFare, invoice.fixawiFareType, invoice.salesTaxRate]);
 
     useEffect(() => {
         getFixawiFare();
@@ -197,7 +200,7 @@ export default function CreateInvoice({ params: { lang } }) {
         if (checkReportId) {
             getCheckReportId(checkReportId);
         }
-    }, []);
+    }, [getCheckReportId, getFixawiFare, searchParams]);
 
     const handleSubmit = async () => {
         setErrors({}); // Clear previous errors at the beginning of a new submission attempt
@@ -404,7 +407,7 @@ export default function CreateInvoice({ params: { lang } }) {
                 </div>
             </div>
 
-            {searchParams.get('promotionId') && (<PromotionDetails lang={lang} promotionId={searchParams.get('promotionId')} />)}
+            {searchParams.get('promotionId') && <PromotionDetails lang={lang} promotionId={searchParams.get('promotionId')} />}
 
             <div className="mb-6 card mt-2">
                 <div className="flex justify-content-between align-items-center mb-4">
@@ -489,7 +492,15 @@ export default function CreateInvoice({ params: { lang } }) {
                     <div className="flex flex-column gap-3 w-full md:w-6 ml-auto">
                         <div className="flex justify-content-between p-3 bg-primary border-round">
                             <span className="font-bold text-xl text-white">{lang === 'en' ? 'Total:' : 'الإجمالي:'}</span>
+                            <span className="font-bold text-xl text-white">{invoice.subTotal?.toFixed(2) - downPayment} EGP</span>
+                        </div>
+                        <div className="flex justify-content-between p-3 bg-primary border-round">
+                            <span className="font-bold text-xl text-white">{lang === 'en' ? 'Total Before Down Payment:' : 'الإجمالي قبل الدفعة المقدمة:'}</span>
                             <span className="font-bold text-xl text-white">{invoice.subTotal?.toFixed(2)} EGP</span>
+                        </div>
+                        <div className="flex justify-content-between p-3 bg-primary border-round">
+                            <span className="font-bold text-xl text-white">{lang === 'en' ? 'Down Payment:' : 'الدفعة المقدمة:'}</span>
+                            <span className="font-bold text-xl text-white">{downPayment.toFixed(2)} EGP</span>
                         </div>
                     </div>
                 </div>

@@ -19,7 +19,7 @@ export default function DashboardPageContent({ lang }) {
 
     // ROUTER
     const router = useRouter();
-    
+
     // STATE
     const [visits, setVisits] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -30,7 +30,6 @@ export default function DashboardPageContent({ lang }) {
     const [cancelBookingDialogVisible, setCancelBookingDialogVisible] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [cancelReason, setCancelReason] = useState('');
-    
 
     // Service Center Profile State
     const [serviceCenterImage, setServiceCenterImage] = useState('');
@@ -80,7 +79,7 @@ export default function DashboardPageContent({ lang }) {
                         _id: visit?._id,
                         userId: visit?.userId?._id,
                         checkReportId: visit?.checkReportId,
-                        promotionId: visit?.promotionId,
+                        promotionId: visit?.promotionId
                     };
                 });
 
@@ -93,7 +92,7 @@ export default function DashboardPageContent({ lang }) {
                 toast.error(error.response?.data?.message || 'An error occurred');
                 return null;
             });
-    }, [selectedDate, lang]); // Add dependencies for useCallback
+    }, [selectedDate]); // Add dependencies for useCallback
 
     // DELETE VISIT HANDLER
     function cancelVisit() {
@@ -168,7 +167,7 @@ export default function DashboardPageContent({ lang }) {
     }
 
     // GET SERVICE CENTER PROFILE HANDLER
-    const getServiceCenterProfile = async () => {
+    const getServiceCenterProfile = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             toast.error(lang === 'en' ? 'Authentication token not found.' : 'لم يتم العثور على رمز المصادقة.');
@@ -205,7 +204,7 @@ export default function DashboardPageContent({ lang }) {
         } catch (error) {
             toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch service center profile.' : 'فشل في جلب ملف مركز الخدمة.'));
         }
-    };
+    }, [lang]);
 
     useEffect(() => {
         getVisits(); // Fetch visits on initial render
@@ -215,12 +214,10 @@ export default function DashboardPageContent({ lang }) {
         return () => clearInterval(interval); // Cleanup on unmount
     }, [selectedDate, getVisits]); // Keep getVisits in dependency array
 
-
-
     useEffect(() => {
         getServiceCenterProfile();
         // getVisits(); // getVisits is already called in another useEffect
-    }, [lang]);
+    }, [lang, getServiceCenterProfile]);
 
     return (
         <>
@@ -285,28 +282,6 @@ export default function DashboardPageContent({ lang }) {
                                 header={lang === 'en' ? 'Direct Visits' : 'الزيارات المباشرة'}
                             >
                                 <Column field={'fullName'} header={lang === 'en' ? 'Full Name' : 'الاسم الكامل'} sortable filter={true} />
-                                {/*  PHONE NUMBER  */}
-                                <Column field={'phoneNumber'} header={lang === 'en' ? 'Phone Number' : 'رقم الهاتف'} sortable filter={true} />
-                                {/*  DATE  */}
-                                <Column
-                                    field={'createdAt'}
-                                    header={lang === 'en' ? 'Date' : 'التاريخ'}
-                                    sortable
-                                    filter={true}
-                                    body={(rowData) => {
-                                        const date = new Date(rowData.createdAt);
-                                        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: 'numeric',
-                                            minute: 'numeric'
-                                        });
-                                    }}
-                                />
-                                {/*  CAR  */}
-                                <Column field={'car'} header={lang === 'en' ? 'Car' : 'السيارة'} sortable />
                                 {/*  status  */}
                                 <Column
                                     field={'visitStatus'}
@@ -335,31 +310,52 @@ export default function DashboardPageContent({ lang }) {
                                     sortable
                                     filter={true}
                                     body={(rowData) => {
-                                        const promotionId = rowData.promotionId ? "Yes" : "No";
+                                        const promotionId = rowData.promotionId ? 'Yes' : 'No';
 
-                                        return promotionId ? (
-                                            <Tag value={promotionId} severity={promotionId === "Yes" ? "success" : "danger"} />
-                                        ) : '-';
+                                        return promotionId ? <Tag value={promotionId} severity={promotionId === 'Yes' ? 'success' : 'danger'} /> : '-';
                                     }}
                                 />
+                                {/*  DATE  */}
+                                <Column
+                                    field={'createdAt'}
+                                    header={lang === 'en' ? 'Date' : 'التاريخ'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        const date = new Date(rowData.createdAt);
+                                        return date.toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: 'numeric',
+                                            minute: 'numeric'
+                                        });
+                                    }}
+                                />
+                                {/*  PHONE NUMBER  */}
+                                <Column field={'phoneNumber'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
+                                {/*  CAR  */}
+                                <Column field={'car'} header={lang === 'en' ? 'Car' : 'السيارة'} sortable />
 
                                 {/*  ACTIONS  */}
                                 <Column
                                     field={'_id'}
                                     header={lang === 'en' ? 'Actions' : 'الإجراءات'}
                                     body={(rowData) => {
-                                        console.log(rowData);
                                         return rowData.visitStatus === 'canceled' ? null : (
                                             <div className="flex gap-2">
-                                                {rowData.visitStatus !== "visited" && (<Button
-                                                    icon="pi pi-file-edit"
-                                                    className="p-button-success p-button-sm"
-                                                    tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
-                                                    tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}&promotionId=${rowData?.promotionId}`)}
-                                                />)}
+                                                {rowData.visitStatus !== 'visited' && (
+                                                    <Button
+                                                        icon="pi pi-file-edit"
+                                                        className="p-button-success p-button-sm"
+                                                        tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
+                                                        tooltipOptions={{ position: 'top' }}
+                                                        onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.userId}&visitId=${rowData._id}&promotionId=${rowData?.promotionId}`)}
+                                                    />
+                                                )}
                                                 {/* CREATE INVOICE */}
-                                                {(rowData?.checkReportId && rowData.visitStatus !== "visited") && (
+                                                {rowData?.checkReportId && rowData.visitStatus !== 'visited' && (
                                                     <Button
                                                         icon="pi pi-file"
                                                         className="p-button-info p-button-sm"
@@ -438,7 +434,7 @@ export default function DashboardPageContent({ lang }) {
                                         return <Badge value={rowData.bookingStatus} severity={getBadgeSeverity(rowData.bookingStatus)} />;
                                     }}
                                 />
-                                
+
                                 {/* PROMOTION ID */}
                                 <Column
                                     field={'promotionId'}
@@ -446,11 +442,24 @@ export default function DashboardPageContent({ lang }) {
                                     sortable
                                     filter={true}
                                     body={(rowData) => {
-                                        const promotionId = rowData.promotionId ? "Yes" : "No";
+                                        const promotionId = rowData.promotionId ? 'Yes' : 'No';
 
-                                        return promotionId ? (
-                                            <Tag value={promotionId} severity={promotionId === "Yes" ? "success" : "danger"} />
-                                        ) : '-';
+                                        return promotionId ? <Tag value={promotionId} severity={promotionId === 'Yes' ? 'success' : 'danger'} /> : '-';
+                                    }}
+                                />
+
+                                {/* DOWN PAYMENT */}
+                                <Column
+                                    field={'downPayment'}
+                                    header={lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'}
+                                    sortable
+                                    filter={true}
+                                    body={(rowData) => {
+                                        return (
+                                            <span>
+                                                {rowData.downPayment ? rowData.downPayment : 0} {lang === 'en' ? 'EGP' : 'جنيه'}
+                                            </span>
+                                        );
                                     }}
                                 />
 
@@ -471,7 +480,7 @@ export default function DashboardPageContent({ lang }) {
                                     }}
                                 />
 
-                                <Column field={'phone'} header={lang === 'en' ? 'Phone' : 'رقم الهاتف'} sortable filter={true} />
+                                <Column field={'clientPhone'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
                                 <Column field={'carInfo'} header={lang === 'en' ? 'Car Info' : 'معلومات السيارة'} sortable body={(rowData) => `${rowData.carBrand} - ${rowData.carModel}`} />
                                 {/* Add Actions Column for Bookings */}
                                 <Column
@@ -484,7 +493,23 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-success p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`/${lang}/check-reports?userId=${rowData.clientId}&visitId=${rowData._id}&isBooking=true&time=${rowData.time}&date=${selectedDate}&bookingId=${rowData.bookingId}&promotionId=${rowData?.promotionId}`)}
+                                                    onClick={() => {
+                                                        const searchParams = new URLSearchParams({
+                                                            userId: rowData.clientId,
+                                                            visitId: rowData._id,
+                                                            isBooking: 'true',
+                                                            time: rowData.time,
+                                                            date: rowData.date,
+                                                            bookingId: rowData._id,
+                                                            downPayment: rowData.downPayment || 0
+                                                        });
+
+                                                        if (rowData?.promotionId === '' || rowData?.promotionId === 'null' || !rowData?.promotionId) {
+                                                            searchParams.delete('promotionId');
+                                                        }
+
+                                                        router.push(`/${lang}/check-reports?${searchParams.toString()}`);
+                                                    }}
                                                 />
                                             )}
                                             {/* CREATE INVOICE */}
@@ -494,7 +519,22 @@ export default function DashboardPageContent({ lang }) {
                                                     className="p-button-info p-button-sm"
                                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                     tooltipOptions={{ position: 'top' }}
-                                                    onClick={() => router.push(`${lang}/invoices/create?check-report-id=${rowData.checkReportId}&userId=${rowData.clientId}&promotionId=${rowData?.promotionId}`)}
+                                                    onClick={() => {
+                                                        const searchParams = new URLSearchParams({
+                                                            'check-report-id': rowData.checkReportId,
+                                                            userId: rowData.clientId,
+                                                            downPayment: rowData.downPayment || 0
+                                                        });
+
+                                                        const promotionId = rowData?.promotionId;
+
+                                                        if (promotionId && promotionId !== '' && promotionId !== 'null') {
+                                                            console.log('Appending promotionId:', promotionId);
+                                                            searchParams.append('promotionId', promotionId);
+                                                        }
+
+                                                        router.push(`${lang}/invoices/create?${searchParams.toString()}`);
+                                                    }}
                                                 />
                                             )}
                                             {/* Add Cancel Button */}

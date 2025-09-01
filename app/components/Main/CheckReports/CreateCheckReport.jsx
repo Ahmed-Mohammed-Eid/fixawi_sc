@@ -22,9 +22,10 @@ export default function CreateCheckReport({ lang }) {
     const userId = searchParams?.get('userId') || null;
     const isBooking = searchParams?.get('isBooking') || null;
     const time = searchParams?.get('time') || null;
-    const date = searchParams?.get('date') || null;
+    const dateSearchParams = searchParams?.get('date') || null;
     const bookingId = searchParams?.get('bookingId') || null;
     const promotionId = searchParams?.get('promotionId') || null;
+    const downPayment = searchParams?.get('downPayment') || 0;
 
     if (!visitId) {
         new Promise(() => router.push(`/${lang}`)).then(() => {
@@ -40,9 +41,9 @@ export default function CreateCheckReport({ lang }) {
         phoneNumber: '',
         carBrand: '',
         carModel: '',
-        date: new Date(),
+        date: bookingId ? new Date(dateSearchParams) : new Date(),
         checkDetails: [],
-        total: 0
+        total: 0,
     });
 
     const validateForm = () => {
@@ -209,7 +210,8 @@ export default function CreateCheckReport({ lang }) {
             isBooking: isBooking === 'true' ? true : false,
             date: checkReport.date.toISOString(),
             time: time,
-            bookingId: bookingId
+            bookingId: bookingId,
+            downPayment: parseInt(downPayment) || 0
         };
 
         try {
@@ -337,7 +339,7 @@ export default function CreateCheckReport({ lang }) {
                     </div>
                 </div>
 
-                {promotionId && <PromotionDetails promotionId={promotionId} />}
+                {(promotionId && promotionId !== 'undefined') && <PromotionDetails promotionId={promotionId} />}
 
                 <div className="card mt-5">
                     <h4 className="text-xl mb-3">
@@ -405,11 +407,29 @@ export default function CreateCheckReport({ lang }) {
                     <Button type="button" label={lang === 'en' ? 'Add Check Detail' : 'إضافة تفصيل فحص'} icon="pi pi-plus" className="p-button-outlined" onClick={addCheckDetail} />
                 </div>
 
-                <div className="card mt-5 p-5 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                    <div className="flex justify-between items-center p-4 flex flex-column justify-content-center align-items-center">
+                <div className="card mb-2 mt-5 p-2 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                    <div className="flex justify-between items-center p-2 flex flex-column justify-content-center align-items-center">
                         <h4 className="text-xl font-bold text-blue-800 dark:text-blue-100">{lang === 'en' ? 'Total' : 'الإجمالي'}</h4>
                         <span className="text-2xl font-bold text-blue-800 dark:text-blue-100">
+                            {checkReport.total - parseInt(downPayment)} {lang === 'en' ? 'EGP' : 'ج.م'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="card mt-2 mb-2 p-2 bg-green-50 dark:bg-green-900 rounded-lg">
+                    <div className="flex justify-between items-center p-2 flex flex-column justify-content-center align-items-center">
+                        <h4 className="text-xl font-bold text-green-800 dark:text-green-100">{lang === 'en' ? 'Total before down payment' : 'الإجمالي قبل مقدم الدفع'}</h4>
+                        <span className="text-2xl font-bold text-green-800 dark:text-green-100">
                             {checkReport.total} {lang === 'en' ? 'EGP' : 'ج.م'}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="card mt-2 mb-2 p-2 bg-orange-50 dark:bg-orange-900 rounded-lg">
+                    <div className="flex justify-between items-center p-2 flex flex-column justify-content-center align-items-center">
+                        <h4 className="text-xl font-bold text-orange-800 dark:text-orange-100">{lang === 'en' ? 'Down payment' : 'مقدم الدفع'}</h4>
+                        <span className="text-2xl font-bold text-orange-800 dark:text-orange-100">
+                            {downPayment} {lang === 'en' ? 'EGP' : 'ج.م'}
                         </span>
                     </div>
                 </div>

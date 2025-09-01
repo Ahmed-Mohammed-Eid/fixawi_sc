@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Calendar } from 'primereact/calendar';
@@ -32,7 +32,7 @@ export default function Invoices({ params: { lang } }) {
         to: new Date() // today
     });
 
-    const fetchInvoices = async () => {
+    const fetchInvoices = useCallback(async () => {
         // GET TOKEN
         const token = localStorage.getItem('token');
 
@@ -67,11 +67,11 @@ export default function Invoices({ params: { lang } }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [dateRange]);
 
     useEffect(() => {
         fetchInvoices();
-    }, [dateRange]);
+    }, [fetchInvoices]);
 
     // Templates
     const priceTemplate = (rowData, column) => {
@@ -200,6 +200,10 @@ export default function Invoices({ params: { lang } }) {
                 <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} style={{ minWidth: '120px' }} />
                 <Column field="date" header={lang === 'en' ? 'Date' : 'التاريخ'} sortable body={dateTemplate} style={{ minWidth: '120px' }} />
                 <Column field="paymentStatus" header={lang === 'en' ? 'Status' : 'الحالة'} body={statusTemplate} sortable style={{ minWidth: '120px' }} />
+
+                {/* down payment */}
+                <Column field="downPayment" header={lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'} sortable body={(row) => (row.downPayment ? `${row.downPayment} ${lang === 'en' ? 'EGP' : 'ج.م'}` : `0 ${lang === 'en' ? 'EGP' : 'ج.م'}`)} />
+
                 <Column field="subTotal" header={lang === 'en' ? 'Client Total' : 'إجمالي العميل'} sortable body={(row) => priceTemplate(row, { field: 'subTotal' })} style={{ minWidth: '120px' }} />
                 <Column field="fixawiFare" header={lang === 'en' ? 'Sayyn Fare' : 'رسوم صيّن'} body={(row) => priceTemplate(row, { field: 'fixawiFare' })} style={{ minWidth: '120px' }} />
                 <Column field="salesTaxAmount" header={lang === 'en' ? 'Tax' : 'ضريبة'} body={(row) => priceTemplate(row, { field: 'salesTaxAmount' })} style={{ minWidth: '120px' }} />
@@ -276,6 +280,7 @@ export default function Invoices({ params: { lang } }) {
                                     <span className="font-semibold">{lang === 'en' ? 'Tax:' : 'ضريبة:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'salesTaxAmount' })}</span>
                                 </div>
+
                                 <hr style={{ border: '1px dashed #ccc' }} />
                                 <div className="flex justify-content-between">
                                     <span className="font-semibold">{lang === 'en' ? '(Sayyn Total):' : '(الإجمالي):'}</span>

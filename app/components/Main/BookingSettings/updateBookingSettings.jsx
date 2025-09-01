@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useCallback } from 'react';
 import axios from 'axios';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -94,7 +94,7 @@ export default function UpdateBookingSettings({ lang }) {
             });
     }
 
-    function getServices() {
+    const getServices = useCallback(() => {
         const token = localStorage.getItem('token') || null;
 
         axios
@@ -113,9 +113,9 @@ export default function UpdateBookingSettings({ lang }) {
             .catch((error) => {
                 console.log(error);
             });
-    }
+    }, [lang]);
 
-    function getBookingSettings() {
+    const getBookingSettings = useCallback(() => {
         const token = localStorage.getItem('token') || null;
 
         axios
@@ -145,12 +145,15 @@ export default function UpdateBookingSettings({ lang }) {
             .catch((error) => {
                 console.log(error);
             });
-    }
+    }, []);
+
+    React.useEffect(() => {
+        getBookingSettings();
+    }, [getBookingSettings]);
 
     React.useEffect(() => {
         getServices();
-        getBookingSettings();
-    }, []);
+    }, [getServices]);
 
     return (
         <form onSubmit={updateBookingSettings} dir={isRTL ? 'rtl' : 'ltr'}>

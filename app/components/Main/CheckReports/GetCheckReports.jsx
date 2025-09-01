@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -25,38 +25,41 @@ export default function GetCheckReports({ lang }) {
     const [reportToDelete, setReportToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    const fetchReports = async (e) => {
-        if (e) e.preventDefault();
+    const fetchReports = useCallback(
+        async (e) => {
+            if (e) e.preventDefault();
 
-        if (!date) {
-            return toast.error(lang === 'en' ? 'Please select a date' : 'يرجى اختيار تاريخ');
-        }
+            if (!date) {
+                return toast.error(lang === 'en' ? 'Please select a date' : 'يرجى اختيار تاريخ');
+            }
 
-        try {
-            setLoading(true);
+            try {
+                setLoading(true);
 
-            const token = localStorage.getItem('token');
-            const response = await axios.get(`${process.env.API_URL}/check/reports`, {
-                params: { date },
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${process.env.API_URL}/check/reports`, {
+                    params: { date },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-            // Ensure reports is always an array
-            const reportsData = Array.isArray(response?.data?.checkReports) ? response.data?.checkReports : [];
-            setReports(reportsData);
-        } catch (error) {
-            toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch reports' : 'فشل في جلب التقارير'));
-        } finally {
-            setLoading(false);
-        }
-    };
+                // Ensure reports is always an array
+                const reportsData = Array.isArray(response?.data?.checkReports) ? response.data?.checkReports : [];
+                setReports(reportsData);
+            } catch (error) {
+                toast.error(error.response?.data?.message || (lang === 'en' ? 'Failed to fetch reports' : 'فشل في جلب التقارير'));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [date, lang]
+    );
 
     // Fetch reports for today when component mounts
     useEffect(() => {
         fetchReports();
-    }, []);
+    }, [fetchReports]);
 
     return (
         <div className="card" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -82,6 +85,9 @@ export default function GetCheckReports({ lang }) {
                 <Column field="phoneNumber" header={lang === 'en' ? 'Phone Number' : 'رقم الهاتف'} sortable />
                 <Column field="carBrand" header={lang === 'en' ? 'Car Brand' : 'ماركة السيارة'} sortable />
                 <Column field="carModel" header={lang === 'en' ? 'Car Model' : 'موديل السيارة'} sortable />
+                {/* down payment */}
+                <Column field="downPayment" header={lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'} sortable body={(row) => (row.downPayment ? `${row.downPayment} ${lang === 'en' ? 'EGP' : 'ج.م'}` : `0 ${lang === 'en' ? 'EGP' : 'ج.م'}`)} />
+
                 <Column field="total" header={lang === 'en' ? 'Total' : 'الإجمالي'} sortable body={(row) => `${row.total} ${lang === 'en' ? 'EGP' : 'ج.م'}`} />
                 <Column
                     field="date"
@@ -126,7 +132,13 @@ export default function GetCheckReports({ lang }) {
                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                     icon="pi pi-file"
                                     className="p-button-rounded p-button-success p-button-text"
-                                    onClick={() => router.push(`/invoices/create?check-report-id=${row._id}&userId=${row.userId}`)}
+                                    onClick={() => {
+                                        const searchParams = new URLSearchParams();
+                                        searchParams.append('check-report-id', row._id);
+                                        searchParams.append('userId', row.userId);
+                                        searchParams.append('downPayment', row.downPayment || 0);
+                                        router.push(`/invoices/create?${searchParams.toString()}`);
+                                    }}
                                 />
                             )}
 
@@ -178,6 +190,13 @@ export default function GetCheckReports({ lang }) {
                         </div>
                         <div className="col-12">
                             <h5>{lang === 'en' ? 'Check Details' : 'تفاصيل الفحص'}</h5>
+                            {/* DOWN PAYMENT */}
+                            {selectedReport.downPayment > 0 && (
+                                <p>
+                                    <strong>{lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'}:</strong> {selectedReport.downPayment} {lang === 'en' ? 'EGP' : 'ج.م'}
+                                </p>
+                            )}
+
                             <DataTable value={selectedReport.checkDetails} size="small">
                                 <Column field="service" header={lang === 'en' ? 'Service' : 'الخدمة'} />
                                 <Column field="quantity" header={lang === 'en' ? 'Quantity' : 'الكمية'} />

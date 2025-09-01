@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useCallback } from 'react';
 import axios from 'axios';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -94,7 +94,7 @@ export default function BookingSettingsFormPart({ lang }) {
             });
     }
 
-    function getServices() {
+    const getServices = useCallback(() => {
         const token = localStorage.getItem('token') || null;
 
         axios
@@ -116,11 +116,11 @@ export default function BookingSettingsFormPart({ lang }) {
             .catch((error) => {
                 console.log(error);
             });
-    }
+    }, [lang]);
 
     React.useEffect(() => {
         getServices();
-    }, []);
+    }, [getServices]);
 
     return (
         <form onSubmit={createBookingPlan} dir={isRTL ? 'rtl' : 'ltr'}>

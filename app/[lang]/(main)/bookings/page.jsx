@@ -286,6 +286,12 @@ export default function ServiceCenterBookingsPage({ params: { lang } }) {
             >
                 <Column field="_id" header={lang === 'en' ? 'Booking ID' : 'معرف الحجز'} sortable style={{ minWidth: '150px' }} />
                 <Column field="date" header={lang === 'en' ? 'Date' : 'التاريخ'} sortable body={(rowData) => (rowData.date ? new Date(rowData.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'ar-EG') : '-')} style={{ minWidth: '150px' }} />
+
+                {/* DOWN PAYMENT */}
+                <Column field="downPayment" header={lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'} sortable 
+                    body={(rowData) => (rowData.downPayment ? `${rowData.downPayment} EGP` : '0 EGP')}
+                />
+
                 <Column field="time" header={lang === 'en' ? 'Time' : 'الوقت'} sortable body={(rowData) => (rowData.time ? `${rowData.time}:00` : '-')} style={{ minWidth: '100px' }} />
                 <Column field="clientName" header={lang === 'en' ? 'Client Name' : 'اسم العميل'} sortable style={{ minWidth: '150px' }} />
                 <Column field="clientPhone" header={lang === 'en' ? 'Phone' : 'الهاتف'} sortable style={{ minWidth: '130px' }} />
@@ -395,6 +401,11 @@ export default function ServiceCenterBookingsPage({ params: { lang } }) {
                         <div className="field col-12 md:col-6">
                             <h5>{lang === 'en' ? 'Service Center' : 'مركز الخدمة'}</h5>
                             <p>{lang === 'en' ? infoDialog.data.serviceCenterTitleEn : infoDialog.data.serviceCenterTitle}</p>
+                        </div>
+                        {/* down payment */}
+                        <div className="field col-12 md:col-6">
+                            <h5>{lang === 'en' ? 'Down Payment' : 'الدفعة المقدمة'}</h5>
+                            <p>{infoDialog.data.downPayment ? `${infoDialog.data.downPayment} EGP` : '0 EGP'}</p>
                         </div>
                     </div>
                 )}

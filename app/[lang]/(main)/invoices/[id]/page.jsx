@@ -1,11 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
-import { Button } from 'primereact/button';
-import { Divider } from 'primereact/divider';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -37,7 +35,7 @@ export default function EditInvoice({ params: { lang, id } }) {
     const [errors, setErrors] = useState({});
 
     // GET SALES TAX RATE FROM API
-    const getSalesTaxRate = async () => {
+    const getSalesTaxRate = useCallback(async () => {
         // GET TOKEN
         const token = localStorage.getItem('token');
 
@@ -61,7 +59,7 @@ export default function EditInvoice({ params: { lang, id } }) {
                     : 'فشل الحصول على معدل ضريبة المبيعات. يرجى المحاولة مرة أخرى.')
             );
         }
-    };
+    }, [lang]);
 
     useEffect(() => {
         const fetchInvoice = async () => {
@@ -113,7 +111,7 @@ export default function EditInvoice({ params: { lang, id } }) {
             fetchInvoice();
             getSalesTaxRate();
         }
-    }, [id]);
+    }, [id, lang, getSalesTaxRate]);
 
     const updateInvoiceDetails = (index, field, value) => {
         const updatedDetails = [...invoice.invoiceDetails];
