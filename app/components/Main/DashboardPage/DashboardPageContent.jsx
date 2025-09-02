@@ -79,7 +79,8 @@ export default function DashboardPageContent({ lang }) {
                         _id: visit?._id,
                         userId: visit?.userId?._id,
                         checkReportId: visit?.checkReportId,
-                        promotionId: visit?.promotionId
+                        promotionId: visit?.promotionId,
+                        services: visit?.services || []
                     };
                 });
 
@@ -337,6 +338,21 @@ export default function DashboardPageContent({ lang }) {
                                 <Column field={'phoneNumber'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
                                 {/*  CAR  */}
                                 <Column field={'car'} header={lang === 'en' ? 'Car' : 'السيارة'} sortable />
+                                
+                                {/* services = [] */}
+                                <Column
+                                    field={'services'}
+                                    header={lang === 'en' ? 'Services' : 'الخدمات'}
+                                    body={(rowData) => {
+                                        console.log('Row Data for Services:', rowData);
+                                        if (!rowData.services || rowData.services.length === 0) {
+                                            return '-';
+                                        }
+                                        return rowData.services.map((service, index) => (
+                                            <div key={index}>{service}</div>
+                                        ));
+                                    }}
+                                />
 
                                 {/*  ACTIONS  */}
                                 <Column
@@ -482,6 +498,16 @@ export default function DashboardPageContent({ lang }) {
 
                                 <Column field={'clientPhone'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
                                 <Column field={'carInfo'} header={lang === 'en' ? 'Car Info' : 'معلومات السيارة'} sortable body={(rowData) => `${rowData.carBrand} - ${rowData.carModel}`} />
+
+                                <Column field={'services'} header={lang === 'en' ? 'Services' : 'الخدمات'} sortable body={(rowData) => {
+                                    if (!rowData.serviceName) {
+                                        return '-';
+                                    }
+                                    return  (
+                                        <div>{rowData.serviceName}</div>
+                                    )
+                                }} />
+
                                 {/* Add Actions Column for Bookings */}
                                 <Column
                                     header={lang === 'en' ? 'Actions' : 'الإجراءات'}

@@ -280,6 +280,11 @@ export default function Invoices({ params: { lang } }) {
                                     <span className="font-semibold">{lang === 'en' ? 'Tax:' : 'ضريبة:'}</span>
                                     <span>{priceTemplate(selectedInvoice, { field: 'salesTaxAmount' })}</span>
                                 </div>
+                                {/* down payment */}
+                                <div className="flex justify-content-between mb-2">
+                                    <span className="font-semibold">{lang === 'en' ? 'Down Payment:' : 'الدفعة المقدمة:'}</span>
+                                    <span>{selectedInvoice.downPayment ? `${selectedInvoice.downPayment.toFixed(2)} EGP` : `0.00 ${lang === 'en' ? 'EGP' : 'ج.م'}`}</span>
+                                </div>
 
                                 <hr style={{ border: '1px dashed #ccc' }} />
                                 <div className="flex justify-content-between">
