@@ -338,7 +338,7 @@ export default function DashboardPageContent({ lang }) {
                                 <Column field={'phoneNumber'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
                                 {/*  CAR  */}
                                 <Column field={'car'} header={lang === 'en' ? 'Car' : 'السيارة'} sortable />
-                                
+
                                 {/* services = [] */}
                                 <Column
                                     field={'services'}
@@ -348,9 +348,7 @@ export default function DashboardPageContent({ lang }) {
                                         if (!rowData.services || rowData.services.length === 0) {
                                             return '-';
                                         }
-                                        return rowData.services.map((service, index) => (
-                                            <div key={index}>{service}</div>
-                                        ));
+                                        return rowData.services.map((service, index) => <div key={index}>{service}</div>);
                                     }}
                                 />
 
@@ -499,14 +497,17 @@ export default function DashboardPageContent({ lang }) {
                                 <Column field={'clientPhone'} header={lang === 'en' ? 'Client Phone' : 'هاتف العميل'} sortable filter={true} />
                                 <Column field={'carInfo'} header={lang === 'en' ? 'Car Info' : 'معلومات السيارة'} sortable body={(rowData) => `${rowData.carBrand} - ${rowData.carModel}`} />
 
-                                <Column field={'services'} header={lang === 'en' ? 'Services' : 'الخدمات'} sortable body={(rowData) => {
-                                    if (!rowData.serviceName) {
-                                        return '-';
-                                    }
-                                    return  (
-                                        <div>{rowData.serviceName}</div>
-                                    )
-                                }} />
+                                <Column
+                                    field={'services'}
+                                    header={lang === 'en' ? 'Services' : 'الخدمات'}
+                                    sortable
+                                    body={(rowData) => {
+                                        if (!rowData.serviceName) {
+                                            return '-';
+                                        }
+                                        return <div>{rowData.serviceName}</div>;
+                                    }}
+                                />
 
                                 {/* Add Actions Column for Bookings */}
                                 <Column
@@ -520,7 +521,7 @@ export default function DashboardPageContent({ lang }) {
                                                     tooltip={lang === 'en' ? 'Create Check Report' : 'إنشاء تقرير فحص'}
                                                     tooltipOptions={{ position: 'top' }}
                                                     onClick={() => {
-                                                        const searchParams = new URLSearchParams({
+                                                        const searchParamsObj = {
                                                             userId: rowData.clientId,
                                                             visitId: rowData._id,
                                                             isBooking: 'true',
@@ -528,11 +529,12 @@ export default function DashboardPageContent({ lang }) {
                                                             date: rowData.date,
                                                             bookingId: rowData._id,
                                                             downPayment: rowData.downPayment || 0
-                                                        });
-
-                                                        if (rowData?.promotionId === '' || rowData?.promotionId === 'null' || !rowData?.promotionId) {
-                                                            searchParams.delete('promotionId');
+                                                        };
+                                                        if (rowData?.promotionId && rowData?.promotionId !== '' && rowData?.promotionId !== 'null') {
+                                                            searchParamsObj.promotionId = rowData.promotionId;
                                                         }
+
+                                                        const searchParams = new URLSearchParams(searchParamsObj);
 
                                                         router.push(`/${lang}/check-reports?${searchParams.toString()}`);
                                                     }}
@@ -546,18 +548,16 @@ export default function DashboardPageContent({ lang }) {
                                                     tooltip={lang === 'en' ? 'Create Invoice' : 'إنشاء فاتورة'}
                                                     tooltipOptions={{ position: 'top' }}
                                                     onClick={() => {
-                                                        const searchParams = new URLSearchParams({
+                                                        const searchParamsObj = {
                                                             'check-report-id': rowData.checkReportId,
                                                             userId: rowData.clientId,
                                                             downPayment: rowData.downPayment || 0
-                                                        });
-
-                                                        const promotionId = rowData?.promotionId;
-
-                                                        if (promotionId && promotionId !== '' && promotionId !== 'null') {
-                                                            console.log('Appending promotionId:', promotionId);
-                                                            searchParams.append('promotionId', promotionId);
+                                                        };
+                                                        if (rowData?.promotionId && rowData?.promotionId !== '' && rowData?.promotionId !== 'null') {
+                                                            searchParamsObj.promotionId = rowData.promotionId;
                                                         }
+
+                                                        const searchParams = new URLSearchParams(searchParamsObj);
 
                                                         router.push(`${lang}/invoices/create?${searchParams.toString()}`);
                                                     }}

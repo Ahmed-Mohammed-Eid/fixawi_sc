@@ -133,10 +133,13 @@ export default function GetCheckReports({ lang }) {
                                     icon="pi pi-file"
                                     className="p-button-rounded p-button-success p-button-text"
                                     onClick={() => {
-                                        const searchParams = new URLSearchParams();
-                                        searchParams.append('check-report-id', row._id);
-                                        searchParams.append('userId', row.userId);
-                                        searchParams.append('downPayment', row.downPayment || 0);
+                                        const searchParamsObj = {
+                                            'check-report-id': row._id,
+                                            userId: row.userId,
+                                            downPayment: row.downPayment || 0
+                                        }
+
+                                        const searchParams = new URLSearchParams(searchParamsObj);
                                         router.push(`/invoices/create?${searchParams.toString()}`);
                                     }}
                                 />
