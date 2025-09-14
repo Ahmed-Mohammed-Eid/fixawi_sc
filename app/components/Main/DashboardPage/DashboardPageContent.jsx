@@ -502,10 +502,10 @@ export default function DashboardPageContent({ lang }) {
                                     header={lang === 'en' ? 'Services' : 'الخدمات'}
                                     sortable
                                     body={(rowData) => {
-                                        if (!rowData.serviceName) {
+                                        if (!rowData.services) {
                                             return '-';
                                         }
-                                        return <div>{rowData.serviceName}</div>;
+                                        return rowData.services.map((service, index) => <div key={index}>{service}</div>);
                                     }}
                                 />
 
